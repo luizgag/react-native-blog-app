@@ -305,3 +305,279 @@ const HomeScreen = () => {
   // Component implementation...
 };
 ```
+#
+# User Management Contexts (Task 6)
+
+### ✅ Teachers Context
+- [x] Complete TeachersContext with pagination support
+- [x] CRUD operations for teacher management
+- [x] Pagination state management with navigation helpers
+- [x] Loading states and error handling
+- [x] Current teacher selection state
+- [x] Integration with API service
+
+### ✅ Students Context
+- [x] Complete StudentsContext with pagination support
+- [x] CRUD operations for student management
+- [x] Pagination state management with navigation helpers
+- [x] Loading states and error handling
+- [x] Current student selection state
+- [x] Integration with API service
+
+### Teachers Context Features
+
+#### State Management
+- `data`: Array of teachers or null
+- `loading`: Loading state ('idle' | 'loading' | 'success' | 'error')
+- `error`: Error message if any
+- `pagination`: Complete pagination information
+- `currentTeacher`: Currently selected teacher
+
+#### Actions
+- `fetchTeachers(page?)`: Load teachers with optional page number
+- `fetchTeacher(id)`: Load specific teacher by ID
+- `createTeacher(teacher)`: Create new teacher
+- `updateTeacher(id, teacher)`: Update existing teacher
+- `deleteTeacher(id)`: Delete teacher
+- `clearCurrentTeacher()`: Clear selected teacher
+- `clearError()`: Clear error state
+
+#### Pagination Support
+```tsx
+const { pagination } = useTeachers();
+
+// Pagination includes:
+// - currentPage: Current page number
+// - totalPages: Total number of pages
+// - totalItems: Total number of teachers
+// - itemsPerPage: Teachers per page
+// - hasNextPage: Boolean for next page availability
+// - hasPreviousPage: Boolean for previous page availability
+```
+
+### Students Context Features
+
+#### State Management
+- `data`: Array of students or null
+- `loading`: Loading state ('idle' | 'loading' | 'success' | 'error')
+- `error`: Error message if any
+- `pagination`: Complete pagination information
+- `currentStudent`: Currently selected student
+
+#### Actions
+- `fetchStudents(page?)`: Load students with optional page number
+- `fetchStudent(id)`: Load specific student by ID
+- `createStudent(student)`: Create new student
+- `updateStudent(id, student)`: Update existing student
+- `deleteStudent(id)`: Delete student
+- `clearCurrentStudent()`: Clear selected student
+- `clearError()`: Clear error state
+
+### Usage Examples
+
+#### Teachers Management
+```tsx
+import { useTeachers } from '../context';
+
+const TeachersManagement = () => {
+  const { 
+    data: teachers, 
+    loading, 
+    pagination, 
+    error,
+    actions 
+  } = useTeachers();
+  
+  useEffect(() => {
+    actions.fetchTeachers();
+  }, []);
+  
+  const handleNextPage = () => {
+    if (pagination.hasNextPage) {
+      actions.fetchTeachers(pagination.currentPage + 1);
+    }
+  };
+  
+  const handleCreateTeacher = async () => {
+    try {
+      await actions.createTeacher({
+        name: 'New Teacher',
+        email: 'teacher@example.com',
+        password: 'password123',
+        department: 'Computer Science',
+      });
+    } catch (error) {
+      // Error handled by context
+    }
+  };
+  
+  // Component implementation...
+};
+```
+
+#### Students Management
+```tsx
+import { useStudents } from '../context';
+
+const StudentsManagement = () => {
+  const { 
+    data: students, 
+    loading, 
+    pagination, 
+    currentStudent,
+    actions 
+  } = useStudents();
+  
+  const handleUpdateStudent = async (id, updates) => {
+    try {
+      await actions.updateStudent(id, updates);
+      // Success handled automatically
+    } catch (error) {
+      // Error handled by context
+    }
+  };
+  
+  const handleDeleteStudent = async (id) => {
+    try {
+      await actions.deleteStudent(id);
+      // Optimistic update applied
+    } catch (error) {
+      // Error handled by context
+    }
+  };
+  
+  // Component implementation...
+};
+```
+
+### Complete Provider Setup
+
+Update your app setup to include all contexts:
+
+```tsx
+import { 
+  AuthProvider, 
+  PostsProvider, 
+  TeachersProvider, 
+  StudentsProvider 
+} from './src/context';
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <PostsProvider>
+        <TeachersProvider>
+          <StudentsProvider>
+            <YourAppContent />
+          </StudentsProvider>
+        </TeachersProvider>
+      </PostsProvider>
+    </AuthProvider>
+  );
+}
+```
+
+### Requirements Satisfied (Task 6)
+
+This implementation satisfies all requirements from task 6:
+
+1. ✅ **Create TeachersContext for teacher management state**
+   - Complete TeachersContext with reducer-based state management
+   - Teacher list state with loading and error handling
+   - Current teacher state for detailed operations
+   - Optimistic updates for better UX
+
+2. ✅ **Create StudentsContext for student management state**
+   - Complete StudentsContext with reducer-based state management
+   - Student list state with loading and error handling
+   - Current student state for detailed operations
+   - Optimistic updates for better UX
+
+3. ✅ **Add pagination support for user lists**
+   - Complete pagination state with navigation helpers
+   - Page-based data fetching with API integration
+   - Pagination controls (next/previous page availability)
+   - Total items and pages tracking
+   - Items per page calculation
+
+4. ✅ **Implement CRUD operations state management for both contexts**
+   - **Create**: Add new teachers/students with optimistic updates
+   - **Read**: Fetch individual and paginated lists of users
+   - **Update**: Modify existing users with state synchronization
+   - **Delete**: Remove users with optimistic updates and cleanup
+   - Error handling for all operations
+   - Loading states for async operations
+
+### API Integration
+
+Both contexts integrate with the existing API service:
+
+#### Teachers Context
+- Uses `apiService.getTeachers(page)` for paginated teacher lists
+- Uses `apiService.createTeacher(data)` for creating teachers
+- Uses `apiService.updateTeacher(id, data)` for updating teachers
+- Uses `apiService.deleteTeacher(id)` for deleting teachers
+
+#### Students Context
+- Uses `apiService.getStudents(page)` for paginated student lists
+- Uses `apiService.createStudent(data)` for creating students
+- Uses `apiService.updateStudent(id, data)` for updating students
+- Uses `apiService.deleteStudent(id)` for deleting students
+
+### Error Handling
+
+Both contexts implement comprehensive error handling:
+
+```tsx
+const { error, actions } = useTeachers();
+
+// Automatic error state management
+if (error) {
+  return (
+    <ErrorMessage 
+      message={error} 
+      onDismiss={actions.clearError} 
+    />
+  );
+}
+
+// Try-catch for additional error handling
+const handleOperation = async () => {
+  try {
+    await actions.someOperation();
+  } catch (error) {
+    // Error automatically stored in context state
+    // Additional custom error handling if needed
+  }
+};
+```
+
+### Testing
+
+Both contexts include comprehensive test suites:
+
+- **`__tests__/TeachersContext.test.tsx`** - Complete test coverage for teachers context
+- **`__tests__/StudentsContext.test.tsx`** - Complete test coverage for students context
+
+Test coverage includes:
+- Initial state verification
+- Successful operations (fetch, create, update, delete)
+- Error handling scenarios
+- Pagination functionality
+- Context provider requirements
+- Hook usage outside provider error handling
+
+### Usage Examples
+
+Complete usage examples are provided:
+
+- **`examples/TeachersContextUsage.tsx`** - Full implementation example with UI
+- **`examples/StudentsContextUsage.tsx`** - Full implementation example with UI
+
+These examples demonstrate:
+- Complete CRUD operations with UI
+- Pagination controls and navigation
+- Error handling and user feedback
+- Loading states and user experience
+- Form handling and validation patterns
+- Confirmation dialogs for destructive actions
