@@ -163,3 +163,15 @@ export interface StudentFormData {
   password?: string;
   studentId?: string;
 }
+
+// Re-export utility types
+export * from './utils';
+
+// Re-export context types
+export * from './context';
+
+// Re-export API types
+export * from './api';
+
+// Re-export validation utilities
+export * from './validation';
