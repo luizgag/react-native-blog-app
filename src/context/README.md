@@ -1,22 +1,29 @@
-# Authentication Context Implementation
+# Context Implementation
 
-This directory contains the complete authentication context implementation for the React Native Blog App.
+This directory contains the complete context implementations for the React Native Blog App, including authentication and posts management.
 
 ## Files Overview
 
 ### Core Implementation
 - **`AuthContext.tsx`** - Main authentication context with state management and actions
-- **`index.ts`** - Exports all authentication-related components and hooks
+- **`PostsContext.tsx`** - Main posts context with CRUD operations and search functionality
+- **`index.ts`** - Exports all context-related components and hooks
 
 ### Specialized Hooks
 - **`hooks/useAuthActions.ts`** - Hook providing only authentication actions
 - **`hooks/useAuthState.ts`** - Hook providing only authentication state
 - **`hooks/useAuthGuard.ts`** - Hook for role-based access control
 - **`hooks/useAuthPersistence.ts`** - Hook for managing authentication data persistence
+- **`hooks/usePostsActions.ts`** - Hook providing only posts actions
+- **`hooks/usePostsState.ts`** - Hook providing only posts state
+- **`hooks/usePostsSearch.ts`** - Hook for posts search functionality with debouncing
+- **`hooks/usePostsCrud.ts`** - Hook for posts CRUD operations with error handling
 
 ### Documentation & Examples
-- **`examples/AuthContextUsage.tsx`** - Complete usage examples for all hooks and components
-- **`__tests__/AuthContext.test.tsx`** - Comprehensive test suite (requires testing dependencies)
+- **`examples/AuthContextUsage.tsx`** - Complete usage examples for authentication hooks and components
+- **`examples/PostsContextUsage.tsx`** - Complete usage examples for posts hooks and components
+- **`__tests__/AuthContext.test.tsx`** - Comprehensive authentication test suite
+- **`__tests__/PostsContext.test.tsx`** - Comprehensive posts test suite
 
 ## Features Implemented
 
@@ -46,6 +53,36 @@ This directory contains the complete authentication context implementation for t
 - [x] Permission checking utilities
 - [x] Protected action guards
 - [x] Conditional rendering helpers
+
+### ✅ Core Posts Context
+- [x] Posts list management with state
+- [x] Individual post fetching and display
+- [x] Search functionality with debounced queries
+- [x] CRUD operations (Create, Read, Update, Delete)
+- [x] Loading states for all async operations
+- [x] Error handling and error clearing
+- [x] Current post state management
+
+### ✅ Posts Search Functionality
+- [x] Real-time search with debouncing
+- [x] Search results state management
+- [x] Search query persistence
+- [x] Search error handling
+- [x] Clear search functionality
+
+### ✅ Posts CRUD Operations
+- [x] Create new posts with validation
+- [x] Update existing posts with optimistic updates
+- [x] Delete posts with confirmation
+- [x] Optimistic UI updates for better UX
+- [x] Error handling with user feedback
+
+### ✅ Posts Hooks
+- [x] `usePosts` - Main hook with full context access
+- [x] `usePostsState` - Read-only state access
+- [x] `usePostsActions` - Action-only access
+- [x] `usePostsSearch` - Search functionality with debouncing
+- [x] `usePostsCrud` - CRUD operations with error handling
 
 ## Usage Examples
 
@@ -98,16 +135,82 @@ const UserProfile = () => {
 };
 ```
 
+### Basic Posts Management
+```tsx
+import { usePosts } from '../context';
+
+const PostsList = () => {
+  const { posts, isLoading, error, actions } = usePosts();
+  
+  useEffect(() => {
+    actions.fetchPosts().catch(() => {
+      // Error handled by context
+    });
+  }, [actions]);
+  
+  // Component implementation...
+};
+```
+
+### Posts Search
+```tsx
+import { usePostsSearch } from '../context';
+
+const SearchPosts = () => {
+  const { 
+    searchResults, 
+    searchQuery, 
+    isSearching,
+    handleSearchQueryChange,
+    clearSearch 
+  } = usePostsSearch(500); // 500ms debounce
+  
+  // Component implementation...
+};
+```
+
+### Posts CRUD Operations
+```tsx
+import { usePostsCrud } from '../context';
+
+const CreatePost = () => {
+  const { createPost, error, isLoading } = usePostsCrud();
+  
+  const handleSubmit = async (postData) => {
+    const result = await createPost(postData);
+    if (result.success) {
+      // Handle success
+    } else {
+      // Handle error
+    }
+  };
+  
+  // Component implementation...
+};
+```
+
 ## Integration with API Service
 
-The authentication context integrates seamlessly with the existing API service:
+Both contexts integrate seamlessly with the existing API service:
 
+### Authentication Context
 - Uses `apiService.login()` for authentication
 - Uses `apiService.logout()` for logout
 - Automatically stores tokens in AsyncStorage
 - Handles API errors and token expiration
 
+### Posts Context
+- Uses `apiService.getPosts()` for fetching all posts
+- Uses `apiService.getPost()` for fetching individual posts
+- Uses `apiService.searchPosts()` for search functionality
+- Uses `apiService.createPost()` for creating new posts
+- Uses `apiService.updatePost()` for updating existing posts
+- Uses `apiService.deletePost()` for deleting posts
+- Handles all API errors with user-friendly messages
+
 ## Requirements Satisfied
+
+### Authentication Context (Task 4)
 
 This implementation satisfies all requirements from task 4:
 
@@ -134,24 +237,71 @@ This implementation satisfies all requirements from task 4:
    - Storage management hooks
    - Clean separation of concerns
 
+### Posts Context (Task 5)
+
+This implementation satisfies all requirements from task 5:
+
+1. ✅ **Implement PostsContext for managing posts state**
+   - Complete PostsContext with reducer-based state management
+   - Posts list state with loading and error handling
+   - Current post state for detailed views
+   - Search results state management
+
+2. ✅ **Add actions for fetching, creating, updating, and deleting posts**
+   - `fetchPosts()` - Fetch all posts from API
+   - `fetchPost(id)` - Fetch individual post by ID
+   - `createPost(data)` - Create new post with optimistic updates
+   - `updatePost(id, data)` - Update existing post with optimistic updates
+   - `deletePost(id)` - Delete post with optimistic updates
+
+3. ✅ **Implement search functionality state management**
+   - `searchPosts(query)` - Search posts with API integration
+   - Search results state with loading indicators
+   - Search query persistence
+   - Debounced search with configurable delay
+   - Clear search functionality
+
+4. ✅ **Create posts-related hooks for components**
+   - `usePosts` - Main hook with full context access
+   - `usePostsState` - Read-only state access for performance
+   - `usePostsActions` - Action-only access for event handlers
+   - `usePostsSearch` - Specialized search hook with debouncing
+   - `usePostsCrud` - CRUD operations with error handling and success feedback
+
 ## Next Steps
 
-To use this authentication context in your app:
+To use both contexts in your app:
 
-1. Wrap your app with `AuthProvider`
+1. Wrap your app with both `AuthProvider` and `PostsProvider`
 2. Use the appropriate hooks in your components
 3. Implement protected routes using `useAuthGuard`
-4. Handle authentication flows in your screens
+4. Handle authentication and posts flows in your screens
 
 Example app setup:
 ```tsx
-import { AuthProvider } from './src/context';
+import { AuthProvider, PostsProvider } from './src/context';
 
 export default function App() {
   return (
     <AuthProvider>
-      <YourAppContent />
+      <PostsProvider>
+        <YourAppContent />
+      </PostsProvider>
     </AuthProvider>
   );
 }
+```
+
+### Usage in Components
+```tsx
+// In a screen component
+import { useAuth, usePosts, usePostsSearch } from './src/context';
+
+const HomeScreen = () => {
+  const { isAuthenticated } = useAuth();
+  const { posts, actions: postsActions } = usePosts();
+  const { searchResults, handleSearchQueryChange } = usePostsSearch();
+  
+  // Component implementation...
+};
 ```
