@@ -1,30 +1,16 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from './src/context/AuthContext';
+import { AuthScreensDemo } from './src/screens/AuthScreensDemo';
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <View style={styles.container}>
-        <Text>React Native Blog App</Text>
-        <Text style={styles.subtitle}>Project structure initialized successfully!</Text>
+      <AuthProvider>
+        <AuthScreensDemo />
         <StatusBar style="auto" />
-      </View>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  subtitle: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#666',
-  },
-});

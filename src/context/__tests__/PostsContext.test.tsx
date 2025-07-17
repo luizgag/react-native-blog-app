@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { PostsProvider, usePosts } from '../PostsContext';
-import { apiService } from '../../services/ApiService';
+import { apiService } from '../../services/apiService';
 import { Post } from '../../types';
 
 // Mock API service

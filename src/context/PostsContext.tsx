@@ -5,7 +5,7 @@ import {
   PostsAction
 } from '../types/context';
 import { Post } from '../types';
-import { apiService } from '../services/ApiService';
+import { apiService } from '../services/apiService';
 
 // Initial state
 const initialState: PostsContextState = {
