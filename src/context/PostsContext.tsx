@@ -5,7 +5,7 @@ import {
   PostsAction
 } from '../types/context';
 import { Post } from '../types';
-import { apiService } from '../services/apiService';
+import { enhancedApiService } from '../services/apiService';
 
 // Initial state
 const initialState: PostsContextState = {
@@ -152,7 +152,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
     dispatch({ type: 'FETCH_POSTS_START' });
     
     try {
-      const posts = await apiService.getPosts();
+      const posts = await enhancedApiService.getPosts();
       dispatch({ type: 'FETCH_POSTS_SUCCESS', payload: posts });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to fetch posts. Please try again.';
@@ -165,7 +165,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
     dispatch({ type: 'FETCH_POST_START' });
     
     try {
-      const post = await apiService.getPost(id);
+      const post = await enhancedApiService.getPost(id);
       dispatch({ type: 'FETCH_POST_SUCCESS', payload: post });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to fetch post. Please try again.';
@@ -178,7 +178,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
     dispatch({ type: 'SEARCH_POSTS_START' });
     
     try {
-      const results = await apiService.searchPosts(query);
+      const results = await enhancedApiService.searchPosts(query);
       dispatch({ type: 'SEARCH_POSTS_SUCCESS', payload: results });
     } catch (error: any) {
       const errorMessage = error.message || 'Search failed. Please try again.';
@@ -189,7 +189,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
 
   const createPost = async (post: { title: string; content: string; author: string }): Promise<void> => {
     try {
-      const newPost = await apiService.createPost(post);
+      const newPost = await enhancedApiService.createPost(post);
       dispatch({ type: 'CREATE_POST_SUCCESS', payload: newPost });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create post. Please try again.';
@@ -200,7 +200,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
 
   const updatePost = async (id: number, post: { title?: string; content?: string; author?: string }): Promise<void> => {
     try {
-      const updatedPost = await apiService.updatePost(id, post);
+      const updatedPost = await enhancedApiService.updatePost(id, post);
       dispatch({ type: 'UPDATE_POST_SUCCESS', payload: updatedPost });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to update post. Please try again.';
@@ -211,7 +211,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
 
   const deletePost = async (id: number): Promise<void> => {
     try {
-      await apiService.deletePost(id);
+      await enhancedApiService.deletePost(id);
       dispatch({ type: 'DELETE_POST_SUCCESS', payload: id });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to delete post. Please try again.';

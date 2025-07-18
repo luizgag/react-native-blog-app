@@ -197,11 +197,12 @@ const AdminContent: React.FC = () => {
       </View>
 
       {error && (
-        <ErrorMessage
-          message={error}
-          onRetry={loadPosts}
-          style={styles.errorMessage}
-        />
+        <View style={styles.errorMessage}>
+          <ErrorMessage
+            message={error}
+            onRetry={loadPosts}
+          />
+        </View>
       )}
 
       <View style={styles.createButtonContainer}>

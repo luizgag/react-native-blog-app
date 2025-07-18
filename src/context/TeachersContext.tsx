@@ -5,7 +5,7 @@ import {
   TeachersAction
 } from '../types/context';
 import { Teacher, PaginatedResponse } from '../types';
-import { apiService } from '../services/apiService';
+import { enhancedApiService } from '../services/apiService';
 import { PaginationState } from '../types/utils';
 
 // Initial state
@@ -130,7 +130,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
     dispatch({ type: 'FETCH_TEACHERS_START' });
     
     try {
-      const response: PaginatedResponse<Teacher> = await apiService.getTeachers(page);
+      const response: PaginatedResponse<Teacher> = await enhancedApiService.getTeachers(page);
       
       const pagination: PaginationState = {
         currentPage: response.currentPage,
@@ -183,7 +183,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
     department?: string 
   }): Promise<void> => {
     try {
-      const newTeacher = await apiService.createTeacher(teacher);
+      const newTeacher = await enhancedApiService.createTeacher(teacher);
       dispatch({ type: 'CREATE_TEACHER_SUCCESS', payload: newTeacher });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create teacher. Please try again.';
@@ -198,7 +198,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
     department?: string 
   }): Promise<void> => {
     try {
-      const updatedTeacher = await apiService.updateTeacher(id, teacher);
+      const updatedTeacher = await enhancedApiService.updateTeacher(id, teacher);
       dispatch({ type: 'UPDATE_TEACHER_SUCCESS', payload: updatedTeacher });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to update teacher. Please try again.';
@@ -209,7 +209,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
 
   const deleteTeacher = async (id: number): Promise<void> => {
     try {
-      await apiService.deleteTeacher(id);
+      await enhancedApiService.deleteTeacher(id);
       dispatch({ type: 'DELETE_TEACHER_SUCCESS', payload: id });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to delete teacher. Please try again.';

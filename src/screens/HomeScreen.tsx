@@ -14,6 +14,7 @@ import { PostCard } from '../components/PostCard';
 import { SearchBar } from '../components/SearchBar';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { Post } from '../types';
 
 type HomeScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Home'>;
@@ -36,6 +37,7 @@ export const HomeScreen: React.FC = () => {
   } = usePosts();
 
   const [refreshing, setRefreshing] = useState(false);
+  const { isOnline } = useNetworkStatus();
 
   // Fetch posts on component mount
   useEffect(() => {
@@ -136,15 +138,25 @@ export const HomeScreen: React.FC = () => {
 
   // Show error state
   if (error && !refreshing) {
+    const errorMessage = !isOnline 
+      ? 'You appear to be offline. Please check your internet connection and try again.'
+      : error;
+    
     return (
       <View style={styles.container}>
         <SearchBar
           onSearch={handleSearch}
           initialValue={searchQuery}
         />
+        {!isOnline && (
+          <View style={styles.offlineIndicator}>
+            <Text style={styles.offlineText}>You are currently offline</Text>
+          </View>
+        )}
         <ErrorMessage
-          message={error}
-          onRetry={handleRetry}
+          message={errorMessage}
+          onRetry={isOnline ? handleRetry : undefined}
+          retryText={isOnline ? "Try Again" : "Retry when online"}
         />
       </View>
     );
@@ -220,5 +232,21 @@ const styles = StyleSheet.create({
     color: '#666666',
     textAlign: 'center',
     lineHeight: 22,
+  },
+  offlineIndicator: {
+    backgroundColor: '#FFF3CD',
+    borderColor: '#FFEAA7',
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 6,
+  },
+  offlineText: {
+    color: '#856404',
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

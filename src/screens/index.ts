@@ -2,6 +2,7 @@
 export { LoginScreen } from './LoginScreen';
 export { SplashScreen } from './SplashScreen';
 export { AuthScreensDemo } from './AuthScreensDemo';
+export { ErrorHandlingDemoScreen } from './ErrorHandlingDemoScreen';
 
 // Main app screens
 export { HomeScreen } from './HomeScreen';

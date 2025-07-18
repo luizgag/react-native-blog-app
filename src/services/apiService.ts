@@ -200,3 +200,6 @@ class BlogApiService implements ApiService {
 // Export singleton instance
 export const apiService = new BlogApiService();
 export default apiService;
+
+// Re-export enhanced API service for components that need retry functionality
+export { enhancedApiService } from './enhancedApiService';

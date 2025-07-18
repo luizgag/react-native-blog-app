@@ -5,7 +5,7 @@ import {
   StudentsAction
 } from '../types/context';
 import { Student, PaginatedResponse } from '../types';
-import { apiService } from '../services/apiService';
+import { enhancedApiService } from '../services/apiService';
 import { PaginationState } from '../types/utils';
 
 // Initial state
@@ -130,7 +130,7 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
     dispatch({ type: 'FETCH_STUDENTS_START' });
     
     try {
-      const response: PaginatedResponse<Student> = await apiService.getStudents(page);
+      const response: PaginatedResponse<Student> = await enhancedApiService.getStudents(page);
       
       const pagination: PaginationState = {
         currentPage: response.currentPage,
@@ -183,7 +183,7 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
     studentId?: string 
   }): Promise<void> => {
     try {
-      const newStudent = await apiService.createStudent(student);
+      const newStudent = await enhancedApiService.createStudent(student);
       dispatch({ type: 'CREATE_STUDENT_SUCCESS', payload: newStudent });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create student. Please try again.';
@@ -198,7 +198,7 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
     studentId?: string 
   }): Promise<void> => {
     try {
-      const updatedStudent = await apiService.updateStudent(id, student);
+      const updatedStudent = await enhancedApiService.updateStudent(id, student);
       dispatch({ type: 'UPDATE_STUDENT_SUCCESS', payload: updatedStudent });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to update student. Please try again.';
@@ -209,7 +209,7 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
 
   const deleteStudent = async (id: number): Promise<void> => {
     try {
-      await apiService.deleteStudent(id);
+      await enhancedApiService.deleteStudent(id);
       dispatch({ type: 'DELETE_STUDENT_SUCCESS', payload: id });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to delete student. Please try again.';

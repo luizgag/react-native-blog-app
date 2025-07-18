@@ -6,7 +6,7 @@ import {
   AuthAction
 } from '../types/context';
 import { AuthUser } from '../types';
-import { apiService } from '../services/apiService';
+import { enhancedApiService } from '../services/apiService';
 import { STORAGE_KEYS } from '../config';
 
 // Initial state
@@ -145,7 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      const response = await apiService.login({ email, password });
+      const response = await enhancedApiService.login({ email, password });
       const { user, token } = response;
       
       // Create AuthUser object with token
@@ -164,7 +164,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async (): Promise<void> => {
     try {
-      await apiService.logout();
+      await enhancedApiService.logout();
     } catch (error) {
       console.warn('Logout API call failed:', error);
       // Continue with logout even if API call fails
