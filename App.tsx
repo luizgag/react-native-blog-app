@@ -22,7 +22,7 @@ export default function App() {
     // Log to crash reporting service (e.g., Crashlytics, Sentry)
     console.error('Global error caught by ErrorBoundary:', error);
     console.error('Error info:', errorInfo);
-    
+
     // You can integrate with crash reporting services here
     // Example: crashlytics().recordError(error);
   };
@@ -54,9 +54,9 @@ const AppContent: React.FC = () => {
     <>
       <AppNavigator />
       <NetworkStatusIndicator />
-      <ToastContainer 
-        toasts={toasts} 
-        onHideToast={actions.hideToast} 
+      <ToastContainer
+        toasts={toasts}
+        onHideToast={actions.hideToast}
       />
       <StatusBar style="auto" />
     </>
