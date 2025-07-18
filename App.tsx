@@ -5,9 +5,11 @@ import { AuthProvider } from './src/context/AuthContext';
 import { PostsProvider } from './src/context/PostsContext';
 import { TeachersProvider } from './src/context/TeachersContext';
 import { StudentsProvider } from './src/context/StudentsContext';
+import { AppProvider, useApp } from './src/context/AppContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { NetworkStatusIndicator } from './src/components/NetworkStatusIndicator';
+import { ToastContainer } from './src/components/ToastContainer';
 import { NetworkStatusService } from './src/services/networkStatusService';
 
 export default function App() {
@@ -28,18 +30,35 @@ export default function App() {
   return (
     <ErrorBoundary onError={handleGlobalError}>
       <SafeAreaProvider>
-        <AuthProvider>
-          <PostsProvider>
-            <TeachersProvider>
-              <StudentsProvider>
-                <AppNavigator />
-                <NetworkStatusIndicator />
-                <StatusBar style="auto" />
-              </StudentsProvider>
-            </TeachersProvider>
-          </PostsProvider>
-        </AuthProvider>
+        <AppProvider>
+          <AuthProvider>
+            <PostsProvider>
+              <TeachersProvider>
+                <StudentsProvider>
+                  <AppContent />
+                </StudentsProvider>
+              </TeachersProvider>
+            </PostsProvider>
+          </AuthProvider>
+        </AppProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
+  );
+}
+
+// Separate component to use the AppContext
+const AppContent: React.FC = () => {
+  const { toasts, actions } = useApp();
+
+  return (
+    <>
+      <AppNavigator />
+      <NetworkStatusIndicator />
+      <ToastContainer 
+        toasts={toasts} 
+        onHideToast={actions.hideToast} 
+      />
+      <StatusBar style="auto" />
+    </>
   );
 }

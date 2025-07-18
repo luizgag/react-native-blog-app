@@ -9,13 +9,16 @@ import {
   Alert,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/AppContext';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { LoginFormData } from '../types';
+import { formValidationSchemas } from '../utils/validation';
 
 export const LoginScreen: React.FC = () => {
   const { isLoading, error, actions } = useAuth();
+  const { showSuccess, showError } = useToast();
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -117,6 +120,9 @@ export const LoginScreen: React.FC = () => {
               autoCapitalize="none"
               autoCorrect={false}
               placeholder="Enter your email"
+              validationRules={formValidationSchemas.login.email}
+              realTimeValidation={true}
+              showValidationIcon={true}
               accessibilityLabel="Email input"
               accessibilityHint="Enter your email address to sign in"
             />
@@ -130,6 +136,9 @@ export const LoginScreen: React.FC = () => {
               secureTextEntry
               showPasswordToggle
               placeholder="Enter your password"
+              validationRules={formValidationSchemas.login.password}
+              realTimeValidation={true}
+              showValidationIcon={true}
               accessibilityLabel="Password input"
               accessibilityHint="Enter your password to sign in"
             />

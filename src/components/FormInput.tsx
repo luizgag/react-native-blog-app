@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInputProps,
+  Animated,
 } from 'react-native';
 
 interface FormInputProps extends TextInputProps {
@@ -15,6 +16,14 @@ interface FormInputProps extends TextInputProps {
   multiline?: boolean;
   secureTextEntry?: boolean;
   showPasswordToggle?: boolean;
+  validationRules?: ValidationRule[];
+  showValidationIcon?: boolean;
+  realTimeValidation?: boolean;
+}
+
+interface ValidationRule {
+  test: (value: string) => boolean;
+  message: string;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -24,11 +33,73 @@ export const FormInput: React.FC<FormInputProps> = ({
   multiline = false,
   secureTextEntry = false,
   showPasswordToggle = false,
+  validationRules = [],
+  showValidationIcon = true,
+  realTimeValidation = true,
+  value,
+  onChangeText,
   style,
   ...textInputProps
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [internalValue, setInternalValue] = useState(value || '');
+  const [validationError, setValidationError] = useState<string>('');
+  const [isValid, setIsValid] = useState<boolean | null>(null);
+  const shakeAnimation = new Animated.Value(0);
+
+  // Update internal value when prop changes
+  useEffect(() => {
+    setInternalValue(value || '');
+  }, [value]);
+
+  // Real-time validation
+  useEffect(() => {
+    if (realTimeValidation && validationRules.length > 0 && internalValue) {
+      validateInput(internalValue);
+    } else if (!internalValue) {
+      setValidationError('');
+      setIsValid(null);
+    }
+  }, [internalValue, validationRules, realTimeValidation]);
+
+  const validateInput = (inputValue: string) => {
+    for (const rule of validationRules) {
+      if (!rule.test(inputValue)) {
+        setValidationError(rule.message);
+        setIsValid(false);
+        return false;
+      }
+    }
+    setValidationError('');
+    setIsValid(true);
+    return true;
+  };
+
+  const shakeInput = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnimation, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: -10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -40,6 +111,21 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   const handleBlur = () => {
     setIsFocused(false);
+    // Validate on blur if real-time validation is enabled
+    if (realTimeValidation && validationRules.length > 0 && internalValue) {
+      validateInput(internalValue);
+    }
+  };
+
+  const handleChangeText = (text: string) => {
+    setInternalValue(text);
+    onChangeText?.(text);
+    
+    // Clear validation error when user starts typing
+    if (error || validationError) {
+      setValidationError('');
+      setIsValid(null);
+    }
   };
 
   const getInputStyle = () => {
@@ -49,8 +135,11 @@ export const FormInput: React.FC<FormInputProps> = ({
       baseStyle.push(styles.multilineInput);
     }
     
-    if (error) {
+    const currentError = error || validationError;
+    if (currentError) {
       baseStyle.push(styles.inputError);
+    } else if (isValid === true && showValidationIcon) {
+      baseStyle.push(styles.inputValid);
     } else if (isFocused) {
       baseStyle.push(styles.inputFocused);
     }
@@ -62,10 +151,35 @@ export const FormInput: React.FC<FormInputProps> = ({
     return baseStyle;
   };
 
+  const getValidationIcon = () => {
+    if (!showValidationIcon || isValid === null) return null;
+    
+    return (
+      <View style={styles.validationIcon}>
+        <Text style={styles.validationIconText}>
+          {isValid ? '✅' : '❌'}
+        </Text>
+      </View>
+    );
+  };
+
   const actualSecureTextEntry = secureTextEntry && !isPasswordVisible;
+  const displayError = error || validationError;
+
+  // Trigger shake animation when there's an error
+  useEffect(() => {
+    if (displayError) {
+      shakeInput();
+    }
+  }, [displayError]);
 
   return (
-    <View style={styles.container}>
+    <Animated.View 
+      style={[
+        styles.container,
+        { transform: [{ translateX: shakeAnimation }] }
+      ]}
+    >
       <Text style={styles.label}>
         {label}
         {required && <Text style={styles.required}> *</Text>}
@@ -74,14 +188,18 @@ export const FormInput: React.FC<FormInputProps> = ({
       <View style={styles.inputContainer}>
         <TextInput
           {...textInputProps}
+          value={internalValue}
+          onChangeText={handleChangeText}
           style={getInputStyle()}
           secureTextEntry={actualSecureTextEntry}
           multiline={multiline}
           onFocus={handleFocus}
           onBlur={handleBlur}
           accessibilityLabel={label}
-          accessibilityHint={error ? `Error: ${error}` : undefined}
+          accessibilityHint={displayError ? `Error: ${displayError}` : undefined}
         />
+        
+        {getValidationIcon()}
         
         {showPasswordToggle && secureTextEntry && (
           <TouchableOpacity
@@ -97,16 +215,16 @@ export const FormInput: React.FC<FormInputProps> = ({
         )}
       </View>
       
-      {error && (
-        <Text
-          style={styles.errorText}
-          accessibilityLabel={`Error: ${error}`}
+      {displayError && (
+        <Animated.Text
+          style={[styles.errorText, { opacity: displayError ? 1 : 0 }]}
+          accessibilityLabel={`Error: ${displayError}`}
           accessibilityRole="alert"
         >
-          {error}
-        </Text>
+          {displayError}
+        </Animated.Text>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
@@ -150,6 +268,23 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: '#E53E3E',
     borderWidth: 2,
+  },
+  inputValid: {
+    borderColor: '#4CAF50',
+    borderWidth: 2,
+  },
+  validationIcon: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
+    padding: 4,
+    minWidth: 32,
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  validationIconText: {
+    fontSize: 16,
   },
   passwordToggle: {
     position: 'absolute',

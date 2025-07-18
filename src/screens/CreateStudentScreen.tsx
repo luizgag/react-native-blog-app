@@ -11,9 +11,11 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../navigation';
 import { useStudents } from '../context/StudentsContext';
+import { useToast } from '../context/AppContext';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { formValidationSchemas, validationRules } from '../utils/validation';
 
 type CreateStudentScreenNavigationProp = StackNavigationProp<MainStackParamList, 'CreateStudent'>;
 
@@ -39,6 +41,7 @@ interface FormErrors {
 
 export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
   const { actions: studentsActions, error: studentsError } = useStudents();
+  const { showSuccess, showError } = useToast();
   
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -129,23 +132,11 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       // Show success message
-      Alert.alert(
-        'Success',
-        'Student created successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+      showSuccess('Student created successfully!', 'Success');
+      navigation.goBack();
     } catch (error: any) {
       // Error is handled by the context, but we can show additional feedback
-      Alert.alert(
-        'Error',
-        'Failed to create student. Please try again.',
-        [{ text: 'OK' }]
-      );
+      showError('Failed to create student. Please try again.', 'Error');
     } finally {
       setIsSubmitting(false);
     }
@@ -205,6 +196,9 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             required
             placeholder="Enter student's full name..."
             maxLength={100}
+            validationRules={formValidationSchemas.createStudent.name}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Student full name"
             accessibilityHint="Enter the student's full name"
           />
@@ -220,6 +214,9 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={255}
+            validationRules={formValidationSchemas.createStudent.email}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Student email address"
             accessibilityHint="Enter the student's email address for login"
           />
@@ -232,7 +229,11 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             required
             placeholder="Enter password..."
             secureTextEntry
+            showPasswordToggle
             maxLength={128}
+            validationRules={formValidationSchemas.createStudent.password}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Student password"
             accessibilityHint="Enter a secure password for the student account"
           />
@@ -245,7 +246,11 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             required
             placeholder="Confirm password..."
             secureTextEntry
+            showPasswordToggle
             maxLength={128}
+            validationRules={[validationRules.passwordMatch(formData.password)]}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Confirm student password"
             accessibilityHint="Re-enter the password to confirm"
           />
@@ -257,6 +262,9 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             error={errors.studentId}
             placeholder="Enter student ID..."
             maxLength={50}
+            validationRules={formValidationSchemas.createStudent.studentId}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Student ID"
             accessibilityHint="Enter the student's unique identifier"
           />

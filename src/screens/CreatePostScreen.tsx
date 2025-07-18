@@ -12,10 +12,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../navigation';
 import { useAuth } from '../context/AuthContext';
 import { usePosts } from '../context/PostsContext';
+import { useToast } from '../context/AppContext';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { formValidationSchemas } from '../utils/validation';
 
 type CreatePostScreenNavigationProp = StackNavigationProp<MainStackParamList, 'CreatePost'>;
 
@@ -38,6 +40,7 @@ interface FormErrors {
 export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
   const { actions: postsActions, error: postsError } = usePosts();
+  const { showSuccess, showError } = useToast();
   
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -112,23 +115,11 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       // Show success message
-      Alert.alert(
-        'Success',
-        'Post created successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+      showSuccess('Post created successfully!', 'Success');
+      navigation.goBack();
     } catch (error: any) {
       // Error is handled by the context, but we can show additional feedback
-      Alert.alert(
-        'Error',
-        'Failed to create post. Please try again.',
-        [{ text: 'OK' }]
-      );
+      showError('Failed to create post. Please try again.', 'Error');
     } finally {
       setIsSubmitting(false);
     }
@@ -196,6 +187,9 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
             required
             placeholder="Enter post title..."
             maxLength={200}
+            validationRules={formValidationSchemas.createPost.title}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Post title"
             accessibilityHint="Enter a descriptive title for your post"
           />
@@ -208,6 +202,9 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
             required
             placeholder="Enter author name..."
             maxLength={100}
+            validationRules={formValidationSchemas.createPost.author}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Author name"
             accessibilityHint="Enter the name of the post author"
           />
@@ -221,6 +218,9 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
             multiline
             placeholder="Write your post content here..."
             maxLength={10000}
+            validationRules={formValidationSchemas.createPost.content}
+            realTimeValidation={true}
+            showValidationIcon={false}
             accessibilityLabel="Post content"
             accessibilityHint="Enter the main content of your post"
             style={styles.contentInput}

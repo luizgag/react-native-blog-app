@@ -12,10 +12,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from '../navigation';
 import { useTeachers } from '../context/TeachersContext';
+import { useToast } from '../context/AppContext';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { formValidationSchemas } from '../utils/validation';
 
 type EditTeacherScreenNavigationProp = StackNavigationProp<MainStackParamList, 'EditTeacher'>;
 type EditTeacherScreenRouteProp = RouteProp<MainStackParamList, 'EditTeacher'>;
@@ -40,6 +42,7 @@ interface FormErrors {
 export const EditTeacherScreen: React.FC<Props> = ({ navigation, route }) => {
   const { teacherId } = route.params;
   const { data: teachers, currentTeacher, actions: teachersActions, error: teachersError, loading } = useTeachers();
+  const { showSuccess, showError } = useToast();
   
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -73,16 +76,8 @@ export const EditTeacherScreen: React.FC<Props> = ({ navigation, route }) => {
       setIsLoading(true);
       await teachersActions.fetchTeacher(teacherId);
     } catch (error) {
-      Alert.alert(
-        'Error',
-        'Failed to load teacher data. Please try again.',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+      showError('Failed to load teacher data. Please try again.', 'Error');
+      navigation.goBack();
     }
   };
 
@@ -147,23 +142,11 @@ export const EditTeacherScreen: React.FC<Props> = ({ navigation, route }) => {
       });
 
       // Show success message
-      Alert.alert(
-        'Success',
-        'Teacher updated successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+      showSuccess('Teacher updated successfully!', 'Success');
+      navigation.goBack();
     } catch (error: any) {
       // Error is handled by the context, but we can show additional feedback
-      Alert.alert(
-        'Error',
-        'Failed to update teacher. Please try again.',
-        [{ text: 'OK' }]
-      );
+      showError('Failed to update teacher. Please try again.', 'Error');
     } finally {
       setIsSubmitting(false);
     }
@@ -253,6 +236,9 @@ export const EditTeacherScreen: React.FC<Props> = ({ navigation, route }) => {
             required
             placeholder="Enter teacher's full name..."
             maxLength={100}
+            validationRules={formValidationSchemas.createTeacher.name}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Teacher full name"
             accessibilityHint="Enter the teacher's full name"
           />
@@ -268,6 +254,9 @@ export const EditTeacherScreen: React.FC<Props> = ({ navigation, route }) => {
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={255}
+            validationRules={formValidationSchemas.createTeacher.email}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Teacher email address"
             accessibilityHint="Enter the teacher's email address for login"
           />
@@ -279,6 +268,9 @@ export const EditTeacherScreen: React.FC<Props> = ({ navigation, route }) => {
             error={errors.department}
             placeholder="Enter department name..."
             maxLength={100}
+            validationRules={formValidationSchemas.createTeacher.department}
+            realTimeValidation={true}
+            showValidationIcon={true}
             accessibilityLabel="Teacher department"
             accessibilityHint="Enter the teacher's department or subject area"
           />
