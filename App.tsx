@@ -1,64 +1,63 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AuthProvider } from './src/context/AuthContext';
-import { PostsProvider } from './src/context/PostsContext';
-import { TeachersProvider } from './src/context/TeachersContext';
-import { StudentsProvider } from './src/context/StudentsContext';
-import { AppProvider, useApp } from './src/context/AppContext';
-import { AppNavigator } from './src/navigation/AppNavigator';
-import { ErrorBoundary } from './src/components/ErrorBoundary';
-import { NetworkStatusIndicator } from './src/components/NetworkStatusIndicator';
-import { ToastContainer } from './src/components/ToastContainer';
-import { NetworkStatusService } from './src/services/networkStatusService';
 
 export default function App() {
-  useEffect(() => {
-    // Initialize network status service
-    NetworkStatusService.initialize().catch(console.error);
-  }, []);
-
-  const handleGlobalError = (error: Error, errorInfo: string) => {
-    // Log to crash reporting service (e.g., Crashlytics, Sentry)
-    console.error('Global error caught by ErrorBoundary:', error);
-    console.error('Error info:', errorInfo);
-
-    // You can integrate with crash reporting services here
-    // Example: crashlytics().recordError(error);
-  };
-
   return (
-    <ErrorBoundary onError={handleGlobalError}>
-      <SafeAreaProvider>
-        <AppProvider>
-          <AuthProvider>
-            <PostsProvider>
-              <TeachersProvider>
-                <StudentsProvider>
-                  <AppContent />
-                </StudentsProvider>
-              </TeachersProvider>
-            </PostsProvider>
-          </AuthProvider>
-        </AppProvider>
-      </SafeAreaProvider>
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <Text style={styles.title}>React Native Blog App</Text>
+        <Text style={styles.subtitle}>Debugging Mode</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardText}>✅ App is loading successfully!</Text>
+          <Text style={styles.cardText}>🔧 Hermes engine fix applied</Text>
+          <Text style={styles.cardText}>📱 React Native + Expo</Text>
+        </View>
+        <StatusBar style="auto" />
+      </View>
+    </SafeAreaProvider>
   );
 }
 
-// Separate component to use the AppContext
-const AppContent: React.FC = () => {
-  const { toasts, actions } = useApp();
-
-  return (
-    <>
-      <AppNavigator />
-      <NetworkStatusIndicator />
-      <ToastContainer
-        toasts={toasts}
-        onHideToast={actions.hideToast}
-      />
-      <StatusBar style="auto" />
-    </>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#2196F3',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  card: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    minWidth: 300,
+  },
+  cardText: {
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+});
