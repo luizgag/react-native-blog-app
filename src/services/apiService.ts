@@ -99,34 +99,32 @@ class BlogApiService implements ApiService {
 
   // Posts API methods
   async getPosts(): Promise<Post[]> {
-    const response = await this.client.get<Post[]>('/posts');
+    const response = await this.client.get<Post[]>('/api/posts');
     return response.data;
   }
 
   async getPost(id: number): Promise<Post> {
-    const response = await this.client.get<Post>(`/posts/${id}`);
+    const response = await this.client.get<Post>(`/api/posts/${id}`);
     return response.data;
   }
 
   async searchPosts(term: string): Promise<Post[]> {
-    const response = await this.client.get<Post[]>('/posts/search', {
-      params: { q: term },
-    });
+    const response = await this.client.get<Post[]>(`/api/posts/search/${encodeURIComponent(term)}`);
     return response.data;
   }
 
   async createPost(post: CreatePostRequest): Promise<Post> {
-    const response = await this.client.post<Post>('/posts', post);
+    const response = await this.client.post<Post>('/api/posts', post);
     return response.data;
   }
 
   async updatePost(id: number, post: UpdatePostRequest): Promise<Post> {
-    const response = await this.client.put<Post>(`/posts/${id}`, post);
+    const response = await this.client.put<Post>(`/api/posts/${id}`, post);
     return response.data;
   }
 
   async deletePost(id: number): Promise<void> {
-    await this.client.delete(`/posts/${id}`);
+    await this.client.delete(`/api/posts/${id}`);
   }
 
   // Authentication API methods
