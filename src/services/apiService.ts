@@ -132,12 +132,12 @@ class BlogApiService implements ApiService {
   // Authentication API methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response = await this.client.post<AuthResponse>('/auth/login', credentials);
-    
+
     // Store auth data
     const { user, token } = response.data;
     await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
     await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
-    
+
     return response.data;
   }
 

@@ -5,17 +5,30 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { AuthStackParamList } from '../navigation/AuthNavigator';
+
+type SplashScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Splash'>;
 
 export const SplashScreen: React.FC = () => {
-  const { isLoading, error, actions } = useAuth();
+  const { isLoading, error, isAuthenticated, actions } = useAuth();
+  const navigation = useNavigation<SplashScreenNavigationProp>();
 
   useEffect(() => {
-    // The auth context automatically checks authentication status on mount
-    // We don't need to do anything here as the AuthProvider handles it
-  }, []);
+    // Navigate to login screen after auth check completes
+    if (!isLoading && !isAuthenticated && !error) {
+      // Add a small delay for better UX
+      const timer = setTimeout(() => {
+        navigation.replace('Login');
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, isAuthenticated, error, navigation]);
 
   const handleRetry = () => {
     actions.checkAuthStatus();
