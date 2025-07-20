@@ -45,6 +45,31 @@ const authReducer = (state: AuthContextState, action: AuthAction): AuthContextSt
         error: action.payload,
       };
     
+    case 'REGISTER_START':
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    
+    case 'REGISTER_SUCCESS':
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      };
+    
+    case 'REGISTER_FAILURE':
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: action.payload,
+      };
+    
     case 'LOGOUT':
       return {
         ...state,
@@ -162,6 +187,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const register = async (nome: string, email: string, senha: string, tipo_usuario: 'teacher' | 'student'): Promise<void> => {
+    dispatch({ type: 'REGISTER_START' });
+    
+    try {
+      const response = await enhancedApiService.register({ nome, email, senha, tipo_usuario });
+      const { user, token } = response;
+      
+      // Create AuthUser object with token
+      const authUser: AuthUser = {
+        ...user,
+        token,
+      };
+      
+      dispatch({ type: 'REGISTER_SUCCESS', payload: authUser });
+    } catch (error: any) {
+      const errorMessage = error.message || 'Registration failed. Please try again.';
+      dispatch({ type: 'REGISTER_FAILURE', payload: errorMessage });
+      throw error; // Re-throw to allow components to handle
+    }
+  };
+
   const logout = async (): Promise<void> => {
     try {
       await enhancedApiService.logout();
@@ -193,6 +239,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     ...state,
     actions: {
       login,
+      register,
       logout,
       clearError,
       checkAuthStatus,

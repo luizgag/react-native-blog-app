@@ -5,6 +5,7 @@ import {
   Student,
   AuthResponse,
   LoginRequest,
+  RegisterRequest,
   CreatePostRequest,
   UpdatePostRequest,
   CreateTeacherRequest,
@@ -12,6 +13,10 @@ import {
   CreateStudentRequest,
   UpdateStudentRequest,
   PaginatedResponse,
+  Comment,
+  CreateCommentRequest,
+  UpdateCommentRequest,
+  Like,
 } from './index';
 
 export interface ApiService {
@@ -25,6 +30,7 @@ export interface ApiService {
 
   // Authentication
   login(credentials: LoginRequest): Promise<AuthResponse>;
+  register(userData: RegisterRequest): Promise<AuthResponse>;
   logout(): Promise<void>;
 
   // Teachers (assumed endpoints)
@@ -38,6 +44,17 @@ export interface ApiService {
   createStudent(student: CreateStudentRequest): Promise<Student>;
   updateStudent(id: number, student: UpdateStudentRequest): Promise<Student>;
   deleteStudent(id: number): Promise<void>;
+
+  // Comments
+  getComments(postId: number): Promise<Comment[]>;
+  createComment(comment: CreateCommentRequest): Promise<Comment>;
+  updateComment(id: number, comment: UpdateCommentRequest): Promise<Comment>;
+  deleteComment(id: number): Promise<void>;
+
+  // Likes
+  getLikes(postId: number): Promise<Like[]>;
+  toggleLike(postId: number): Promise<{ liked: boolean; count: number }>;
+  removeLike(postId: number): Promise<void>;
 }
 
 // HTTP error types

@@ -93,6 +93,38 @@ export interface UpdateStudentRequest {
   studentId?: string;
 }
 
+export interface RegisterRequest {
+  nome: string;
+  email: string;
+  senha: string;
+  tipo_usuario: 'teacher' | 'student';
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  author_id: number;
+  post_id: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateCommentRequest {
+  content: string;
+  post_id: number;
+}
+
+export interface UpdateCommentRequest {
+  content?: string;
+}
+
+export interface Like {
+  id: number;
+  user_id: number;
+  post_id: number;
+  created_at?: string;
+}
+
 // State management types
 export interface AppState {
   auth: {
@@ -127,6 +159,7 @@ export interface AppState {
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
+  Register: undefined;
   Home: undefined;
   PostDetail: { postId: number };
   CreatePost: undefined;

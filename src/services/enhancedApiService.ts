@@ -7,6 +7,7 @@ import {
   Student,
   AuthResponse,
   LoginRequest,
+  RegisterRequest,
   CreatePostRequest,
   UpdatePostRequest,
   CreateTeacherRequest,
@@ -14,6 +15,10 @@ import {
   CreateStudentRequest,
   UpdateStudentRequest,
   PaginatedResponse,
+  Comment,
+  CreateCommentRequest,
+  UpdateCommentRequest,
+  Like,
 } from '../types';
 
 /**
@@ -50,6 +55,11 @@ class EnhancedApiService implements ApiService {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     // Don't retry login to avoid account lockout
     return apiService.login(credentials);
+  }
+
+  async register(userData: RegisterRequest): Promise<AuthResponse> {
+    // Don't retry registration to avoid duplicate accounts
+    return apiService.register(userData);
   }
 
   async logout(): Promise<void> {
@@ -90,6 +100,37 @@ class EnhancedApiService implements ApiService {
 
   async deleteStudent(id: number): Promise<void> {
     return RetryService.withRetry(() => apiService.deleteStudent(id));
+  }
+
+  // Comments API methods with retry
+  async getComments(postId: number): Promise<Comment[]> {
+    return RetryService.withRetry(() => apiService.getComments(postId));
+  }
+
+  async createComment(comment: CreateCommentRequest): Promise<Comment> {
+    // Don't retry create operations to avoid duplicates
+    return apiService.createComment(comment);
+  }
+
+  async updateComment(id: number, comment: UpdateCommentRequest): Promise<Comment> {
+    return RetryService.withRetry(() => apiService.updateComment(id, comment));
+  }
+
+  async deleteComment(id: number): Promise<void> {
+    return RetryService.withRetry(() => apiService.deleteComment(id));
+  }
+
+  // Likes API methods with retry
+  async getLikes(postId: number): Promise<Like[]> {
+    return RetryService.withRetry(() => apiService.getLikes(postId));
+  }
+
+  async toggleLike(postId: number): Promise<{ liked: boolean; count: number }> {
+    return RetryService.withRetry(() => apiService.toggleLike(postId));
+  }
+
+  async removeLike(postId: number): Promise<void> {
+    return RetryService.withRetry(() => apiService.removeLike(postId));
   }
 }
 

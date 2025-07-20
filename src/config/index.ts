@@ -8,6 +8,7 @@ export const API_CONFIG = {
 
 export const STORAGE_KEYS = {
   AUTH_TOKEN: '@blog_app_auth_token',
+  REFRESH_TOKEN: '@blog_app_refresh_token',
   USER_DATA: '@blog_app_user_data',
 };
 

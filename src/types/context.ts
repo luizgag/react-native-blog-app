@@ -12,6 +12,7 @@ export interface AuthContextState {
 
 export interface AuthContextActions {
   login: (email: string, password: string) => Promise<void>;
+  register: (nome: string, email: string, senha: string, tipo_usuario: 'teacher' | 'student') => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
   checkAuthStatus: () => Promise<void>;
@@ -111,6 +112,9 @@ export type AuthAction =
   | { type: 'LOGIN_START' }
   | { type: 'LOGIN_SUCCESS'; payload: AuthUser }
   | { type: 'LOGIN_FAILURE'; payload: string }
+  | { type: 'REGISTER_START' }
+  | { type: 'REGISTER_SUCCESS'; payload: AuthUser }
+  | { type: 'REGISTER_FAILURE'; payload: string }
   | { type: 'LOGOUT' }
   | { type: 'CLEAR_ERROR' }
   | { type: 'CHECK_AUTH_START' }
