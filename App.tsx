@@ -14,7 +14,7 @@ import { NetworkStatusIndicator } from './src/components/NetworkStatusIndicator'
 // Development mode API testing
 if (__DEV__) {
   // Uncomment the line below to run API tests on app startup (for development only)
-  // import('./src/utils/apiTest').then(({ quickApiTest }) => quickApiTest());
+  import('./src/utils/apiTest').then(({ quickApiTest }) => quickApiTest());
 }
 
 // Connected ToastContainer component that uses AppContext

@@ -7,13 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
+    "scheme": "react-native-blog-app",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.blogapp.reactnative"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +23,11 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "jsEngine": "hermes"
-    }
+      "jsEngine": "hermes",
+      "package": "com.blogapp.reactnative"
+    },
+    "plugins": [
+      "expo-dev-client"
+    ]
   }
 }
