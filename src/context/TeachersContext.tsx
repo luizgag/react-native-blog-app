@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { 
-  TeachersContextValue, 
-  TeachersContextState, 
+import {
+  TeachersContextValue,
+  TeachersContextState,
   TeachersAction
 } from '../types/context';
 import { Teacher, PaginatedResponse } from '../types';
@@ -33,7 +33,7 @@ const teachersReducer = (state: TeachersContextState, action: TeachersAction): T
         loading: 'loading',
         error: null,
       };
-    
+
     case 'FETCH_TEACHERS_SUCCESS':
       return {
         ...state,
@@ -42,21 +42,21 @@ const teachersReducer = (state: TeachersContextState, action: TeachersAction): T
         loading: 'success',
         error: null,
       };
-    
+
     case 'FETCH_TEACHERS_FAILURE':
       return {
         ...state,
         loading: 'error',
         error: action.payload,
       };
-    
+
     case 'FETCH_TEACHER_SUCCESS':
       return {
         ...state,
         currentTeacher: action.payload,
         error: null,
       };
-    
+
     case 'CREATE_TEACHER_SUCCESS':
       return {
         ...state,
@@ -67,29 +67,29 @@ const teachersReducer = (state: TeachersContextState, action: TeachersAction): T
         },
         error: null,
       };
-    
+
     case 'UPDATE_TEACHER_SUCCESS':
       return {
         ...state,
-        data: state.data 
-          ? state.data.map(teacher => 
-              teacher.id === action.payload.id ? action.payload : teacher
-            )
+        data: state.data
+          ? state.data.map(teacher =>
+            teacher.id === action.payload.id ? action.payload : teacher
+          )
           : null,
-        currentTeacher: state.currentTeacher?.id === action.payload.id 
-          ? action.payload 
+        currentTeacher: state.currentTeacher?.id === action.payload.id
+          ? action.payload
           : state.currentTeacher,
         error: null,
       };
-    
+
     case 'DELETE_TEACHER_SUCCESS':
       return {
         ...state,
-        data: state.data 
+        data: state.data
           ? state.data.filter(teacher => teacher.id !== action.payload)
           : null,
-        currentTeacher: state.currentTeacher?.id === action.payload 
-          ? null 
+        currentTeacher: state.currentTeacher?.id === action.payload
+          ? null
           : state.currentTeacher,
         pagination: {
           ...state.pagination,
@@ -97,19 +97,19 @@ const teachersReducer = (state: TeachersContextState, action: TeachersAction): T
         },
         error: null,
       };
-    
+
     case 'CLEAR_CURRENT_TEACHER':
       return {
         ...state,
         currentTeacher: null,
       };
-    
+
     case 'CLEAR_ERROR':
       return {
         ...state,
         error: null,
       };
-    
+
     default:
       return state;
   }
@@ -128,10 +128,10 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
 
   const fetchTeachers = async (page: number = 1): Promise<void> => {
     dispatch({ type: 'FETCH_TEACHERS_START' });
-    
+
     try {
       const response: PaginatedResponse<Teacher> = await enhancedApiService.getTeachers(page);
-      
+
       const pagination: PaginationState = {
         currentPage: response.currentPage,
         totalPages: response.totalPages,
@@ -140,13 +140,13 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
         hasNextPage: response.currentPage < response.totalPages,
         hasPreviousPage: response.currentPage > 1,
       };
-      
-      dispatch({ 
-        type: 'FETCH_TEACHERS_SUCCESS', 
-        payload: { 
-          data: response.data, 
-          pagination 
-        } 
+
+      dispatch({
+        type: 'FETCH_TEACHERS_SUCCESS',
+        payload: {
+          data: response.data,
+          pagination
+        }
       });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to fetch teachers. Please try again.';
@@ -162,7 +162,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
       if (!state.data) {
         await fetchTeachers();
       }
-      
+
       const teacher = state.data?.find(t => t.id === id);
       if (teacher) {
         dispatch({ type: 'FETCH_TEACHER_SUCCESS', payload: teacher });
@@ -176,11 +176,11 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
     }
   };
 
-  const createTeacher = async (teacher: { 
-    name: string; 
-    email: string; 
-    password: string; 
-    department?: string 
+  const createTeacher = async (teacher: {
+    name: string;
+    email: string;
+    password: string;
+    department?: string
   }): Promise<void> => {
     try {
       const newTeacher = await enhancedApiService.createTeacher(teacher);
@@ -192,10 +192,10 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
     }
   };
 
-  const updateTeacher = async (id: number, teacher: { 
-    name?: string; 
-    email?: string; 
-    department?: string 
+  const updateTeacher = async (id: number, teacher: {
+    name?: string;
+    email?: string;
+    department?: string
   }): Promise<void> => {
     try {
       const updatedTeacher = await enhancedApiService.updateTeacher(id, teacher);
