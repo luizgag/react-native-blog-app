@@ -1,12 +1,13 @@
 // Core data types for the blog app
 
 export interface Post {
-  id: number;
+  id?: number;
   title: string;
   content: string;
-  author: string;
-  createdAt?: string;
-  updatedAt?: string;
+  author_id?: number;
+  created_at?: string;
+  updated_at?: string;
+  materia?: string;
 }
 
 export interface User {
@@ -56,13 +57,14 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  author: string;
+  author?: number; // author_id from JWT token
+  materia?: string;
 }
 
 export interface UpdatePostRequest {
   title?: string;
   content?: string;
-  author?: string;
+  materia?: string;
 }
 
 export interface CreateTeacherRequest {
@@ -147,7 +149,7 @@ export interface LoginFormData {
 export interface PostFormData {
   title: string;
   content: string;
-  author: string;
+  materia?: string;
 }
 
 export interface TeacherFormData {

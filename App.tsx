@@ -11,6 +11,12 @@ import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { ToastContainer } from './src/components/ToastContainer';
 import { NetworkStatusIndicator } from './src/components/NetworkStatusIndicator';
 
+// Development mode API testing
+if (__DEV__) {
+  // Uncomment the line below to run API tests on app startup (for development only)
+  // import('./src/utils/apiTest').then(({ quickApiTest }) => quickApiTest());
+}
+
 // Connected ToastContainer component that uses AppContext
 const ConnectedToastContainer: React.FC = () => {
   const { toasts, actions } = useApp();

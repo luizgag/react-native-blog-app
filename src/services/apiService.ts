@@ -17,6 +17,7 @@ import {
   PaginatedResponse,
 } from '../types';
 import { API_CONFIG, STORAGE_KEYS } from '../config';
+import { decodeToken, isTokenExpired, getUserFromToken } from '../utils/jwt';
 
 class BlogApiService implements ApiService {
   private client: AxiosInstance;
@@ -40,7 +41,13 @@ class BlogApiService implements ApiService {
         try {
           const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
           if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            // Check if token is expired before using it
+            if (isTokenExpired(token)) {
+              await this.clearAuthData();
+              throw new Error('Token expired');
+            }
+            // Use accessToken header as specified in API documentation
+            config.headers.accessToken = token;
           }
         } catch (error) {
           console.warn('Failed to get auth token from storage:', error);
@@ -99,55 +106,82 @@ class BlogApiService implements ApiService {
 
   // Posts API methods
   async getPosts(): Promise<Post[]> {
-    const response = await this.client.get<Post[]>('/api/posts');
+    const response = await this.client.get<Post[]>('/posts');
     return response.data;
   }
 
   async getPost(id: number): Promise<Post> {
-    const response = await this.client.get<Post>(`/api/posts/${id}`);
-    return response.data;
+    const response = await this.client.get<Post[]>(`/posts?id=${id}`);
+    // Backend returns array, get first item
+    return response.data[0] || null;
   }
 
   async searchPosts(term: string): Promise<Post[]> {
-    const response = await this.client.get<Post[]>(`/api/posts/search/${encodeURIComponent(term)}`);
+    const response = await this.client.get<Post[]>(`/posts?search=${encodeURIComponent(term)}`);
     return response.data;
   }
 
   async createPost(post: CreatePostRequest): Promise<Post> {
-    const response = await this.client.post<Post>('/api/posts', post);
+    // Get current user ID from stored token
+    const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+    const userFromToken = token ? getUserFromToken(token) : null;
+    
+    // Prepare post data with author_id from token
+    const postData = {
+      ...post,
+      author: userFromToken?.id || post.author // Use author_id from token or fallback to provided author
+    };
+
+    const response = await this.client.post<Post>('/posts', postData);
     return response.data;
   }
 
   async updatePost(id: number, post: UpdatePostRequest): Promise<Post> {
-    const response = await this.client.put<Post>(`/api/posts/${id}`, post);
+    const response = await this.client.put<Post>(`/posts/${id}`, post);
     return response.data;
   }
 
   async deletePost(id: number): Promise<void> {
-    await this.client.delete(`/api/posts/${id}`);
+    await this.client.delete(`/posts/${id}`);
   }
 
   // Authentication API methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>('/auth/login', credentials);
+    // Transform credentials to match backend API format
+    const loginData = {
+      email: credentials.email,
+      senha: credentials.password // Backend expects 'senha' instead of 'password'
+    };
 
-    // Store auth data
-    const { user, token } = response.data;
-    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-    await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+    const response = await this.client.post<{ accessToken: string }>('/login', loginData);
 
-    return response.data;
+    // Store auth token (backend returns accessToken)
+    const { accessToken } = response.data;
+    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken);
+
+    // Decode JWT token to extract user information
+    const userFromToken = getUserFromToken(accessToken);
+    
+    // Create AuthResponse format for compatibility
+    const authResponse: AuthResponse = {
+      user: {
+        id: userFromToken?.id || 0,
+        name: userFromToken?.email || credentials.email,
+        email: userFromToken?.email || credentials.email,
+        role: (userFromToken?.role as 'teacher' | 'student') || 'teacher',
+        token: accessToken
+      },
+      token: accessToken
+    };
+
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(authResponse.user));
+
+    return authResponse;
   }
 
   async logout(): Promise<void> {
-    try {
-      await this.client.post('/auth/logout');
-    } catch (error) {
-      // Continue with logout even if server call fails
-      console.warn('Logout API call failed:', error);
-    } finally {
-      await this.clearAuthData();
-    }
+    // Backend doesn't have a logout endpoint, just clear local data
+    await this.clearAuthData();
   }
 
   // Teachers API methods (assumed endpoints)
