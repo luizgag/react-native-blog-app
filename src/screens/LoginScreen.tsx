@@ -426,15 +426,6 @@ export const LoginScreen: React.FC = () => {
               </Text>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              Teachers can manage posts and users
-            </Text>
-            <Text style={styles.footerText}>
-              Students have read-only access to posts
-            </Text>
-          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
