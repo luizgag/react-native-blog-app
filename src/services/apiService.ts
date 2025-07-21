@@ -70,7 +70,9 @@ class BlogApiService implements ApiService {
         return;
         
       } catch (error) {
-        console.log(`❌ Failed to connect to: ${baseUrl}`, error.code || error.message);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorCode = (error as any)?.code || 'UNKNOWN';
+        console.log(`❌ Failed to connect to: ${baseUrl}`, errorCode, errorMessage);
         continue;
       }
     }
@@ -94,7 +96,8 @@ class BlogApiService implements ApiService {
             config.headers.accesstoken = token;
           }
         } catch (error) {
-          console.warn('Failed to get auth token from storage:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          console.warn('Failed to get auth token from storage:', errorMessage);
         }
         return config;
       },
@@ -224,7 +227,8 @@ class BlogApiService implements ApiService {
     try {
       await AsyncStorage.multiRemove([STORAGE_KEYS.AUTH_TOKEN, STORAGE_KEYS.USER_DATA]);
     } catch (error) {
-      console.warn('Failed to clear auth data:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn('Failed to clear auth data:', errorMessage);
     }
   }
 
@@ -348,7 +352,8 @@ class BlogApiService implements ApiService {
       await this.client.post('/logout');
     } catch (error) {
       // Continue with logout even if server call fails
-      console.warn('Logout API call failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn('Logout API call failed:', errorMessage);
     } finally {
       await this.clearAuthData();
     }
