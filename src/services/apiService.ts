@@ -44,20 +44,20 @@ class BlogApiService implements ApiService {
     }
 
     console.log('Testing API connectivity...');
-    
+
     for (const baseUrl of API_CONFIG.FALLBACK_URLS) {
       try {
         const testClient = this.createAxiosInstance(baseUrl);
-        
+
         // Test with a simple GET request with short timeout
-        await testClient.get('/posts', { 
+        await testClient.get('/posts', {
           timeout: API_CONFIG.CONNECTION_TIMEOUT,
           // Don't include auth headers for connectivity test
           headers: { 'Content-Type': 'application/json' }
         });
-        
+
         console.log(`✅ API connectivity successful with: ${baseUrl}`);
-        
+
         // Update base URL if different from current
         if (baseUrl !== this.currentBaseUrl) {
           this.currentBaseUrl = baseUrl;
@@ -65,10 +65,10 @@ class BlogApiService implements ApiService {
           this.setupInterceptors();
           console.log(`🔄 Switched to working base URL: ${baseUrl}`);
         }
-        
+
         this.isConnectivityTested = true;
         return;
-        
+
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         const errorCode = (error as any)?.code || 'UNKNOWN';
@@ -76,7 +76,7 @@ class BlogApiService implements ApiService {
         continue;
       }
     }
-    
+
     // If all URLs fail, keep the original but mark as tested to avoid repeated attempts
     this.isConnectivityTested = true;
     console.warn('⚠️ All API endpoints failed connectivity test. Using default URL.');
@@ -89,7 +89,7 @@ class BlogApiService implements ApiService {
         try {
           // Test connectivity on first request
           await this.testConnectivity();
-          
+
           const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
           if (token) {
             // Use accesstoken header as specified in API documentation
@@ -114,13 +114,13 @@ class BlogApiService implements ApiService {
         if (error.response?.status === 401) {
           await this.clearAuthData();
         }
-        
+
         // Handle network connectivity issues
         if (this.isNetworkError(error)) {
           // Reset connectivity test flag to retry on next request
           this.isConnectivityTested = false;
         }
-        
+
         return Promise.reject(this.handleError(error));
       }
     );
@@ -142,7 +142,7 @@ class BlogApiService implements ApiService {
       // Server responded with error status
       const responseData = error.response.data as any;
       const serverMessage = responseData?.message || responseData?.error || 'Server error occurred';
-      
+
       return {
         message: this.translatePortugueseError(serverMessage),
         status: error.response.status,
@@ -367,8 +367,8 @@ class BlogApiService implements ApiService {
       await this.testConnectivity();
       return { success: true, baseUrl: this.currentBaseUrl };
     } catch (error) {
-      return { 
-        success: false, 
+      return {
+        success: false,
         baseUrl: this.currentBaseUrl,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
