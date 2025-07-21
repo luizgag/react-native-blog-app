@@ -92,6 +92,18 @@ class EnhancedApiService implements ApiService {
     // Don't retry registration to avoid duplicates
     return apiService.register(userData);
   }
+
+  async createTeacher(userData: RegisterRequest): Promise<any> {
+    // Don't retry registration to avoid duplicates
+    const teacherData = { ...userData, tipo_usuario: 'professor' as const };
+    return apiService.register(teacherData);
+  }
+
+  async createStudent(userData: RegisterRequest): Promise<any> {
+    // Don't retry registration to avoid duplicates
+    const studentData = { ...userData, tipo_usuario: 'aluno' as const };
+    return apiService.register(studentData);
+  }
 }
 
 // Export singleton instance
