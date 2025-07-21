@@ -1,7 +1,6 @@
 // Main service exports
-export { apiService } from './apiService';
-export { enhancedApiService } from './enhancedApiService';
+export { apiService, enhancedApiService } from './apiService';
 export { RetryService } from './retryService';
 
 // Export the enhanced service as default for convenience
-export { enhancedApiService as default } from './enhancedApiService';
+export { enhancedApiService as default } from './apiService';
