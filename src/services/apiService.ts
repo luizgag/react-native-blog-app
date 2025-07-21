@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RetryService } from './retryService';
 import {
   ApiService,
   ApiError,
@@ -232,43 +233,57 @@ class BlogApiService implements ApiService {
     }
   }
 
-  // Posts API methods
+  // Posts API methods with retry logic
   async getPosts(): Promise<Post[]> {
-    const response = await this.client.get<Post[]>('/posts');
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get<Post[]>('/posts');
+      return response.data;
+    });
   }
 
   async getPost(id: number): Promise<Post> {
-    const response = await this.client.get<Post>(`/posts/${id}`);
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get<Post>(`/posts/${id}`);
+      return response.data;
+    });
   }
 
   async searchPosts(term: string): Promise<Post[]> {
-    const response = await this.client.get<Post[]>(`/posts/search/${encodeURIComponent(term)}`);
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get<Post[]>(`/posts/search/${encodeURIComponent(term)}`);
+      return response.data;
+    });
   }
 
   async createPost(post: CreatePostRequest): Promise<Post> {
+    // Don't retry create operations to avoid duplicates
     const response = await this.client.post<Post>('/posts', post);
     return response.data;
   }
 
   async updatePost(id: number, post: UpdatePostRequest): Promise<Post> {
-    const response = await this.client.put<Post>(`/posts/${id}`, post);
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.put<Post>(`/posts/${id}`, post);
+      return response.data;
+    });
   }
 
   async deletePost(id: number): Promise<void> {
-    await this.client.delete(`/posts/${id}`);
+    return RetryService.withRetry(async () => {
+      await this.client.delete(`/posts/${id}`);
+    });
   }
 
-  // Comments API methods
+  // Comments API methods with retry logic
   async getComments(postId: number): Promise<Comment[]> {
-    const response = await this.client.get<Comment[]>(`/posts/comentarios/${postId}`);
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get<Comment[]>(`/posts/comentarios/${postId}`);
+      return response.data;
+    });
   }
 
   async createComment(postId: number, comentario: string): Promise<Comment> {
+    // Don't retry create operations to avoid duplicates
     const response = await this.client.post<Comment>('/posts/comentarios', {
       postId,
       comentario
@@ -277,46 +292,70 @@ class BlogApiService implements ApiService {
   }
 
   async updateComment(id: number, comentario: string): Promise<Comment> {
-    const response = await this.client.put<Comment>(`/posts/comentarios/${id}`, {
-      comentario
+    return RetryService.withRetry(async () => {
+      const response = await this.client.put<Comment>(`/posts/comentarios/${id}`, {
+        comentario
+      });
+      return response.data;
     });
-    return response.data;
   }
 
   async deleteComment(id: number): Promise<void> {
-    await this.client.delete(`/posts/comentarios/${id}`);
+    return RetryService.withRetry(async () => {
+      await this.client.delete(`/posts/comentarios/${id}`);
+    });
   }
 
-  // Likes API methods
+  // Likes API methods with retry logic
   async toggleLike(postId: number): Promise<Like> {
-    const response = await this.client.post<Like>('/posts/like', {
-      postId
+    return RetryService.withRetry(async () => {
+      const response = await this.client.post<Like>('/posts/like', {
+        postId
+      });
+      return response.data;
     });
-    return response.data;
   }
 
   async getLikes(postId: number): Promise<Like[]> {
-    const response = await this.client.get<Like[]>(`/posts/like/${postId}`);
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get<Like[]>(`/posts/like/${postId}`);
+      return response.data;
+    });
   }
 
   async removeLike(postId: number): Promise<void> {
-    await this.client.delete(`/posts/like/${postId}`);
+    return RetryService.withRetry(async () => {
+      await this.client.delete(`/posts/like/${postId}`);
+    });
   }
 
-  // User API methods
+  // User API methods with retry logic
   async getUser(id: number): Promise<any> {
-    const response = await this.client.get(`/users/${id}`);
-    return response.data;
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get(`/users/${id}`);
+      return response.data;
+    });
   }
 
-  // Registration method
+  // Registration methods (no retry to avoid duplicates)
   async register(userData: RegisterRequest): Promise<any> {
     const response = await this.client.post('/register', userData);
     return response.data;
   }
 
-  // Authentication API methods
+  async createTeacher(userData: RegisterRequest): Promise<any> {
+    const teacherData = { ...userData, tipo_usuario: 'professor' as const };
+    const response = await this.client.post('/register', teacherData);
+    return response.data;
+  }
+
+  async createStudent(userData: RegisterRequest): Promise<any> {
+    const studentData = { ...userData, tipo_usuario: 'aluno' as const };
+    const response = await this.client.post('/register', studentData);
+    return response.data;
+  }
+
+  // Authentication API methods (no retry for login to avoid account lockout)
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     // LoginRequest now uses 'senha' to match backend API format
     const loginData = {
@@ -348,15 +387,17 @@ class BlogApiService implements ApiService {
   }
 
   async logout(): Promise<void> {
-    try {
-      await this.client.post('/logout');
-    } catch (error) {
-      // Continue with logout even if server call fails
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.warn('Logout API call failed:', errorMessage);
-    } finally {
-      await this.clearAuthData();
-    }
+    return RetryService.withRetry(async () => {
+      try {
+        await this.client.post('/logout');
+      } catch (error) {
+        // Continue with logout even if server call fails
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.warn('Logout API call failed:', errorMessage);
+      } finally {
+        await this.clearAuthData();
+      }
+    });
   }
 
   /**
@@ -394,5 +435,5 @@ class BlogApiService implements ApiService {
 export const apiService = new BlogApiService();
 export default apiService;
 
-// Re-export enhanced API service for components that need retry functionality
-export { enhancedApiService } from './enhancedApiService';
+// Export the same instance as enhancedApiService for backward compatibility
+export const enhancedApiService = apiService;

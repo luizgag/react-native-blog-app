@@ -37,6 +37,10 @@ export interface ApiService {
   login(credentials: LoginRequest): Promise<AuthResponse>;
   logout(): Promise<void>;
   register(userData: RegisterRequest): Promise<any>;
+  
+  // User creation methods
+  createTeacher(userData: RegisterRequest): Promise<any>;
+  createStudent(userData: RegisterRequest): Promise<any>;
 }
 
 // HTTP error types
