@@ -16,7 +16,7 @@ import { ActionButton } from '../components/ActionButton';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { LoginFormData, CreateTeacherRequest, CreateStudentRequest } from '../types';
 import { formValidationSchemas } from '../utils/validation';
-import { enhancedApiService } from '../services/apiService';
+import { enhancedApiService } from '../services';
 
 interface SignupFormData {
   name: string;

@@ -5,7 +5,7 @@ import {
   TeachersAction
 } from '../types/context';
 import { Teacher, PaginatedResponse } from '../types';
-import { enhancedApiService } from '../services/apiService';
+import { enhancedApiService } from '../services';
 import { PaginationState } from '../types/utils';
 
 // Initial state

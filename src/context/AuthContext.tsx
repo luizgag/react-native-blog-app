@@ -6,7 +6,7 @@ import {
   AuthAction
 } from '../types/context';
 import { AuthUser } from '../types';
-import { enhancedApiService } from '../services/apiService';
+import { enhancedApiService } from '../services';
 import { STORAGE_KEYS } from '../config';
 
 // Initial state

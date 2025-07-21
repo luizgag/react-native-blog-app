@@ -5,7 +5,7 @@ import {
   StudentsAction
 } from '../types/context';
 import { Student, PaginatedResponse } from '../types';
-import { enhancedApiService } from '../services/apiService';
+import { enhancedApiService } from '../services';
 import { PaginationState } from '../types/utils';
 
 // Initial state

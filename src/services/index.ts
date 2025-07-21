@@ -1,9 +1,7 @@
-// Export all API services
-export { apiService, default as BlogApiService } from './apiService';
-export { enhancedApiService, default as EnhancedApiService } from './enhancedApiService';
+// Main service exports
+export { apiService } from './apiService';
+export { enhancedApiService } from './enhancedApiService';
 export { RetryService } from './retryService';
-export { NetworkService, default as NetworkServiceDefault } from './networkService';
-export { NetworkStatusService } from './networkStatusService';
 
-// Export the enhanced API service as the default export for the app to use
+// Export the enhanced service as default for convenience
 export { enhancedApiService as default } from './enhancedApiService';
