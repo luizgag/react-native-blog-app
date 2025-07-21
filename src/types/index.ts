@@ -46,7 +46,7 @@ export interface PaginatedResponse<T> {
 // Request/Response types
 export interface LoginRequest {
   email: string;
-  password: string;
+  senha: string;  // Changed from password to match backend API
 }
 
 export interface AuthResponse {
@@ -143,7 +143,7 @@ export type RootStackParamList = {
 // Form types
 export interface LoginFormData {
   email: string;
-  password: string;
+  password: string;  // Keep as password for form, will be transformed to senha in API call
 }
 
 export interface PostFormData {

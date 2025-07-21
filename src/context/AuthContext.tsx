@@ -145,7 +145,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      const response = await enhancedApiService.login({ email, password });
+      // Transform password to senha for backend API
+      const response = await enhancedApiService.login({ email, senha: password });
       const { user, token } = response;
       
       // Create AuthUser object with token

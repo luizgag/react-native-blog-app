@@ -114,7 +114,7 @@ const testPaginatedResponse: PaginatedResponse<Post> = {
 
 const testLoginRequest: LoginRequest = {
     email: 'test@example.com',
-    password: 'password123',
+    senha: 'password123',  // Updated to use senha instead of password
 };
 
 const testAuthResponse: AuthResponse = {

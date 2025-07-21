@@ -1,17 +1,10 @@
 // API service interface definitions
 import {
   Post,
-  Teacher,
-  Student,
   AuthResponse,
   LoginRequest,
   CreatePostRequest,
   UpdatePostRequest,
-  CreateTeacherRequest,
-  UpdateTeacherRequest,
-  CreateStudentRequest,
-  UpdateStudentRequest,
-  PaginatedResponse,
 } from './index';
 
 export interface ApiService {
@@ -23,21 +16,29 @@ export interface ApiService {
   updatePost(id: number, post: UpdatePostRequest): Promise<Post>;
   deletePost(id: number): Promise<void>;
 
+  // Comments
+  getComments(postId: number): Promise<any[]>;
+  createComment(postId: number, comentario: string): Promise<any>;
+  updateComment(id: number, comentario: string): Promise<any>;
+  deleteComment(id: number): Promise<void>;
+
+  // Likes
+  toggleLike(postId: number): Promise<any>;
+  getLikes(postId: number): Promise<any[]>;
+  removeLike(postId: number): Promise<void>;
+
+  // Users
+  getUser(id: number): Promise<any>;
+
   // Authentication
   login(credentials: LoginRequest): Promise<AuthResponse>;
   logout(): Promise<void>;
-
-  // Teachers (assumed endpoints)
-  getTeachers(page: number): Promise<PaginatedResponse<Teacher>>;
-  createTeacher(teacher: CreateTeacherRequest): Promise<Teacher>;
-  updateTeacher(id: number, teacher: UpdateTeacherRequest): Promise<Teacher>;
-  deleteTeacher(id: number): Promise<void>;
-
-  // Students (assumed endpoints)
-  getStudents(page: number): Promise<PaginatedResponse<Student>>;
-  createStudent(student: CreateStudentRequest): Promise<Student>;
-  updateStudent(id: number, student: UpdateStudentRequest): Promise<Student>;
-  deleteStudent(id: number): Promise<void>;
+  register(userData: {
+    nome: string;
+    email: string;
+    senha: string;
+    tipo_usuario: 'professor' | 'aluno';
+  }): Promise<any>;
 }
 
 // HTTP error types

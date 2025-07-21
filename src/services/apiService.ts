@@ -4,20 +4,12 @@ import {
   ApiService,
   ApiError,
   Post,
-  Teacher,
-  Student,
   AuthResponse,
   LoginRequest,
   CreatePostRequest,
   UpdatePostRequest,
-  CreateTeacherRequest,
-  UpdateTeacherRequest,
-  CreateStudentRequest,
-  UpdateStudentRequest,
-  PaginatedResponse,
 } from '../types';
 import { API_CONFIG, STORAGE_KEYS } from '../config';
-import { decodeToken, isTokenExpired, getUserFromToken } from '../utils/jwt';
 
 class BlogApiService implements ApiService {
   private client: AxiosInstance;
@@ -41,13 +33,8 @@ class BlogApiService implements ApiService {
         try {
           const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
           if (token) {
-            // Check if token is expired before using it
-            if (isTokenExpired(token)) {
-              await this.clearAuthData();
-              throw new Error('Token expired');
-            }
-            // Use accessToken header as specified in API documentation
-            config.headers.accessToken = token;
+            // Use accesstoken header as specified in API documentation
+            config.headers.accesstoken = token;
           }
         } catch (error) {
           console.warn('Failed to get auth token from storage:', error);
@@ -111,28 +98,17 @@ class BlogApiService implements ApiService {
   }
 
   async getPost(id: number): Promise<Post> {
-    const response = await this.client.get<Post[]>(`/posts?id=${id}`);
-    // Backend returns array, get first item
-    return response.data[0] || null;
+    const response = await this.client.get<Post>(`/posts/${id}`);
+    return response.data;
   }
 
   async searchPosts(term: string): Promise<Post[]> {
-    const response = await this.client.get<Post[]>(`/posts?search=${encodeURIComponent(term)}`);
+    const response = await this.client.get<Post[]>(`/posts/search/${encodeURIComponent(term)}`);
     return response.data;
   }
 
   async createPost(post: CreatePostRequest): Promise<Post> {
-    // Get current user ID from stored token
-    const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-    const userFromToken = token ? getUserFromToken(token) : null;
-
-    // Prepare post data with author_id from token
-    const postData = {
-      ...post,
-      author: userFromToken?.id || post.author // Use author_id from token or fallback to provided author
-    };
-
-    const response = await this.client.post<Post>('/posts', postData);
+    const response = await this.client.post<Post>('/posts', post);
     return response.data;
   }
 
@@ -145,12 +121,71 @@ class BlogApiService implements ApiService {
     await this.client.delete(`/posts/${id}`);
   }
 
+  // Comments API methods
+  async getComments(postId: number): Promise<any[]> {
+    const response = await this.client.get(`/posts/comentarios/${postId}`);
+    return response.data;
+  }
+
+  async createComment(postId: number, comentario: string): Promise<any> {
+    const response = await this.client.post('/posts/comentarios', {
+      postId,
+      comentario
+    });
+    return response.data;
+  }
+
+  async updateComment(id: number, comentario: string): Promise<any> {
+    const response = await this.client.put(`/posts/comentarios/${id}`, {
+      comentario
+    });
+    return response.data;
+  }
+
+  async deleteComment(id: number): Promise<void> {
+    await this.client.delete(`/posts/comentarios/${id}`);
+  }
+
+  // Likes API methods
+  async toggleLike(postId: number): Promise<any> {
+    const response = await this.client.post('/posts/like', {
+      postId
+    });
+    return response.data;
+  }
+
+  async getLikes(postId: number): Promise<any[]> {
+    const response = await this.client.get(`/posts/like/${postId}`);
+    return response.data;
+  }
+
+  async removeLike(postId: number): Promise<void> {
+    await this.client.delete(`/posts/like/${postId}`);
+  }
+
+  // User API methods
+  async getUser(id: number): Promise<any> {
+    const response = await this.client.get(`/users/${id}`);
+    return response.data;
+  }
+
+  // Registration method
+  async register(userData: {
+    nome: string;
+    email: string;
+    senha: string;
+    tipo_usuario: 'professor' | 'aluno';
+  }): Promise<any> {
+    const response = await this.client.post('/register', userData);
+    return response.data;
+  }
+
   // Authentication API methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    // Transform credentials to match backend API format
+    // LoginRequest now uses 'senha' to match backend API format
     const loginData = {
       email: credentials.email,
-      senha: credentials.password // Backend expects 'senha' instead of 'password'
+      senha: credentials.senha
     };
 
     const response = await this.client.post<{ accessToken: string }>('/login', loginData);
@@ -159,16 +194,13 @@ class BlogApiService implements ApiService {
     const { accessToken } = response.data;
     await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken);
 
-    // Decode JWT token to extract user information
-    const userFromToken = getUserFromToken(accessToken);
-
     // Create AuthResponse format for compatibility
     const authResponse: AuthResponse = {
       user: {
-        id: userFromToken?.id || 0,
-        name: userFromToken?.email || credentials.email,
-        email: userFromToken?.email || credentials.email,
-        role: (userFromToken?.role as 'teacher' | 'student') || 'teacher',
+        id: 1, // Will be updated when we have user info endpoint
+        name: credentials.email,
+        email: credentials.email,
+        role: 'teacher', // Default role
         token: accessToken
       },
       token: accessToken
@@ -180,55 +212,22 @@ class BlogApiService implements ApiService {
   }
 
   async logout(): Promise<void> {
-    // Backend doesn't have a logout endpoint, just clear local data
-    await this.clearAuthData();
+    try {
+      await this.client.post('/logout');
+    } catch (error) {
+      // Continue with logout even if server call fails
+      console.warn('Logout API call failed:', error);
+    } finally {
+      await this.clearAuthData();
+    }
   }
 
-  // Teachers API methods (assumed endpoints)
-  async getTeachers(page: number = 1): Promise<PaginatedResponse<Teacher>> {
-    const response = await this.client.get<PaginatedResponse<Teacher>>('/teachers', {
-      params: { page },
-    });
-    return response.data;
-  }
 
-  async createTeacher(teacher: CreateTeacherRequest): Promise<Teacher> {
-    const response = await this.client.post<Teacher>('/teachers', teacher);
-    return response.data;
-  }
-
-  async updateTeacher(id: number, teacher: UpdateTeacherRequest): Promise<Teacher> {
-    const response = await this.client.put<Teacher>(`/teachers/${id}`, teacher);
-    return response.data;
-  }
-
-  async deleteTeacher(id: number): Promise<void> {
-    await this.client.delete(`/teachers/${id}`);
-  }
-
-  // Students API methods (assumed endpoints)
-  async getStudents(page: number = 1): Promise<PaginatedResponse<Student>> {
-    const response = await this.client.get<PaginatedResponse<Student>>('/students', {
-      params: { page },
-    });
-    return response.data;
-  }
-
-  async createStudent(student: CreateStudentRequest): Promise<Student> {
-    const response = await this.client.post<Student>('/students', student);
-    return response.data;
-  }
-
-  async updateStudent(id: number, student: UpdateStudentRequest): Promise<Student> {
-    const response = await this.client.put<Student>(`/students/${id}`, student);
-    return response.data;
-  }
-
-  async deleteStudent(id: number): Promise<void> {
-    await this.client.delete(`/students/${id}`);
-  }
 }
 
 // Export singleton instance
 export const apiService = new BlogApiService();
 export default apiService;
+
+// Re-export enhanced API service for components that need retry functionality
+export { enhancedApiService } from './enhancedApiService';

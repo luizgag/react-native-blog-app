@@ -3,17 +3,10 @@ import { RetryService } from './retryService';
 import {
   ApiService,
   Post,
-  Teacher,
-  Student,
   AuthResponse,
   LoginRequest,
   CreatePostRequest,
   UpdatePostRequest,
-  CreateTeacherRequest,
-  UpdateTeacherRequest,
-  CreateStudentRequest,
-  UpdateStudentRequest,
-  PaginatedResponse,
 } from '../types';
 
 /**
@@ -46,6 +39,42 @@ class EnhancedApiService implements ApiService {
     return RetryService.withRetry(() => apiService.deletePost(id));
   }
 
+  // Comments API methods with retry
+  async getComments(postId: number): Promise<any[]> {
+    return RetryService.withRetry(() => apiService.getComments(postId));
+  }
+
+  async createComment(postId: number, comentario: string): Promise<any> {
+    // Don't retry create operations to avoid duplicates
+    return apiService.createComment(postId, comentario);
+  }
+
+  async updateComment(id: number, comentario: string): Promise<any> {
+    return RetryService.withRetry(() => apiService.updateComment(id, comentario));
+  }
+
+  async deleteComment(id: number): Promise<void> {
+    return RetryService.withRetry(() => apiService.deleteComment(id));
+  }
+
+  // Likes API methods with retry
+  async toggleLike(postId: number): Promise<any> {
+    return RetryService.withRetry(() => apiService.toggleLike(postId));
+  }
+
+  async getLikes(postId: number): Promise<any[]> {
+    return RetryService.withRetry(() => apiService.getLikes(postId));
+  }
+
+  async removeLike(postId: number): Promise<void> {
+    return RetryService.withRetry(() => apiService.removeLike(postId));
+  }
+
+  // Users API methods with retry
+  async getUser(id: number): Promise<any> {
+    return RetryService.withRetry(() => apiService.getUser(id));
+  }
+
   // Authentication API methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     // Don't retry login to avoid account lockout
@@ -56,40 +85,14 @@ class EnhancedApiService implements ApiService {
     return RetryService.withRetry(() => apiService.logout());
   }
 
-  // Teachers API methods with retry
-  async getTeachers(page: number = 1): Promise<PaginatedResponse<Teacher>> {
-    return RetryService.withRetry(() => apiService.getTeachers(page));
-  }
-
-  async createTeacher(teacher: CreateTeacherRequest): Promise<Teacher> {
-    // Don't retry create operations to avoid duplicates
-    return apiService.createTeacher(teacher);
-  }
-
-  async updateTeacher(id: number, teacher: UpdateTeacherRequest): Promise<Teacher> {
-    return RetryService.withRetry(() => apiService.updateTeacher(id, teacher));
-  }
-
-  async deleteTeacher(id: number): Promise<void> {
-    return RetryService.withRetry(() => apiService.deleteTeacher(id));
-  }
-
-  // Students API methods with retry
-  async getStudents(page: number = 1): Promise<PaginatedResponse<Student>> {
-    return RetryService.withRetry(() => apiService.getStudents(page));
-  }
-
-  async createStudent(student: CreateStudentRequest): Promise<Student> {
-    // Don't retry create operations to avoid duplicates
-    return apiService.createStudent(student);
-  }
-
-  async updateStudent(id: number, student: UpdateStudentRequest): Promise<Student> {
-    return RetryService.withRetry(() => apiService.updateStudent(id, student));
-  }
-
-  async deleteStudent(id: number): Promise<void> {
-    return RetryService.withRetry(() => apiService.deleteStudent(id));
+  async register(userData: {
+    nome: string;
+    email: string;
+    senha: string;
+    tipo_usuario: 'professor' | 'aluno';
+  }): Promise<any> {
+    // Don't retry registration to avoid duplicates
+    return apiService.register(userData);
   }
 }
 
