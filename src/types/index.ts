@@ -67,6 +67,29 @@ export interface UpdatePostRequest {
   materia?: string;
 }
 
+export interface Comment {
+  id: number;
+  post_id: number;
+  author_id: number;
+  comentario: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface Like {
+  id: number;
+  user_id: number;
+  post_id: number;
+  created_at: string;
+}
+
+export interface RegisterRequest {
+  nome: string;
+  email: string;
+  senha: string;
+  tipo_usuario: 'professor' | 'aluno';
+}
+
 export interface CreateTeacherRequest {
   name: string;
   email: string;

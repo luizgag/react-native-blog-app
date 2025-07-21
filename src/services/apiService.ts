@@ -8,6 +8,9 @@ import {
   LoginRequest,
   CreatePostRequest,
   UpdatePostRequest,
+  Comment,
+  Like,
+  RegisterRequest,
 } from '../types';
 import { API_CONFIG, STORAGE_KEYS } from '../config';
 
@@ -122,21 +125,21 @@ class BlogApiService implements ApiService {
   }
 
   // Comments API methods
-  async getComments(postId: number): Promise<any[]> {
-    const response = await this.client.get(`/posts/comentarios/${postId}`);
+  async getComments(postId: number): Promise<Comment[]> {
+    const response = await this.client.get<Comment[]>(`/posts/comentarios/${postId}`);
     return response.data;
   }
 
-  async createComment(postId: number, comentario: string): Promise<any> {
-    const response = await this.client.post('/posts/comentarios', {
+  async createComment(postId: number, comentario: string): Promise<Comment> {
+    const response = await this.client.post<Comment>('/posts/comentarios', {
       postId,
       comentario
     });
     return response.data;
   }
 
-  async updateComment(id: number, comentario: string): Promise<any> {
-    const response = await this.client.put(`/posts/comentarios/${id}`, {
+  async updateComment(id: number, comentario: string): Promise<Comment> {
+    const response = await this.client.put<Comment>(`/posts/comentarios/${id}`, {
       comentario
     });
     return response.data;
@@ -147,15 +150,15 @@ class BlogApiService implements ApiService {
   }
 
   // Likes API methods
-  async toggleLike(postId: number): Promise<any> {
-    const response = await this.client.post('/posts/like', {
+  async toggleLike(postId: number): Promise<Like> {
+    const response = await this.client.post<Like>('/posts/like', {
       postId
     });
     return response.data;
   }
 
-  async getLikes(postId: number): Promise<any[]> {
-    const response = await this.client.get(`/posts/like/${postId}`);
+  async getLikes(postId: number): Promise<Like[]> {
+    const response = await this.client.get<Like[]>(`/posts/like/${postId}`);
     return response.data;
   }
 
@@ -170,12 +173,7 @@ class BlogApiService implements ApiService {
   }
 
   // Registration method
-  async register(userData: {
-    nome: string;
-    email: string;
-    senha: string;
-    tipo_usuario: 'professor' | 'aluno';
-  }): Promise<any> {
+  async register(userData: RegisterRequest): Promise<any> {
     const response = await this.client.post('/register', userData);
     return response.data;
   }

@@ -7,6 +7,9 @@ import {
   LoginRequest,
   CreatePostRequest,
   UpdatePostRequest,
+  Comment,
+  Like,
+  RegisterRequest,
 } from '../types';
 
 /**
@@ -40,16 +43,16 @@ class EnhancedApiService implements ApiService {
   }
 
   // Comments API methods with retry
-  async getComments(postId: number): Promise<any[]> {
+  async getComments(postId: number): Promise<Comment[]> {
     return RetryService.withRetry(() => apiService.getComments(postId));
   }
 
-  async createComment(postId: number, comentario: string): Promise<any> {
+  async createComment(postId: number, comentario: string): Promise<Comment> {
     // Don't retry create operations to avoid duplicates
     return apiService.createComment(postId, comentario);
   }
 
-  async updateComment(id: number, comentario: string): Promise<any> {
+  async updateComment(id: number, comentario: string): Promise<Comment> {
     return RetryService.withRetry(() => apiService.updateComment(id, comentario));
   }
 
@@ -58,11 +61,11 @@ class EnhancedApiService implements ApiService {
   }
 
   // Likes API methods with retry
-  async toggleLike(postId: number): Promise<any> {
+  async toggleLike(postId: number): Promise<Like> {
     return RetryService.withRetry(() => apiService.toggleLike(postId));
   }
 
-  async getLikes(postId: number): Promise<any[]> {
+  async getLikes(postId: number): Promise<Like[]> {
     return RetryService.withRetry(() => apiService.getLikes(postId));
   }
 
@@ -85,12 +88,7 @@ class EnhancedApiService implements ApiService {
     return RetryService.withRetry(() => apiService.logout());
   }
 
-  async register(userData: {
-    nome: string;
-    email: string;
-    senha: string;
-    tipo_usuario: 'professor' | 'aluno';
-  }): Promise<any> {
+  async register(userData: RegisterRequest): Promise<any> {
     // Don't retry registration to avoid duplicates
     return apiService.register(userData);
   }
