@@ -16,24 +16,78 @@ import { API_CONFIG, STORAGE_KEYS } from '../config';
 
 class BlogApiService implements ApiService {
   private client: AxiosInstance;
+  private currentBaseUrl: string;
+  private isConnectivityTested: boolean = false;
 
   constructor() {
-    this.client = axios.create({
-      baseURL: API_CONFIG.BASE_URL,
+    this.currentBaseUrl = API_CONFIG.BASE_URL;
+    this.client = this.createAxiosInstance(this.currentBaseUrl);
+    this.setupInterceptors();
+  }
+
+  private createAxiosInstance(baseURL: string): AxiosInstance {
+    return axios.create({
+      baseURL,
       timeout: API_CONFIG.TIMEOUT,
       headers: {
         'Content-Type': 'application/json',
       },
     });
+  }
 
-    this.setupInterceptors();
+  /**
+   * Test connectivity with different base URLs and select the working one
+   */
+  private async testConnectivity(): Promise<void> {
+    if (this.isConnectivityTested) {
+      return;
+    }
+
+    console.log('Testing API connectivity...');
+    
+    for (const baseUrl of API_CONFIG.FALLBACK_URLS) {
+      try {
+        const testClient = this.createAxiosInstance(baseUrl);
+        
+        // Test with a simple GET request with short timeout
+        await testClient.get('/posts', { 
+          timeout: API_CONFIG.CONNECTION_TIMEOUT,
+          // Don't include auth headers for connectivity test
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        console.log(`✅ API connectivity successful with: ${baseUrl}`);
+        
+        // Update base URL if different from current
+        if (baseUrl !== this.currentBaseUrl) {
+          this.currentBaseUrl = baseUrl;
+          this.client = this.createAxiosInstance(baseUrl);
+          this.setupInterceptors();
+          console.log(`🔄 Switched to working base URL: ${baseUrl}`);
+        }
+        
+        this.isConnectivityTested = true;
+        return;
+        
+      } catch (error) {
+        console.log(`❌ Failed to connect to: ${baseUrl}`, error.code || error.message);
+        continue;
+      }
+    }
+    
+    // If all URLs fail, keep the original but mark as tested to avoid repeated attempts
+    this.isConnectivityTested = true;
+    console.warn('⚠️ All API endpoints failed connectivity test. Using default URL.');
   }
 
   private setupInterceptors(): void {
-    // Request interceptor to add auth token
+    // Request interceptor to add auth token and test connectivity
     this.client.interceptors.request.use(
       async (config) => {
         try {
+          // Test connectivity on first request
+          await this.testConnectivity();
+          
           const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
           if (token) {
             // Use accesstoken header as specified in API documentation
@@ -57,8 +111,26 @@ class BlogApiService implements ApiService {
         if (error.response?.status === 401) {
           await this.clearAuthData();
         }
+        
+        // Handle network connectivity issues
+        if (this.isNetworkError(error)) {
+          // Reset connectivity test flag to retry on next request
+          this.isConnectivityTested = false;
+        }
+        
         return Promise.reject(this.handleError(error));
       }
+    );
+  }
+
+  private isNetworkError(error: AxiosError): boolean {
+    return (
+      error.code === 'ECONNREFUSED' ||
+      error.code === 'ENOTFOUND' ||
+      error.code === 'ETIMEDOUT' ||
+      error.code === 'ECONNABORTED' ||
+      error.message.includes('timeout') ||
+      error.message.includes('Network Error')
     );
   }
 
@@ -66,17 +138,41 @@ class BlogApiService implements ApiService {
     if (error.response) {
       // Server responded with error status
       const responseData = error.response.data as any;
+      const serverMessage = responseData?.message || responseData?.error || 'Server error occurred';
+      
       return {
-        message: responseData?.message || 'Server error occurred',
+        message: this.translatePortugueseError(serverMessage),
         status: error.response.status,
-        code: responseData?.code,
+        code: responseData?.code || `HTTP_${error.response.status}`,
       };
     } else if (error.request) {
-      // Network error
-      return {
-        message: 'Network error - please check your connection',
-        code: 'NETWORK_ERROR',
-      };
+      // Network error - provide specific error messages based on error type
+      if (error.code === 'ECONNREFUSED') {
+        return {
+          message: 'Unable to connect to server. Please check if the server is running.',
+          code: 'CONNECTION_REFUSED',
+        };
+      } else if (error.code === 'ENOTFOUND') {
+        return {
+          message: 'Server not found. Please check your network connection.',
+          code: 'HOST_NOT_FOUND',
+        };
+      } else if (error.code === 'ETIMEDOUT' || error.message.includes('timeout')) {
+        return {
+          message: 'Request timed out. Please check your internet connection and try again.',
+          code: 'TIMEOUT_ERROR',
+        };
+      } else if (error.code === 'ECONNABORTED') {
+        return {
+          message: 'Request was cancelled. Please try again.',
+          code: 'REQUEST_CANCELLED',
+        };
+      } else {
+        return {
+          message: 'Network error - please check your connection and try again.',
+          code: 'NETWORK_ERROR',
+        };
+      }
     } else {
       // Other error
       return {
@@ -84,6 +180,44 @@ class BlogApiService implements ApiService {
         code: 'UNKNOWN_ERROR',
       };
     }
+  }
+
+  /**
+   * Translate common Portuguese error messages to English
+   */
+  private translatePortugueseError(message: string): string {
+    const translations: Record<string, string> = {
+      'Token de acesso não fornecido': 'Access token not provided',
+      'Token inválido': 'Invalid token',
+      'Token expirado': 'Token expired',
+      'Credenciais inválidas': 'Invalid credentials',
+      'E-mail ou senha incorretos': 'Incorrect email or password',
+      'E-mail já cadastrado': 'Email already registered',
+      'Usuário não encontrado': 'User not found',
+      'Post não encontrado': 'Post not found',
+      'Comentário não encontrado': 'Comment not found',
+      'Acesso negado': 'Access denied',
+      'Dados inválidos': 'Invalid data',
+      'Campo obrigatório': 'Required field',
+      'Formato inválido': 'Invalid format',
+      'Erro interno do servidor': 'Internal server error',
+      'Serviço indisponível': 'Service unavailable',
+    };
+
+    // Check for exact matches first
+    if (translations[message]) {
+      return translations[message];
+    }
+
+    // Check for partial matches
+    for (const [portuguese, english] of Object.entries(translations)) {
+      if (message.includes(portuguese)) {
+        return english;
+      }
+    }
+
+    // Return original message if no translation found
+    return message;
   }
 
   private async clearAuthData(): Promise<void> {
@@ -220,7 +354,35 @@ class BlogApiService implements ApiService {
     }
   }
 
+  /**
+   * Test API connectivity and return current base URL
+   */
+  async testApiConnectivity(): Promise<{ success: boolean; baseUrl: string; error?: string }> {
+    try {
+      await this.testConnectivity();
+      return { success: true, baseUrl: this.currentBaseUrl };
+    } catch (error) {
+      return { 
+        success: false, 
+        baseUrl: this.currentBaseUrl,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
 
+  /**
+   * Get current base URL being used
+   */
+  getCurrentBaseUrl(): string {
+    return this.currentBaseUrl;
+  }
+
+  /**
+   * Force reset connectivity test (useful for testing different networks)
+   */
+  resetConnectivityTest(): void {
+    this.isConnectivityTested = false;
+  }
 }
 
 // Export singleton instance

@@ -1,9 +1,31 @@
 // Configuration constants for the app
 
+// Network configuration with Android emulator support
+const getBaseUrl = () => {
+  // For Android emulator, use 10.0.2.2 to access host machine
+  // For iOS simulator and web, use localhost
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    // Check if running on Android
+    const Platform = require('react-native').Platform;
+    if (Platform.OS === 'android') {
+      return 'http://10.0.2.2:3001/api';
+    }
+  }
+  return 'http://localhost:3001/api';
+};
+
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:3001/api', // Updated to use localhost since that's what works with the backend
+  BASE_URL: getBaseUrl(),
+  FALLBACK_URLS: [
+    'http://localhost:3001/api',
+    'http://10.0.2.2:3001/api',
+    'http://127.0.0.1:3001/api'
+  ],
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
+  RETRY_DELAY: 1000,
+  RETRY_BACKOFF_MULTIPLIER: 2,
+  CONNECTION_TIMEOUT: 5000,
 };
 
 export const STORAGE_KEYS = {

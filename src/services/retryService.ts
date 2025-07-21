@@ -15,8 +15,8 @@ export class RetryService {
   ): Promise<T> {
     const {
       maxAttempts = API_CONFIG.RETRY_ATTEMPTS,
-      delay = 1000,
-      backoffMultiplier = 2,
+      delay = API_CONFIG.RETRY_DELAY,
+      backoffMultiplier = API_CONFIG.RETRY_BACKOFF_MULTIPLIER,
       retryCondition = this.defaultRetryCondition,
     } = options;
 
@@ -34,6 +34,9 @@ export class RetryService {
           throw lastError;
         }
 
+        console.log(`Retry attempt ${attempt}/${maxAttempts} failed, retrying in ${currentDelay}ms...`);
+        console.log(`Error: ${lastError.message} (${lastError.code})`);
+
         // Wait before retrying
         await this.sleep(currentDelay);
         currentDelay *= backoffMultiplier;
@@ -44,14 +47,32 @@ export class RetryService {
   }
 
   private static defaultRetryCondition(error: ApiError): boolean {
-    // Retry on network errors and 5xx server errors
-    return (
-      error.code === 'NETWORK_ERROR' ||
-      (error.status !== undefined && error.status >= 500)
-    );
+    // Retry on network errors and 5xx server errors, but not on auth errors
+    const retryableCodes = [
+      'NETWORK_ERROR',
+      'TIMEOUT_ERROR',
+      'CONNECTION_REFUSED',
+      'HOST_NOT_FOUND',
+      'REQUEST_CANCELLED'
+    ];
+
+    const isRetryableCode = retryableCodes.includes(error.code || '');
+    const isServerError = error.status !== undefined && error.status >= 500;
+    const isNotAuthError = error.status !== 401 && error.status !== 403;
+
+    return (isRetryableCode || isServerError) && isNotAuthError;
   }
 
   private static sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Exponential backoff with jitter to avoid thundering herd
+   */
+  static calculateBackoffDelay(attempt: number, baseDelay: number, multiplier: number): number {
+    const exponentialDelay = baseDelay * Math.pow(multiplier, attempt - 1);
+    const jitter = Math.random() * 0.1 * exponentialDelay; // Add up to 10% jitter
+    return Math.min(exponentialDelay + jitter, 30000); // Cap at 30 seconds
   }
 }
