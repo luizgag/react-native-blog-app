@@ -1,7 +1,7 @@
 // Configuration constants for the app
 
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:3001/api', // Backend server URL as specified in API docs
+  BASE_URL: 'http://10.0.2.2:3001/api', // Android emulator-compatible URL (10.0.2.2 maps to host's localhost)
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 };
