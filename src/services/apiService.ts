@@ -125,7 +125,7 @@ class BlogApiService implements ApiService {
     // Get current user ID from stored token
     const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
     const userFromToken = token ? getUserFromToken(token) : null;
-    
+
     // Prepare post data with author_id from token
     const postData = {
       ...post,
@@ -161,7 +161,7 @@ class BlogApiService implements ApiService {
 
     // Decode JWT token to extract user information
     const userFromToken = getUserFromToken(accessToken);
-    
+
     // Create AuthResponse format for compatibility
     const authResponse: AuthResponse = {
       user: {
