@@ -60,42 +60,42 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
 
     // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Nome é obrigatório';
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters long';
+      newErrors.name = 'Nome deve ter pelo menos 2 caracteres';
     } else if (formData.name.trim().length > 100) {
-      newErrors.name = 'Name must be less than 100 characters';
+      newErrors.name = 'Nome deve ter menos de 100 caracteres';
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email é obrigatório';
     } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Por favor, insira um endereço de email válido';
     } else if (formData.email.trim().length > 255) {
-      newErrors.email = 'Email must be less than 255 characters';
+      newErrors.email = 'Email deve ter menos de 255 caracteres';
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Senha é obrigatória';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
+      newErrors.password = 'A senha deve ter pelo menos 6 caracteres';
     } else if (formData.password.length > 128) {
-      newErrors.password = 'Password must be less than 128 characters';
+      newErrors.password = 'A senha deve ter menos de 128 caracteres';
     }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = 'Por favor, confirme sua senha';
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'As senhas não coincidem';
     }
 
     // Department validation (optional)
     if (formData.department.trim() && formData.department.trim().length > 100) {
-      newErrors.department = 'Department must be less than 100 characters';
+      newErrors.department = 'Departamento deve ter menos de 100 caracteres';
     }
 
     setErrors(newErrors);
@@ -133,11 +133,11 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       // Show success message
-      showSuccess('Teacher created successfully!', 'Success');
+      showSuccess('Professor criado com sucesso!', 'Sucesso');
       navigation.goBack();
     } catch (error: any) {
       // Error is handled by the context, but we can show additional feedback
-      showError('Failed to create teacher. Please try again.', 'Error');
+      showError('Falha ao criar professor. Tente novamente.', 'Erro');
     } finally {
       setIsSubmitting(false);
     }
@@ -148,15 +148,15 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
     
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'Are you sure you want to discard your changes?',
+        'Descartar Alterações',
+        'Tem certeza de que deseja descartar suas alterações?',
         [
           {
-            text: 'Cancel',
+            text: 'Cancelar',
             style: 'cancel',
           },
           {
-            text: 'Discard',
+            text: 'Descartar',
             style: 'destructive',
             onPress: () => navigation.goBack(),
           },
@@ -178,9 +178,9 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Add New Teacher</Text>
+          <Text style={styles.title}>Adicionar Novo Professor</Text>
           <Text style={styles.subtitle}>
-            Create a new teacher account with administrative privileges
+            Crie uma nova conta de professor com privilégios administrativos
           </Text>
         </View>
 
@@ -190,27 +190,27 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.form}>
           <FormInput
-            label="Full Name"
+            label="Nome Completo"
             value={formData.name}
             onChangeText={(value) => handleInputChange('name', value)}
             error={errors.name}
             required
-            placeholder="Enter teacher's full name..."
+            placeholder="Digite o nome completo do professor..."
             maxLength={100}
             validationRules={formValidationSchemas.createTeacher.name}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Teacher full name"
-            accessibilityHint="Enter the teacher's full name"
+            accessibilityLabel="Nome completo do professor"
+            accessibilityHint="Digite o nome completo do professor"
           />
 
           <FormInput
-            label="Email Address"
+            label="Endereço de Email"
             value={formData.email}
             onChangeText={(value) => handleInputChange('email', value)}
             error={errors.email}
             required
-            placeholder="Enter email address..."
+            placeholder="Digite o endereço de email..."
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -218,77 +218,77 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
             validationRules={formValidationSchemas.createTeacher.email}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Teacher email address"
-            accessibilityHint="Enter the teacher's email address for login"
+            accessibilityLabel="Endereço de email do professor"
+            accessibilityHint="Digite o endereço de email do professor para login"
           />
 
           <FormInput
-            label="Password"
+            label="Senha"
             value={formData.password}
             onChangeText={(value) => handleInputChange('password', value)}
             error={errors.password}
             required
-            placeholder="Enter password..."
+            placeholder="Digite a senha..."
             secureTextEntry
             showPasswordToggle
             maxLength={128}
             validationRules={formValidationSchemas.createTeacher.password}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Teacher password"
-            accessibilityHint="Enter a secure password for the teacher account"
+            accessibilityLabel="Senha do professor"
+            accessibilityHint="Digite uma senha segura para a conta do professor"
           />
 
           <FormInput
-            label="Confirm Password"
+            label="Confirmar Senha"
             value={formData.confirmPassword}
             onChangeText={(value) => handleInputChange('confirmPassword', value)}
             error={errors.confirmPassword}
             required
-            placeholder="Confirm password..."
+            placeholder="Confirme a senha..."
             secureTextEntry
             showPasswordToggle
             maxLength={128}
             validationRules={[validationRules.passwordMatch(formData.password)]}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Confirm teacher password"
-            accessibilityHint="Re-enter the password to confirm"
+            accessibilityLabel="Confirmar senha do professor"
+            accessibilityHint="Digite novamente a senha para confirmar"
           />
 
           <FormInput
-            label="Department (Optional)"
+            label="Departamento (Opcional)"
             value={formData.department}
             onChangeText={(value) => handleInputChange('department', value)}
             error={errors.department}
-            placeholder="Enter department name..."
+            placeholder="Digite o nome do departamento..."
             maxLength={100}
             validationRules={formValidationSchemas.createTeacher.department}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Teacher department"
-            accessibilityHint="Enter the teacher's department or subject area"
+            accessibilityLabel="Departamento do professor"
+            accessibilityHint="Digite o departamento ou área de assunto do professor"
           />
         </View>
 
         <View style={styles.buttonContainer}>
           <ActionButton
-            title="Cancel"
+            title="Cancelar"
             variant="outline"
             onPress={handleCancel}
             style={styles.cancelButton}
-            accessibilityLabel="Cancel teacher creation"
-            accessibilityHint="Discard changes and go back"
+            accessibilityLabel="Cancelar criação do professor"
+            accessibilityHint="Descartar alterações e voltar"
           />
           
           <ActionButton
-            title="Create Teacher"
+            title="Criar Professor"
             onPress={handleSubmit}
             loading={isSubmitting}
             disabled={isSubmitting}
             style={styles.submitButton}
-            accessibilityLabel="Create teacher account"
-            accessibilityHint="Save and create the new teacher account"
+            accessibilityLabel="Criar conta do professor"
+            accessibilityHint="Salvar e criar a nova conta do professor"
           />
         </View>
       </ScrollView>

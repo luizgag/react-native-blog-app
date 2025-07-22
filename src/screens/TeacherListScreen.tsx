@@ -34,19 +34,19 @@ const TeacherItem: React.FC<TeacherItemProps> = ({ teacher, onEdit, onDelete }) 
           <Text style={styles.teacherEmail}>{teacher.email}</Text>
           {teacher.department && (
             <Text style={styles.teacherDepartment}>
-              Department: {teacher.department}
+              Departamento: {teacher.department}
             </Text>
           )}
         </View>
         <View style={styles.teacherBadge}>
           <Icon name="school" size={16} color="#2196F3" />
-          <Text style={styles.badgeText}>Teacher</Text>
+          <Text style={styles.badgeText}>Professor</Text>
         </View>
       </View>
       
       {teacher.createdAt && (
         <Text style={styles.teacherDate}>
-          Joined: {new Date(teacher.createdAt).toLocaleDateString()}
+          Ingressou: {new Date(teacher.createdAt).toLocaleDateString('pt-BR')}
         </Text>
       )}
       
@@ -54,23 +54,23 @@ const TeacherItem: React.FC<TeacherItemProps> = ({ teacher, onEdit, onDelete }) 
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
           onPress={() => onEdit(teacher.id)}
-          accessibilityLabel={`Edit teacher: ${teacher.name}`}
-          accessibilityHint="Tap to edit this teacher's information"
+          accessibilityLabel={`Editar professor: ${teacher.name}`}
+          accessibilityHint="Toque para editar as informações deste professor"
           accessibilityRole="button"
         >
           <Icon name="edit" size={20} color="#007AFF" />
-          <Text style={styles.editButtonText}>Edit</Text>
+          <Text style={styles.editButtonText}>Editar</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => onDelete(teacher.id)}
-          accessibilityLabel={`Delete teacher: ${teacher.name}`}
-          accessibilityHint="Tap to delete this teacher"
+          accessibilityLabel={`Excluir professor: ${teacher.name}`}
+          accessibilityHint="Toque para excluir este professor"
           accessibilityRole="button"
         >
           <Icon name="delete" size={20} color="#E53E3E" />
-          <Text style={styles.deleteButtonText}>Delete</Text>
+          <Text style={styles.deleteButtonText}>Excluir</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -156,14 +156,14 @@ const TeacherListContent: React.FC = () => {
       try {
         await actions.deleteTeacher(deleteDialog.teacherId);
         Alert.alert(
-          'Success',
-          'Teacher deleted successfully',
+          'Sucesso',
+          'Professor excluído com sucesso',
           [{ text: 'OK' }]
         );
       } catch (error) {
         Alert.alert(
-          'Error',
-          'Failed to delete teacher. Please try again.',
+          'Erro',
+          'Falha ao excluir professor. Tente novamente.',
           [{ text: 'OK' }]
         );
       }
@@ -188,7 +188,7 @@ const TeacherListContent: React.FC = () => {
     return (
       <View style={styles.footerLoader}>
         <LoadingSpinner size="small" />
-        <Text style={styles.footerText}>Loading more teachers...</Text>
+        <Text style={styles.footerText}>Carregando mais professores...</Text>
       </View>
     );
   };
@@ -196,12 +196,12 @@ const TeacherListContent: React.FC = () => {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Icon name="school" size={64} color="#ccc" />
-      <Text style={styles.emptyStateTitle}>No Teachers Yet</Text>
+      <Text style={styles.emptyStateTitle}>Nenhum Professor Ainda</Text>
       <Text style={styles.emptyStateMessage}>
-        Add your first teacher to get started with user management
+        Adicione seu primeiro professor para começar o gerenciamento de usuários
       </Text>
       <ActionButton
-        title="Add First Teacher"
+        title="Adicionar Primeiro Professor"
         onPress={handleCreateTeacher}
         style={styles.emptyStateButton}
       />
@@ -212,7 +212,7 @@ const TeacherListContent: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <LoadingSpinner size="large" />
-        <Text style={styles.loadingText}>Loading teachers...</Text>
+        <Text style={styles.loadingText}>Carregando professores...</Text>
       </View>
     );
   }
@@ -220,9 +220,9 @@ const TeacherListContent: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Teacher Management</Text>
+        <Text style={styles.title}>Gerenciamento de Professores</Text>
         <Text style={styles.subtitle}>
-          Manage teacher accounts ({pagination.totalItems} total)
+          Gerencie contas de professores ({pagination.totalItems} total)
         </Text>
       </View>
 
@@ -235,7 +235,7 @@ const TeacherListContent: React.FC = () => {
 
       <View style={styles.createButtonContainer}>
         <ActionButton
-          title="Add New Teacher"
+          title="Adicionar Novo Professor"
           onPress={handleCreateTeacher}
           icon={<Icon name="add" size={20} color="#FFFFFF" />}
           fullWidth
@@ -263,24 +263,24 @@ const TeacherListContent: React.FC = () => {
         ListFooterComponent={renderFooter}
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
-        accessibilityLabel="Teachers list"
-        accessibilityHint="Swipe down to refresh teachers"
+        accessibilityLabel="Lista de professores"
+        accessibilityHint="Deslize para baixo para atualizar professores"
       />
 
       {pagination.totalPages > 1 && (
         <View style={styles.paginationInfo}>
           <Text style={styles.paginationText}>
-            Page {pagination.currentPage} of {pagination.totalPages}
+            Página {pagination.currentPage} de {pagination.totalPages}
           </Text>
         </View>
       )}
 
       <ConfirmDialog
         visible={deleteDialog.visible}
-        title="Delete Teacher"
-        message={`Are you sure you want to delete "${deleteDialog.teacherName}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title="Excluir Professor"
+        message={`Tem certeza de que deseja excluir "${deleteDialog.teacherName}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
         onConfirm={confirmDeleteTeacher}
         onCancel={cancelDeleteTeacher}
         destructive
@@ -293,7 +293,7 @@ export const TeacherListScreen: React.FC = () => {
   return (
     <ProtectedRoute 
       requiredRole="teacher"
-      fallbackMessage="Only teachers can access teacher management."
+      fallbackMessage="Apenas professores podem acessar o gerenciamento de professores."
     >
       <TeacherListContent />
     </ProtectedRoute>

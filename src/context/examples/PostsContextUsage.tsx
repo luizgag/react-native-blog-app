@@ -45,7 +45,7 @@ export const PostsListExample: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Blog Posts</Text>
+      <Text style={styles.title}>Posts do Blog</Text>
       
       {error && (
         <View style={styles.errorContainer}>

@@ -56,29 +56,29 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
 
     // Title validation
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = 'Título é obrigatório';
     } else if (formData.title.trim().length < 3) {
-      newErrors.title = 'Title must be at least 3 characters long';
+      newErrors.title = 'Título deve ter pelo menos 3 caracteres';
     } else if (formData.title.trim().length > 200) {
-      newErrors.title = 'Title must be less than 200 characters';
+      newErrors.title = 'Título deve ter menos de 200 caracteres';
     }
 
     // Content validation
     if (!formData.content.trim()) {
-      newErrors.content = 'Content is required';
+      newErrors.content = 'Conteúdo é obrigatório';
     } else if (formData.content.trim().length < 10) {
-      newErrors.content = 'Content must be at least 10 characters long';
+      newErrors.content = 'Conteúdo deve ter pelo menos 10 caracteres';
     } else if (formData.content.trim().length > 10000) {
-      newErrors.content = 'Content must be less than 10,000 characters';
+      newErrors.content = 'Conteúdo deve ter menos de 10.000 caracteres';
     }
 
     // Author validation
     if (!formData.author.trim()) {
-      newErrors.author = 'Author is required';
+      newErrors.author = 'Autor é obrigatório';
     } else if (formData.author.trim().length < 2) {
-      newErrors.author = 'Author name must be at least 2 characters long';
+      newErrors.author = 'Nome do autor deve ter pelo menos 2 caracteres';
     } else if (formData.author.trim().length > 100) {
-      newErrors.author = 'Author name must be less than 100 characters';
+      newErrors.author = 'Nome do autor deve ter menos de 100 caracteres';
     }
 
     setErrors(newErrors);
@@ -115,11 +115,11 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       // Show success message
-      showSuccess('Post created successfully!', 'Success');
+      showSuccess('Post criado com sucesso!', 'Sucesso');
       navigation.goBack();
     } catch (error: any) {
       // Error is handled by the context, but we can show additional feedback
-      showError('Failed to create post. Please try again.', 'Error');
+      showError('Falha ao criar post. Tente novamente.', 'Erro');
     } finally {
       setIsSubmitting(false);
     }
@@ -128,15 +128,15 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
   const handleCancel = () => {
     if (formData.title.trim() || formData.content.trim()) {
       Alert.alert(
-        'Discard Changes',
-        'Are you sure you want to discard your changes?',
+        'Descartar Alterações',
+        'Tem certeza de que deseja descartar suas alterações?',
         [
           {
-            text: 'Cancel',
+            text: 'Cancelar',
             style: 'cancel',
           },
           {
-            text: 'Discard',
+            text: 'Descartar',
             style: 'destructive',
             onPress: () => navigation.goBack(),
           },
@@ -150,7 +150,7 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
   if (!user) {
     return (
       <View style={styles.container}>
-        <ErrorMessage message="You must be logged in to create posts." />
+        <ErrorMessage message="Você deve estar logado para criar posts." />
       </View>
     );
   }
@@ -166,9 +166,9 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Create New Post</Text>
+          <Text style={styles.title}>Criar Novo Post</Text>
           <Text style={styles.subtitle}>
-            Share your knowledge and insights with students
+            Compartilhe seu conhecimento e insights com os alunos
           </Text>
         </View>
 
@@ -180,75 +180,75 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.form}>
           <FormInput
-            label="Title"
+            label="Título"
             value={formData.title}
             onChangeText={(value) => handleInputChange('title', value)}
             error={errors.title}
             required
-            placeholder="Enter post title..."
+            placeholder="Digite o título do post..."
             maxLength={200}
             validationRules={formValidationSchemas.createPost.title}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Post title"
-            accessibilityHint="Enter a descriptive title for your post"
+            accessibilityLabel="Título do post"
+            accessibilityHint="Digite um título descritivo para seu post"
           />
 
           <FormInput
-            label="Author"
+            label="Autor"
             value={formData.author}
             onChangeText={(value) => handleInputChange('author', value)}
             error={errors.author}
             required
-            placeholder="Enter author name..."
+            placeholder="Digite o nome do autor..."
             maxLength={100}
             validationRules={formValidationSchemas.createPost.author}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Author name"
-            accessibilityHint="Enter the name of the post author"
+            accessibilityLabel="Nome do autor"
+            accessibilityHint="Digite o nome do autor do post"
           />
 
           <FormInput
-            label="Content"
+            label="Conteúdo"
             value={formData.content}
             onChangeText={(value) => handleInputChange('content', value)}
             error={errors.content}
             required
             multiline
-            placeholder="Write your post content here..."
+            placeholder="Escreva o conteúdo do seu post aqui..."
             maxLength={10000}
             validationRules={formValidationSchemas.createPost.content}
             realTimeValidation={true}
             showValidationIcon={false}
-            accessibilityLabel="Post content"
-            accessibilityHint="Enter the main content of your post"
+            accessibilityLabel="Conteúdo do post"
+            accessibilityHint="Digite o conteúdo principal do seu post"
             style={styles.contentInput}
           />
 
           <Text style={styles.characterCount}>
-            {formData.content.length}/10,000 characters
+            {formData.content.length}/10.000 caracteres
           </Text>
         </View>
 
         <View style={styles.buttonContainer}>
           <ActionButton
-            title="Cancel"
+            title="Cancelar"
             variant="outline"
             onPress={handleCancel}
             style={styles.cancelButton}
-            accessibilityLabel="Cancel post creation"
-            accessibilityHint="Discard changes and go back"
+            accessibilityLabel="Cancelar criação do post"
+            accessibilityHint="Descartar alterações e voltar"
           />
           
           <ActionButton
-            title="Create Post"
+            title="Criar Post"
             onPress={handleSubmit}
             loading={isSubmitting}
             disabled={isSubmitting}
             style={styles.submitButton}
-            accessibilityLabel="Create post"
-            accessibilityHint="Save and publish the new post"
+            accessibilityLabel="Criar post"
+            accessibilityHint="Salvar e publicar o novo post"
           />
         </View>
       </ScrollView>

@@ -32,7 +32,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
         <Text style={styles.postTitle} numberOfLines={2}>
           {post.title}
         </Text>
-        <Text style={styles.postAuthor}>by {post.author}</Text>
+        <Text style={styles.postAuthor}>por {post.author}</Text>
       </View>
       
       <Text style={styles.postContent} numberOfLines={3}>
@@ -41,7 +41,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
       
       {post.createdAt && (
         <Text style={styles.postDate}>
-          Created: {new Date(post.createdAt).toLocaleDateString()}
+          Criado: {new Date(post.createdAt).toLocaleDateString('pt-BR')}
         </Text>
       )}
       
@@ -49,23 +49,23 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
           onPress={() => onEdit(post.id)}
-          accessibilityLabel={`Edit post: ${post.title}`}
-          accessibilityHint="Tap to edit this post"
+          accessibilityLabel={`Editar post: ${post.title}`}
+          accessibilityHint="Toque para editar este post"
           accessibilityRole="button"
         >
           <Icon name="edit" size={20} color="#007AFF" />
-          <Text style={styles.editButtonText}>Edit</Text>
+          <Text style={styles.editButtonText}>Editar</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => onDelete(post.id)}
-          accessibilityLabel={`Delete post: ${post.title}`}
-          accessibilityHint="Tap to delete this post"
+          accessibilityLabel={`Excluir post: ${post.title}`}
+          accessibilityHint="Toque para excluir este post"
           accessibilityRole="button"
         >
           <Icon name="delete" size={20} color="#E53E3E" />
-          <Text style={styles.deleteButtonText}>Delete</Text>
+          <Text style={styles.deleteButtonText}>Excluir</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -136,14 +136,14 @@ const AdminContent: React.FC = () => {
       try {
         await actions.deletePost(deleteDialog.postId);
         Alert.alert(
-          'Success',
-          'Post deleted successfully',
+          'Sucesso',
+          'Post excluído com sucesso',
           [{ text: 'OK' }]
         );
       } catch (error) {
         Alert.alert(
-          'Error',
-          'Failed to delete post. Please try again.',
+          'Erro',
+          'Falha ao excluir post. Tente novamente.',
           [{ text: 'OK' }]
         );
       }
@@ -166,12 +166,12 @@ const AdminContent: React.FC = () => {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Icon name="article" size={64} color="#ccc" />
-      <Text style={styles.emptyStateTitle}>No Posts Yet</Text>
+      <Text style={styles.emptyStateTitle}>Nenhum Post Ainda</Text>
       <Text style={styles.emptyStateMessage}>
-        Create your first blog post to get started
+        Crie seu primeiro post do blog para começar
       </Text>
       <ActionButton
-        title="Create First Post"
+        title="Criar Primeiro Post"
         onPress={handleCreatePost}
         style={styles.emptyStateButton}
       />
@@ -182,7 +182,7 @@ const AdminContent: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <LoadingSpinner size="large" />
-        <Text style={styles.loadingText}>Loading posts...</Text>
+        <Text style={styles.loadingText}>Carregando posts...</Text>
       </View>
     );
   }
@@ -190,9 +190,9 @@ const AdminContent: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Admin Dashboard</Text>
+        <Text style={styles.title}>Painel Administrativo</Text>
         <Text style={styles.subtitle}>
-          Manage all blog posts ({posts.length} total)
+          Gerencie todos os posts do blog ({posts.length} total)
         </Text>
       </View>
 
@@ -207,7 +207,7 @@ const AdminContent: React.FC = () => {
 
       <View style={styles.createButtonContainer}>
         <ActionButton
-          title="Create New Post"
+          title="Criar Novo Post"
           onPress={handleCreatePost}
           icon={<Icon name="add" size={20} color="#FFFFFF" />}
           fullWidth
@@ -232,16 +232,16 @@ const AdminContent: React.FC = () => {
         }
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
-        accessibilityLabel="Posts list"
-        accessibilityHint="Swipe down to refresh posts"
+        accessibilityLabel="Lista de posts"
+        accessibilityHint="Deslize para baixo para atualizar os posts"
       />
 
       <ConfirmDialog
         visible={deleteDialog.visible}
-        title="Delete Post"
-        message={`Are you sure you want to delete "${deleteDialog.postTitle}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title="Excluir Post"
+        message={`Tem certeza de que deseja excluir "${deleteDialog.postTitle}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
         onConfirm={confirmDeletePost}
         onCancel={cancelDeletePost}
         destructive
@@ -254,7 +254,7 @@ export const AdminScreen: React.FC = () => {
   return (
     <ProtectedRoute 
       requiredRole="teacher"
-      fallbackMessage="Only teachers can access the admin dashboard."
+      fallbackMessage="Apenas professores podem acessar o painel administrativo."
     >
       <AdminContent />
     </ProtectedRoute>

@@ -15,7 +15,7 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
-  placeholder = 'Search posts...',
+  placeholder = 'Buscar posts...',
   onSearch,
   debounceMs = 300,
   initialValue = '',
@@ -48,8 +48,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         value={searchTerm}
         onChangeText={setSearchTerm}
-        accessibilityLabel="Search posts"
-        accessibilityHint="Enter keywords to search for posts"
+        accessibilityLabel="Buscar posts"
+        accessibilityHint="Digite palavras-chave para buscar posts"
         accessibilityRole="search"
         returnKeyType="search"
         clearButtonMode="while-editing"
@@ -58,8 +58,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         <TouchableOpacity
           style={styles.clearButton}
           onPress={handleClear}
-          accessibilityLabel="Clear search"
-          accessibilityHint="Tap to clear search text"
+          accessibilityLabel="Limpar busca"
+          accessibilityHint="Toque para limpar o texto da busca"
           accessibilityRole="button"
         >
           <Text style={styles.clearText}>✕</Text>

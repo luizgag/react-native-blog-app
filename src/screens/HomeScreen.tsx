@@ -116,9 +116,9 @@ export const HomeScreen: React.FC = () => {
     if (searchQuery.trim() && searchResults.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No posts found</Text>
+          <Text style={styles.emptyTitle}>Nenhum post encontrado</Text>
           <Text style={styles.emptySubtitle}>
-            Try searching with different keywords
+            Tente buscar com palavras-chave diferentes
           </Text>
         </View>
       );
@@ -127,9 +127,9 @@ export const HomeScreen: React.FC = () => {
     if (posts.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No posts available</Text>
+          <Text style={styles.emptyTitle}>Nenhum post disponível</Text>
           <Text style={styles.emptySubtitle}>
-            Check back later for new content
+            Volte mais tarde para ver novo conteúdo
           </Text>
         </View>
       );
@@ -141,7 +141,7 @@ export const HomeScreen: React.FC = () => {
   // Show error state
   if (error && !refreshing) {
     const errorMessage = !isOnline
-      ? 'You appear to be offline. Please check your internet connection and try again.'
+      ? 'Você parece estar offline. Verifique sua conexão com a internet e tente novamente.'
       : error;
 
     return (
@@ -152,13 +152,13 @@ export const HomeScreen: React.FC = () => {
         />
         {!isOnline && (
           <View style={styles.offlineIndicator}>
-            <Text style={styles.offlineText}>You are currently offline</Text>
+            <Text style={styles.offlineText}>Você está atualmente offline</Text>
           </View>
         )}
         <ErrorMessage
           message={errorMessage}
           onRetry={isOnline ? handleRetry : undefined}
-          retryText={isOnline ? "Try Again" : "Retry when online"}
+          retryText={isOnline ? "Tentar Novamente" : "Tentar quando online"}
         />
       </View>
     );
@@ -172,12 +172,12 @@ export const HomeScreen: React.FC = () => {
       />
 
       {showLoading && (
-        <LoadingSpinner message="Loading posts..." />
+        <LoadingSpinner message="Carregando posts..." />
       )}
 
       {showSearching && (
         <View style={styles.searchingContainer}>
-          <LoadingSpinner size="small" message="Searching..." />
+          <LoadingSpinner size="small" message="Buscando..." />
         </View>
       )}
 
@@ -196,8 +196,8 @@ export const HomeScreen: React.FC = () => {
         }
         ListEmptyComponent={renderEmptyComponent}
         showsVerticalScrollIndicator={false}
-        accessibilityLabel="Posts list"
-        accessibilityHint="Swipe down to refresh posts"
+        accessibilityLabel="Lista de posts"
+        accessibilityHint="Deslize para baixo para atualizar os posts"
       />
     </View>
   );

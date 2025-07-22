@@ -16,7 +16,7 @@ interface ErrorMessageProps {
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   message,
   onRetry,
-  retryText = 'Try Again',
+  retryText = 'Tentar Novamente',
   type = 'error',
 }) => {
   const getContainerStyle = () => {

@@ -13,9 +13,9 @@ import { Post } from '../types';
 
 const samplePost: Post = {
   id: 1,
-  title: 'Sample Blog Post',
-  content: 'This is a sample blog post content to demonstrate the PostCard component.',
-  author: 'John Doe',
+  title: 'Post de Blog de Exemplo',
+  content: 'Este é um conteúdo de post de blog de exemplo para demonstrar o componente PostCard.',
+  author: 'João Silva',
   createdAt: '2023-01-01T00:00:00Z',
 };
 
@@ -63,12 +63,12 @@ export const ComponentDemo: React.FC = () => {
       </View>
 
       <View style={styles.section}>
-        <LoadingSpinner message="Loading posts..." />
+        <LoadingSpinner message="Carregando posts..." />
       </View>
 
       <View style={styles.section}>
         <ErrorMessage
-          message="Failed to load posts"
+          message="Falha ao carregar posts"
           onRetry={handleRetry}
           type="error"
         />
@@ -79,25 +79,25 @@ export const ComponentDemo: React.FC = () => {
           label="Email"
           value={inputValue}
           onChangeText={setInputValue}
-          placeholder="Enter your email"
+          placeholder="Digite seu email"
           required
         />
       </View>
 
       <View style={styles.section}>
         <ActionButton
-          title="Primary Button"
+          title="Botão Primário"
           onPress={handleButtonPress}
           loading={loading}
         />
         <ActionButton
-          title="Secondary Button"
+          title="Botão Secundário"
           variant="secondary"
           onPress={() => console.log('Secondary pressed')}
           style={styles.buttonSpacing}
         />
         <ActionButton
-          title="Show Dialog"
+          title="Mostrar Diálogo"
           variant="destructive"
           onPress={() => setShowDialog(true)}
           style={styles.buttonSpacing}
@@ -106,10 +106,10 @@ export const ComponentDemo: React.FC = () => {
 
       <ConfirmDialog
         visible={showDialog}
-        title="Delete Post"
-        message="Are you sure you want to delete this post? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title="Excluir Post"
+        message="Tem certeza de que deseja excluir este post? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         destructive

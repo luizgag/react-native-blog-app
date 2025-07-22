@@ -19,15 +19,15 @@ export const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props
 
   const handleLogout = () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      'Sair',
+      'Tem certeza de que deseja sair?',
       [
         {
-          text: 'Cancel',
+          text: 'Cancelar',
           style: 'cancel',
         },
         {
-          text: 'Logout',
+          text: 'Sair',
           style: 'destructive',
           onPress: () => {
             actions.logout();
@@ -49,7 +49,7 @@ export const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
             <Text style={styles.roleText}>
-              {user?.role === 'teacher' ? 'Teacher' : 'Student'}
+              {user?.role === 'teacher' ? 'Professor' : 'Aluno'}
             </Text>
           </View>
         </View>
@@ -64,7 +64,7 @@ export const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props
       <View style={styles.bottomDrawerSection}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Icon name="logout" size={24} color="#ff4444" />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
       </View>
     </View>

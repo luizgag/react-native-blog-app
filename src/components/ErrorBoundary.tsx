@@ -74,24 +74,24 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContent}>
             <View style={styles.errorContainer}>
-              <Text style={styles.title}>Oops! Something went wrong</Text>
+              <Text style={styles.title}>Ops! Algo deu errado</Text>
               <Text style={styles.message}>
-                We encountered an unexpected error. Please try again or restart the app.
+                Encontramos um erro inesperado. Tente novamente ou reinicie o aplicativo.
               </Text>
               
               <TouchableOpacity
                 style={styles.retryButton}
                 onPress={this.handleRetry}
-                accessibilityLabel="Try again"
-                accessibilityHint="Tap to retry and reload the app"
+                accessibilityLabel="Tentar novamente"
+                accessibilityHint="Toque para tentar novamente e recarregar o app"
                 accessibilityRole="button"
               >
-                <Text style={styles.retryButtonText}>Try Again</Text>
+                <Text style={styles.retryButtonText}>Tentar Novamente</Text>
               </TouchableOpacity>
 
               {__DEV__ && (
                 <View style={styles.debugContainer}>
-                  <Text style={styles.debugTitle}>Debug Information:</Text>
+                  <Text style={styles.debugTitle}>Informações de Debug:</Text>
                   <Text style={styles.debugText}>
                     {this.state.error.name}: {this.state.error.message}
                   </Text>

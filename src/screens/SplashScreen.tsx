@@ -43,7 +43,7 @@ export const SplashScreen: React.FC = () => {
             <Text style={styles.logoText}>📝</Text>
           </View>
           <Text style={styles.appName}>Blog App</Text>
-          <Text style={styles.tagline}>Educational Blogging Platform</Text>
+          <Text style={styles.tagline}>Plataforma Educacional de Blog</Text>
         </View>
 
         {/* Loading State */}
@@ -51,7 +51,7 @@ export const SplashScreen: React.FC = () => {
           <View style={styles.loadingContainer}>
             <LoadingSpinner
               size="large"
-              message="Checking authentication..."
+              message="Verificando autenticação..."
             />
           </View>
         )}
@@ -60,9 +60,9 @@ export const SplashScreen: React.FC = () => {
         {error && !isLoading && (
           <View style={styles.errorContainer}>
             <ErrorMessage
-              message="Failed to check authentication status. Please try again."
+              message="Falha ao verificar status de autenticação. Tente novamente."
               onRetry={handleRetry}
-              retryText="Retry"
+              retryText="Tentar Novamente"
               type="error"
             />
           </View>
@@ -72,13 +72,13 @@ export const SplashScreen: React.FC = () => {
         {!error && (
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
-              Welcome to the educational blog platform
+              Bem-vindo à plataforma educacional de blog
             </Text>
             <Text style={styles.infoSubtext}>
-              Teachers can create and manage content
+              Professores podem criar e gerenciar conteúdo
             </Text>
             <Text style={styles.infoSubtext}>
-              Students can read and explore posts
+              Alunos podem ler e explorar posts
             </Text>
           </View>
         )}
@@ -86,7 +86,7 @@ export const SplashScreen: React.FC = () => {
 
       {/* Version Info */}
       <View style={styles.footer}>
-        <Text style={styles.versionText}>Version 1.0.0</Text>
+        <Text style={styles.versionText}>Versão 1.0.0</Text>
       </View>
     </View>
   );

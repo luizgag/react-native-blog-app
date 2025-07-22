@@ -59,42 +59,42 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
 
     // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Nome é obrigatório';
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters long';
+      newErrors.name = 'Nome deve ter pelo menos 2 caracteres';
     } else if (formData.name.trim().length > 100) {
-      newErrors.name = 'Name must be less than 100 characters';
+      newErrors.name = 'Nome deve ter menos de 100 caracteres';
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email é obrigatório';
     } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Por favor, insira um endereço de email válido';
     } else if (formData.email.trim().length > 255) {
-      newErrors.email = 'Email must be less than 255 characters';
+      newErrors.email = 'Email deve ter menos de 255 caracteres';
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Senha é obrigatória';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
+      newErrors.password = 'A senha deve ter pelo menos 6 caracteres';
     } else if (formData.password.length > 128) {
-      newErrors.password = 'Password must be less than 128 characters';
+      newErrors.password = 'A senha deve ter menos de 128 caracteres';
     }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = 'Por favor, confirme sua senha';
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'As senhas não coincidem';
     }
 
     // Student ID validation (optional)
     if (formData.studentId.trim() && formData.studentId.trim().length > 50) {
-      newErrors.studentId = 'Student ID must be less than 50 characters';
+      newErrors.studentId = 'ID do aluno deve ter menos de 50 caracteres';
     }
 
     setErrors(newErrors);
@@ -132,11 +132,11 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       // Show success message
-      showSuccess('Student created successfully!', 'Success');
+      showSuccess('Aluno criado com sucesso!', 'Sucesso');
       navigation.goBack();
     } catch (error: any) {
       // Error is handled by the context, but we can show additional feedback
-      showError('Failed to create student. Please try again.', 'Error');
+      showError('Falha ao criar aluno. Tente novamente.', 'Erro');
     } finally {
       setIsSubmitting(false);
     }
@@ -147,15 +147,15 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
     
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'Are you sure you want to discard your changes?',
+        'Descartar Alterações',
+        'Tem certeza de que deseja descartar suas alterações?',
         [
           {
-            text: 'Cancel',
+            text: 'Cancelar',
             style: 'cancel',
           },
           {
-            text: 'Discard',
+            text: 'Descartar',
             style: 'destructive',
             onPress: () => navigation.goBack(),
           },
@@ -177,9 +177,9 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Add New Student</Text>
+          <Text style={styles.title}>Adicionar Novo Aluno</Text>
           <Text style={styles.subtitle}>
-            Create a new student account with read-only access
+            Crie uma nova conta de aluno com acesso somente leitura
           </Text>
         </View>
 
@@ -189,27 +189,27 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.form}>
           <FormInput
-            label="Full Name"
+            label="Nome Completo"
             value={formData.name}
             onChangeText={(value) => handleInputChange('name', value)}
             error={errors.name}
             required
-            placeholder="Enter student's full name..."
+            placeholder="Digite o nome completo do aluno..."
             maxLength={100}
             validationRules={formValidationSchemas.createStudent.name}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Student full name"
-            accessibilityHint="Enter the student's full name"
+            accessibilityLabel="Nome completo do aluno"
+            accessibilityHint="Digite o nome completo do aluno"
           />
 
           <FormInput
-            label="Email Address"
+            label="Endereço de Email"
             value={formData.email}
             onChangeText={(value) => handleInputChange('email', value)}
             error={errors.email}
             required
-            placeholder="Enter email address..."
+            placeholder="Digite o endereço de email..."
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -217,77 +217,77 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             validationRules={formValidationSchemas.createStudent.email}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Student email address"
-            accessibilityHint="Enter the student's email address for login"
+            accessibilityLabel="Endereço de email do aluno"
+            accessibilityHint="Digite o endereço de email do aluno para login"
           />
 
           <FormInput
-            label="Password"
+            label="Senha"
             value={formData.password}
             onChangeText={(value) => handleInputChange('password', value)}
             error={errors.password}
             required
-            placeholder="Enter password..."
+            placeholder="Digite a senha..."
             secureTextEntry
             showPasswordToggle
             maxLength={128}
             validationRules={formValidationSchemas.createStudent.password}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Student password"
-            accessibilityHint="Enter a secure password for the student account"
+            accessibilityLabel="Senha do aluno"
+            accessibilityHint="Digite uma senha segura para a conta do aluno"
           />
 
           <FormInput
-            label="Confirm Password"
+            label="Confirmar Senha"
             value={formData.confirmPassword}
             onChangeText={(value) => handleInputChange('confirmPassword', value)}
             error={errors.confirmPassword}
             required
-            placeholder="Confirm password..."
+            placeholder="Confirme a senha..."
             secureTextEntry
             showPasswordToggle
             maxLength={128}
             validationRules={[validationRules.passwordMatch(formData.password)]}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Confirm student password"
-            accessibilityHint="Re-enter the password to confirm"
+            accessibilityLabel="Confirmar senha do aluno"
+            accessibilityHint="Digite novamente a senha para confirmar"
           />
 
           <FormInput
-            label="Student ID (Optional)"
+            label="ID do Aluno (Opcional)"
             value={formData.studentId}
             onChangeText={(value) => handleInputChange('studentId', value)}
             error={errors.studentId}
-            placeholder="Enter student ID..."
+            placeholder="Digite o ID do aluno..."
             maxLength={50}
             validationRules={formValidationSchemas.createStudent.studentId}
             realTimeValidation={true}
             showValidationIcon={true}
-            accessibilityLabel="Student ID"
-            accessibilityHint="Enter the student's unique identifier"
+            accessibilityLabel="ID do aluno"
+            accessibilityHint="Digite o identificador único do aluno"
           />
         </View>
 
         <View style={styles.buttonContainer}>
           <ActionButton
-            title="Cancel"
+            title="Cancelar"
             variant="outline"
             onPress={handleCancel}
             style={styles.cancelButton}
-            accessibilityLabel="Cancel student creation"
-            accessibilityHint="Discard changes and go back"
+            accessibilityLabel="Cancelar criação do aluno"
+            accessibilityHint="Descartar alterações e voltar"
           />
           
           <ActionButton
-            title="Create Student"
+            title="Criar Aluno"
             onPress={handleSubmit}
             loading={isSubmitting}
             disabled={isSubmitting}
             style={styles.submitButton}
-            accessibilityLabel="Create student account"
-            accessibilityHint="Save and create the new student account"
+            accessibilityLabel="Criar conta do aluno"
+            accessibilityHint="Salvar e criar a nova conta do aluno"
           />
         </View>
       </ScrollView>

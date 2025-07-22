@@ -50,25 +50,25 @@ const Drawer = createDrawerNavigator<MainDrawerParamList>();
 const HomeStackNavigator: React.FC = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="Home" 
+      <Stack.Screen
+        name="Home"
         component={HomeScreen}
-        options={{ title: 'Blog Posts' }}
+        options={{ title: 'Posts do Blog' }}
       />
-      <Stack.Screen 
-        name="PostDetail" 
+      <Stack.Screen
+        name="PostDetail"
         component={PostDetailScreen}
-        options={{ title: 'Post Details' }}
+        options={{ title: 'Detalhes do Post' }}
       />
-      <Stack.Screen 
-        name="CreatePost" 
+      <Stack.Screen
+        name="CreatePost"
         component={CreatePostScreen}
-        options={{ title: 'Create Post' }}
+        options={{ title: 'Criar Post' }}
       />
-      <Stack.Screen 
-        name="EditPost" 
+      <Stack.Screen
+        name="EditPost"
         component={EditPostScreen}
-        options={{ title: 'Edit Post' }}
+        options={{ title: 'Editar Post' }}
       />
     </Stack.Navigator>
   );
@@ -78,10 +78,10 @@ const HomeStackNavigator: React.FC = () => {
 const AdminStackNavigator: React.FC = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="Admin" 
+      <Stack.Screen
+        name="Admin"
         component={AdminScreen}
-        options={{ title: 'Admin Dashboard' }}
+        options={{ title: 'Painel Administrativo' }}
       />
     </Stack.Navigator>
   );
@@ -91,20 +91,20 @@ const AdminStackNavigator: React.FC = () => {
 const TeacherStackNavigator: React.FC = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="TeacherList" 
+      <Stack.Screen
+        name="TeacherList"
         component={TeacherListScreen}
-        options={{ title: 'Teachers' }}
+        options={{ title: 'Professores' }}
       />
-      <Stack.Screen 
-        name="CreateTeacher" 
+      <Stack.Screen
+        name="CreateTeacher"
         component={CreateTeacherScreen}
-        options={{ title: 'Add Teacher' }}
+        options={{ title: 'Adicionar Professor' }}
       />
-      <Stack.Screen 
-        name="EditTeacher" 
+      <Stack.Screen
+        name="EditTeacher"
         component={EditTeacherScreen}
-        options={{ title: 'Edit Teacher' }}
+        options={{ title: 'Editar Professor' }}
       />
     </Stack.Navigator>
   );
@@ -114,20 +114,20 @@ const TeacherStackNavigator: React.FC = () => {
 const StudentStackNavigator: React.FC = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="StudentList" 
+      <Stack.Screen
+        name="StudentList"
         component={StudentListScreen}
-        options={{ title: 'Students' }}
+        options={{ title: 'Alunos' }}
       />
-      <Stack.Screen 
-        name="CreateStudent" 
+      <Stack.Screen
+        name="CreateStudent"
         component={CreateStudentScreen}
-        options={{ title: 'Add Student' }}
+        options={{ title: 'Adicionar Aluno' }}
       />
-      <Stack.Screen 
-        name="EditStudent" 
+      <Stack.Screen
+        name="EditStudent"
         component={EditStudentScreen}
-        options={{ title: 'Edit Student' }}
+        options={{ title: 'Editar Aluno' }}
       />
     </Stack.Navigator>
   );
@@ -159,14 +159,14 @@ const MainTabNavigator: React.FC = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen 
-        name="HomeTab" 
+      <Tab.Screen
+        name="HomeTab"
         component={HomeStackNavigator}
-        options={{ tabBarLabel: 'Home' }}
+        options={{ tabBarLabel: 'Início' }}
       />
       {isTeacher && (
-        <Tab.Screen 
-          name="AdminTab" 
+        <Tab.Screen
+          name="AdminTab"
           component={AdminStackNavigator}
           options={{ tabBarLabel: 'Admin' }}
         />
@@ -198,31 +198,31 @@ export const MainNavigator: React.FC = () => {
         drawerInactiveTintColor: '#666',
       }}
     >
-      <Drawer.Screen 
-        name="MainTabs" 
+      <Drawer.Screen
+        name="MainTabs"
         component={MainTabNavigator}
         options={{
-          drawerLabel: 'Home',
+          drawerLabel: 'Início',
           drawerIcon: ({ color, size }) => (
             <Icon name="home" size={size} color={color} />
           ),
         }}
       />
-      <Drawer.Screen 
-        name="TeacherManagement" 
+      <Drawer.Screen
+        name="TeacherManagement"
         component={TeacherStackNavigator}
         options={{
-          drawerLabel: 'Manage Teachers',
+          drawerLabel: 'Gerenciar Professores',
           drawerIcon: ({ color, size }) => (
             <Icon name="school" size={size} color={color} />
           ),
         }}
       />
-      <Drawer.Screen 
-        name="StudentManagement" 
+      <Drawer.Screen
+        name="StudentManagement"
         component={StudentStackNavigator}
         options={{
-          drawerLabel: 'Manage Students',
+          drawerLabel: 'Gerenciar Alunos',
           drawerIcon: ({ color, size }) => (
             <Icon name="people" size={size} color={color} />
           ),

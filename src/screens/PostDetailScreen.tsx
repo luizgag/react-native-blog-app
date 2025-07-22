@@ -77,7 +77,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
   if (isLoading && !currentPost) {
     return (
       <View style={styles.centerContainer}>
-        <LoadingSpinner message="Loading post..." />
+        <LoadingSpinner message="Carregando post..." />
       </View>
     );
   }
@@ -99,9 +99,9 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
     return (
       <View style={styles.centerContainer}>
         <ErrorMessage
-          message="Post not found"
+          message="Post não encontrado"
           onRetry={handleRetry}
-          retryText="Try Again"
+          retryText="Tentar Novamente"
         />
       </View>
     );
@@ -120,15 +120,15 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
         />
       }
       showsVerticalScrollIndicator={false}
-      accessibilityLabel="Post content"
-      accessibilityHint="Swipe down to refresh post content"
+      accessibilityLabel="Conteúdo do post"
+      accessibilityHint="Deslize para baixo para atualizar o conteúdo do post"
     >
       {currentPost && (
         <View style={styles.postContainer}>
           <Text
             style={styles.title}
             accessibilityRole="header"
-            accessibilityLabel={`Post title: ${currentPost.title}`}
+            accessibilityLabel={`Título do post: ${currentPost.title}`}
           >
             {currentPost.title}
           </Text>
@@ -136,16 +136,16 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
           <View style={styles.metaContainer}>
             <Text
               style={styles.author}
-              accessibilityLabel={`Author: ${currentPost.author}`}
+              accessibilityLabel={`Autor: ${currentPost.author}`}
             >
-              By {currentPost.author}
+              Por {currentPost.author}
             </Text>
             {currentPost.createdAt && (
               <Text
                 style={styles.date}
-                accessibilityLabel={`Published on ${new Date(currentPost.createdAt).toLocaleDateString()}`}
+                accessibilityLabel={`Publicado em ${new Date(currentPost.createdAt).toLocaleDateString()}`}
               >
-                {new Date(currentPost.createdAt).toLocaleDateString('en-US', {
+                {new Date(currentPost.createdAt).toLocaleDateString('pt-BR', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
@@ -158,7 +158,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
           
           <Text
             style={styles.content}
-            accessibilityLabel="Post content"
+            accessibilityLabel="Conteúdo do post"
             accessibilityRole="text"
           >
             {currentPost.content}
@@ -167,9 +167,9 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
           {currentPost.updatedAt && currentPost.updatedAt !== currentPost.createdAt && (
             <Text
               style={styles.updatedDate}
-              accessibilityLabel={`Last updated on ${new Date(currentPost.updatedAt).toLocaleDateString()}`}
+              accessibilityLabel={`Última atualização em ${new Date(currentPost.updatedAt).toLocaleDateString()}`}
             >
-              Last updated: {new Date(currentPost.updatedAt).toLocaleDateString('en-US', {
+              Última atualização: {new Date(currentPost.updatedAt).toLocaleDateString('pt-BR', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

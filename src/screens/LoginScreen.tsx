@@ -62,16 +62,16 @@ export const LoginScreen: React.FC = () => {
 
     // Email validation
     if (!loginData.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'Email é obrigatório';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = 'Por favor, insira um endereço de email válido';
     }
 
     // Password validation
     if (!loginData.password) {
-      errors.password = 'Password is required';
+      errors.password = 'Senha é obrigatória';
     } else if (loginData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+      errors.password = 'A senha deve ter pelo menos 6 caracteres';
     }
 
     setLoginErrors(errors);
@@ -83,30 +83,30 @@ export const LoginScreen: React.FC = () => {
 
     // Name validation
     if (!signupData.name.trim()) {
-      errors.name = 'Name is required';
+      errors.name = 'Nome é obrigatório';
     } else if (signupData.name.trim().length < 2) {
-      errors.name = 'Name must be at least 2 characters';
+      errors.name = 'Nome deve ter pelo menos 2 caracteres';
     }
 
     // Email validation
     if (!signupData.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'Email é obrigatório';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupData.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = 'Por favor, insira um endereço de email válido';
     }
 
     // Password validation
     if (!signupData.password) {
-      errors.password = 'Password is required';
+      errors.password = 'Senha é obrigatória';
     } else if (signupData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+      errors.password = 'A senha deve ter pelo menos 6 caracteres';
     }
 
     // Confirm password validation
     if (!signupData.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your password';
+      errors.confirmPassword = 'Por favor, confirme sua senha';
     } else if (signupData.password !== signupData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
+      errors.confirmPassword = 'As senhas não coincidem';
     }
 
 
@@ -188,7 +188,7 @@ export const LoginScreen: React.FC = () => {
         await enhancedApiService.createStudent(registerData);
       }
 
-      showSuccess('Account created successfully! You can now sign in.');
+      showSuccess('Conta criada com sucesso! Agora você pode fazer login.');
       setIsSignupMode(false);
 
       // Clear signup form
@@ -204,7 +204,7 @@ export const LoginScreen: React.FC = () => {
       setSignupErrors({});
 
     } catch (signupError: any) {
-      showError(signupError.message || 'Failed to create account. Please try again.');
+      showError(signupError.message || 'Falha ao criar conta. Tente novamente.');
     } finally {
       setSignupLoading(false);
     }
@@ -236,12 +236,12 @@ export const LoginScreen: React.FC = () => {
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>
-              {isSignupMode ? 'Create Account' : 'Welcome Back'}
+              {isSignupMode ? 'Criar Conta' : 'Bem-vindo de Volta'}
             </Text>
             <Text style={styles.subtitle}>
               {isSignupMode
-                ? 'Sign up to join the blog platform'
-                : 'Sign in to access your blog dashboard'
+                ? 'Cadastre-se para participar da plataforma de blog'
+                : 'Entre para acessar seu painel do blog'
               }
             </Text>
           </View>
@@ -251,15 +251,15 @@ export const LoginScreen: React.FC = () => {
               // Signup Form
               <>
                 <FormInput
-                  label="Full Name"
+                  label="Nome Completo"
                   value={signupData.name}
                   onChangeText={(value) => handleSignupInputChange('name', value)}
                   error={signupErrors.name}
                   required
-                  placeholder="Enter your full name"
+                  placeholder="Digite seu nome completo"
                   autoCapitalize="words"
-                  accessibilityLabel="Name input"
-                  accessibilityHint="Enter your full name for account creation"
+                  accessibilityLabel="Campo de nome"
+                  accessibilityHint="Digite seu nome completo para criar a conta"
                 />
 
                 <FormInput
@@ -271,40 +271,40 @@ export const LoginScreen: React.FC = () => {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  placeholder="Enter your email"
-                  accessibilityLabel="Email input"
-                  accessibilityHint="Enter your email address for account creation"
+                  placeholder="Digite seu email"
+                  accessibilityLabel="Campo de email"
+                  accessibilityHint="Digite seu endereço de email para criar a conta"
                 />
 
                 <FormInput
-                  label="Password"
+                  label="Senha"
                   value={signupData.password}
                   onChangeText={(value) => handleSignupInputChange('password', value)}
                   error={signupErrors.password}
                   required
                   secureTextEntry
                   showPasswordToggle
-                  placeholder="Create a password"
-                  accessibilityLabel="Password input"
-                  accessibilityHint="Create a password for your account"
+                  placeholder="Crie uma senha"
+                  accessibilityLabel="Campo de senha"
+                  accessibilityHint="Crie uma senha para sua conta"
                 />
 
                 <FormInput
-                  label="Confirm Password"
+                  label="Confirmar Senha"
                   value={signupData.confirmPassword}
                   onChangeText={(value) => handleSignupInputChange('confirmPassword', value)}
                   error={signupErrors.confirmPassword}
                   required
                   secureTextEntry
                   showPasswordToggle
-                  placeholder="Confirm your password"
-                  accessibilityLabel="Confirm password input"
-                  accessibilityHint="Re-enter your password to confirm"
+                  placeholder="Confirme sua senha"
+                  accessibilityLabel="Campo de confirmação de senha"
+                  accessibilityHint="Digite novamente sua senha para confirmar"
                 />
 
                 {/* Role Selection */}
                 <View style={styles.roleContainer}>
-                  <Text style={styles.roleLabel}>Account Type</Text>
+                  <Text style={styles.roleLabel}>Tipo de Conta</Text>
                   <View style={styles.roleButtons}>
                     <TouchableOpacity
                       style={[
@@ -312,14 +312,14 @@ export const LoginScreen: React.FC = () => {
                         signupData.role === 'student' && styles.roleButtonActive
                       ]}
                       onPress={() => handleSignupInputChange('role', 'student')}
-                      accessibilityLabel="Select student account"
+                      accessibilityLabel="Selecionar conta de aluno"
                       accessibilityRole="button"
                     >
                       <Text style={[
                         styles.roleButtonText,
                         signupData.role === 'student' && styles.roleButtonTextActive
                       ]}>
-                        Student
+                        Aluno
                       </Text>
                     </TouchableOpacity>
 
@@ -329,14 +329,14 @@ export const LoginScreen: React.FC = () => {
                         signupData.role === 'teacher' && styles.roleButtonActive
                       ]}
                       onPress={() => handleSignupInputChange('role', 'teacher')}
-                      accessibilityLabel="Select teacher account"
+                      accessibilityLabel="Selecionar conta de professor"
                       accessibilityRole="button"
                     >
                       <Text style={[
                         styles.roleButtonText,
                         signupData.role === 'teacher' && styles.roleButtonTextActive
                       ]}>
-                        Teacher
+                        Professor
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -345,7 +345,7 @@ export const LoginScreen: React.FC = () => {
 
 
                 <ActionButton
-                  title="Create Account"
+                  title="Criar Conta"
                   onPress={handleSignup}
                   loading={signupLoading}
                   disabled={signupLoading}
@@ -367,34 +367,34 @@ export const LoginScreen: React.FC = () => {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  placeholder="Enter your email"
-                  accessibilityLabel="Email input"
-                  accessibilityHint="Enter your email address to sign in"
+                  placeholder="Digite seu email"
+                  accessibilityLabel="Campo de email"
+                  accessibilityHint="Digite seu endereço de email para entrar"
                 />
 
                 <FormInput
-                  label="Password"
+                  label="Senha"
                   value={loginData.password}
                   onChangeText={(value) => handleLoginInputChange('password', value)}
                   error={loginErrors.password}
                   required
                   secureTextEntry
                   showPasswordToggle
-                  placeholder="Enter your password"
-                  accessibilityLabel="Password input"
-                  accessibilityHint="Enter your password to sign in"
+                  placeholder="Digite sua senha"
+                  accessibilityLabel="Campo de senha"
+                  accessibilityHint="Digite sua senha para entrar"
                 />
 
                 {error && (
                   <ErrorMessage
                     message={error}
                     onRetry={handleRetryLogin}
-                    retryText="Clear Error"
+                    retryText="Limpar Erro"
                   />
                 )}
 
                 <ActionButton
-                  title="Sign In"
+                  title="Entrar"
                   onPress={handleLogin}
                   loading={isLoading}
                   disabled={isLoading}
@@ -411,13 +411,13 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.toggleContainer}>
             <Text style={styles.toggleText}>
               {isSignupMode
-                ? 'Already have an account?'
-                : "Don't have an account?"
+                ? 'Já tem uma conta?'
+                : "Não tem uma conta?"
               }
             </Text>
             <TouchableOpacity onPress={toggleMode} style={styles.toggleButton}>
               <Text style={styles.toggleButtonText}>
-                {isSignupMode ? 'Sign In' : 'Sign Up'}
+                {isSignupMode ? 'Entrar' : 'Cadastrar'}
               </Text>
             </TouchableOpacity>
           </View>

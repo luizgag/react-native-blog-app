@@ -205,7 +205,7 @@ export const FormInput: React.FC<FormInputProps> = ({
           <TouchableOpacity
             style={styles.passwordToggle}
             onPress={togglePasswordVisibility}
-            accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+            accessibilityLabel={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
             accessibilityRole="button"
           >
             <Text style={styles.passwordToggleText}>
