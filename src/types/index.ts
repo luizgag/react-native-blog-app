@@ -197,6 +197,3 @@ export * from './context';
 
 // Re-export API types
 export * from './api';
-
-// Re-export validation utilities
-export * from './validation';

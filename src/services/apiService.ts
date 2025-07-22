@@ -243,8 +243,13 @@ class BlogApiService implements ApiService {
 
   async getPost(id: number): Promise<Post> {
     return RetryService.withRetry(async () => {
-      const response = await this.client.get<Post>(`/posts/${id}`);
-      return response.data;
+      const response = await this.client.get(`/posts/${id}`);
+      // API returns an array with single post, extract the first item
+      const data = response.data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data[0];
+      }
+      return data;
     });
   }
 
@@ -257,13 +262,27 @@ class BlogApiService implements ApiService {
 
   async createPost(post: CreatePostRequest): Promise<Post> {
     // Don't retry create operations to avoid duplicates
-    const response = await this.client.post<Post>('/posts', post);
+    const response = await this.client.post('/posts', post);
+    
+    // API returns just the ID as a number, we need to fetch the full post
+    const postId = response.data;
+    if (typeof postId === 'number') {
+      // Fetch the created post to return full post data
+      return await this.getPost(postId);
+    }
+    
     return response.data;
   }
 
   async updatePost(id: number, post: UpdatePostRequest): Promise<Post> {
     return RetryService.withRetry(async () => {
-      const response = await this.client.put<Post>(`/posts/${id}`, post);
+      const response = await this.client.put(`/posts/${id}`, post);
+      
+      // If update returns success status, fetch the updated post
+      if (response.status === 200) {
+        return await this.getPost(id);
+      }
+      
       return response.data;
     });
   }
@@ -284,19 +303,58 @@ class BlogApiService implements ApiService {
 
   async createComment(postId: number, comentario: string): Promise<Comment> {
     // Don't retry create operations to avoid duplicates
-    const response = await this.client.post<Comment>('/posts/comentarios', {
+    const response = await this.client.post('/posts/comentarios', {
       postId,
       comentario
     });
-    return response.data;
+    
+    // Handle different response formats
+    const data = response.data;
+    
+    // If response contains error, throw it
+    if (data && typeof data === 'object' && 'error' in data) {
+      throw new Error(data.error);
+    }
+    
+    // If response is just an ID, create a basic comment object
+    if (typeof data === 'number') {
+      return {
+        id: data,
+        postId,
+        comentario,
+        createdAt: new Date().toISOString(),
+        author: 'Current User' // Will be updated when we have user info
+      };
+    }
+    
+    return data;
   }
 
   async updateComment(id: number, comentario: string): Promise<Comment> {
     return RetryService.withRetry(async () => {
-      const response = await this.client.put<Comment>(`/posts/comentarios/${id}`, {
+      const response = await this.client.put(`/posts/comentarios/${id}`, {
         comentario
       });
-      return response.data;
+      
+      // Handle different response formats
+      const data = response.data;
+      
+      // If response contains error, throw it
+      if (data && typeof data === 'object' && 'error' in data) {
+        throw new Error(data.error);
+      }
+      
+      // If successful, return updated comment data
+      if (response.status === 200) {
+        return {
+          id,
+          comentario,
+          updatedAt: new Date().toISOString(),
+          ...data
+        };
+      }
+      
+      return data;
     });
   }
 
@@ -363,19 +421,30 @@ class BlogApiService implements ApiService {
       senha: credentials.senha
     };
 
-    const response = await this.client.post<{ accessToken: string }>('/login', loginData);
+    const response = await this.client.post('/login', loginData);
 
-    // Store auth token (backend returns accessToken)
-    const { accessToken } = response.data;
+    // Handle different response formats
+    const responseData = response.data;
+    let accessToken: string;
+
+    if (responseData.accessToken) {
+      accessToken = responseData.accessToken;
+    } else if (responseData.token) {
+      accessToken = responseData.token;
+    } else {
+      throw new Error('No access token received from login response');
+    }
+
+    // Store auth token
     await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken);
 
     // Create AuthResponse format for compatibility
     const authResponse: AuthResponse = {
       user: {
-        id: 1, // Will be updated when we have user info endpoint
-        name: credentials.email,
+        id: responseData.userId || responseData.id || 1,
+        name: responseData.name || responseData.nome || credentials.email,
         email: credentials.email,
-        role: 'teacher', // Default role
+        role: responseData.tipo_usuario || 'teacher',
         token: accessToken
       },
       token: accessToken
