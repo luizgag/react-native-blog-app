@@ -14,7 +14,7 @@ import { useToast } from '../context/AppContext';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { LoginFormData, CreateTeacherRequest, CreateStudentRequest } from '../types';
+import { LoginFormData, RegisterRequest } from '../types';
 import { formValidationSchemas } from '../utils/validation';
 import { enhancedApiService } from '../services';
 
@@ -175,22 +175,19 @@ export const LoginScreen: React.FC = () => {
     setSignupLoading(true);
     
     try {
+      // Transform data to match API RegisterRequest format (Portuguese field names)
+      const registerData = {
+        nome: signupData.name.trim(),
+        email: signupData.email.trim(),
+        senha: signupData.password,
+        confirmacao_senha: signupData.confirmPassword,
+        tipo_usuario: signupData.role === 'teacher' ? 'professor' as const : 'aluno' as const,
+      };
+
       if (signupData.role === 'teacher') {
-        const teacherData: CreateTeacherRequest = {
-          name: signupData.name.trim(),
-          email: signupData.email.trim(),
-          password: signupData.password,
-          department: signupData.department?.trim(),
-        };
-        await enhancedApiService.createTeacher(teacherData);
+        await enhancedApiService.createTeacher(registerData);
       } else {
-        const studentData: CreateStudentRequest = {
-          name: signupData.name.trim(),
-          email: signupData.email.trim(),
-          password: signupData.password,
-          studentId: signupData.studentId?.trim(),
-        };
-        await enhancedApiService.createStudent(studentData);
+        await enhancedApiService.createStudent(registerData);
       }
 
       showSuccess('Account created successfully! You can now sign in.');

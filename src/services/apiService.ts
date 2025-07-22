@@ -263,26 +263,26 @@ class BlogApiService implements ApiService {
   async createPost(post: CreatePostRequest): Promise<Post> {
     // Don't retry create operations to avoid duplicates
     const response = await this.client.post('/posts', post);
-    
+
     // API returns just the ID as a number, we need to fetch the full post
     const postId = response.data;
     if (typeof postId === 'number') {
       // Fetch the created post to return full post data
       return await this.getPost(postId);
     }
-    
+
     return response.data;
   }
 
   async updatePost(id: number, post: UpdatePostRequest): Promise<Post> {
     return RetryService.withRetry(async () => {
       const response = await this.client.put(`/posts/${id}`, post);
-      
+
       // If update returns success status, fetch the updated post
       if (response.status === 200) {
         return await this.getPost(id);
       }
-      
+
       return response.data;
     });
   }
@@ -307,26 +307,26 @@ class BlogApiService implements ApiService {
       postId,
       comentario
     });
-    
+
     // Handle different response formats
     const data = response.data;
-    
+
     // If response contains error, throw it
     if (data && typeof data === 'object' && 'error' in data) {
       throw new Error(data.error);
     }
-    
+
     // If response is just an ID, create a basic comment object
     if (typeof data === 'number') {
       return {
         id: data,
-        postId,
+        post_id: postId,
+        author_id: 1, // Will be updated when we have user info
         comentario,
-        createdAt: new Date().toISOString(),
-        author: 'Current User' // Will be updated when we have user info
+        created_at: new Date().toISOString(),
       };
     }
-    
+
     return data;
   }
 
@@ -335,15 +335,15 @@ class BlogApiService implements ApiService {
       const response = await this.client.put(`/posts/comentarios/${id}`, {
         comentario
       });
-      
+
       // Handle different response formats
       const data = response.data;
-      
+
       // If response contains error, throw it
       if (data && typeof data === 'object' && 'error' in data) {
         throw new Error(data.error);
       }
-      
+
       // If successful, return updated comment data
       if (response.status === 200) {
         return {
@@ -353,7 +353,7 @@ class BlogApiService implements ApiService {
           ...data
         };
       }
-      
+
       return data;
     });
   }

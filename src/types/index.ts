@@ -18,16 +18,6 @@ export interface User {
   createdAt?: string;
 }
 
-export interface Teacher extends User {
-  role: 'teacher';
-  department?: string;
-}
-
-export interface Student extends User {
-  role: 'student';
-  studentId?: string;
-}
-
 export interface AuthUser {
   id: number;
   name: string;
@@ -87,33 +77,8 @@ export interface RegisterRequest {
   nome: string;
   email: string;
   senha: string;
+  confirmacao_senha: string;
   tipo_usuario: 'professor' | 'aluno';
-}
-
-export interface CreateTeacherRequest {
-  name: string;
-  email: string;
-  password: string;
-  department?: string;
-}
-
-export interface UpdateTeacherRequest {
-  name?: string;
-  email?: string;
-  department?: string;
-}
-
-export interface CreateStudentRequest {
-  name: string;
-  email: string;
-  password: string;
-  studentId?: string;
-}
-
-export interface UpdateStudentRequest {
-  name?: string;
-  email?: string;
-  studentId?: string;
 }
 
 // State management types
@@ -131,14 +96,14 @@ export interface AppState {
     searchTerm: string;
   };
   teachers: {
-    items: Teacher[];
+    items: User[];
     currentPage: number;
     totalPages: number;
     isLoading: boolean;
     error: string | null;
   };
   students: {
-    items: Student[];
+    items: User[];
     currentPage: number;
     totalPages: number;
     isLoading: boolean;
