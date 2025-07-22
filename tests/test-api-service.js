@@ -3,8 +3,33 @@
  * Tests the actual API service implementation used by the app
  */
 
-import { apiService } from './src/services/apiService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// Mock React Native modules for Node.js environment
+const mockAsyncStorage = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  multiGet: jest.fn(),
+  multiRemove: jest.fn(),
+};
+
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
+
+// Mock axios for testing
+jest.mock('axios', () => ({
+  create: jest.fn(() => ({
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  })),
+}));
+
+// Import after mocking
+const { apiService } = require('../src/services/apiService');
 
 // Test data
 const TEST_DATA = {
@@ -319,7 +344,7 @@ const cleanup = async () => {
 };
 
 // Main test runner
-export const runApiServiceTests = async () => {
+const runApiServiceTests = async () => {
   log('Starting API Service Integration Tests...', 'test');
   
   const results = {
@@ -387,8 +412,17 @@ export const runApiServiceTests = async () => {
   };
 };
 
-// Export individual test functions for selective testing
-export {
+// Run tests if this script is executed directly
+if (require.main === module) {
+  runApiServiceTests().catch((error) => {
+    console.error('Test suite failed:', error);
+    process.exit(1);
+  });
+}
+
+// Export functions using CommonJS
+module.exports = {
+  runApiServiceTests,
   testConnectivity,
   testAuthentication,
   testPostsCRUD,

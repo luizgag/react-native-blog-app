@@ -19,11 +19,19 @@ class BlogApiService implements ApiService {
   private client: AxiosInstance;
   private currentBaseUrl: string;
   private isConnectivityTested: boolean = false;
+  private onTokenExpired?: () => void;
 
   constructor() {
     this.currentBaseUrl = API_CONFIG.BASE_URL;
     this.client = this.createAxiosInstance(this.currentBaseUrl);
     this.setupInterceptors();
+  }
+
+  /**
+   * Set callback to be called when token expires (401 error)
+   */
+  setTokenExpiredCallback(callback: () => void): void {
+    this.onTokenExpired = callback;
   }
 
   private createAxiosInstance(baseURL: string): AxiosInstance {
@@ -114,6 +122,10 @@ class BlogApiService implements ApiService {
         // Handle token expiration
         if (error.response?.status === 401) {
           await this.clearAuthData();
+          // Notify about token expiration to trigger redirect to login
+          if (this.onTokenExpired) {
+            this.onTokenExpired();
+          }
         }
 
         // Handle network connectivity issues

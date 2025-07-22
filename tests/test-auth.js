@@ -1,5 +1,5 @@
 // Simple test to verify authentication changes
-const { apiService } = require('./src/services/apiService');
+const { apiService } = require('../src/services/apiService');
 
 // Mock AsyncStorage
 const mockAsyncStorage = {

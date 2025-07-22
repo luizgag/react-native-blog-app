@@ -15,6 +15,7 @@ export interface AuthContextActions {
   logout: () => Promise<void>;
   clearError: () => void;
   checkAuthStatus: () => Promise<void>;
+  handleTokenExpired: () => Promise<void>;
 }
 
 export interface AuthContextValue extends AuthContextState {

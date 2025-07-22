@@ -101,9 +101,12 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Check authentication status on app start
+  // Check authentication status on app start and setup token expiration callback
   useEffect(() => {
     checkAuthStatus();
+    
+    // Set up callback for when token expires
+    enhancedApiService.setTokenExpiredCallback(handleTokenExpired);
   }, []);
 
   const checkAuthStatus = async (): Promise<void> => {
@@ -175,6 +178,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const handleTokenExpired = async (): Promise<void> => {
+    // Clear auth data and update state without making API call
+    // since we already know the token is expired
+    await clearStoredAuthData();
+    dispatch({ type: 'LOGOUT' });
+  };
+
   const clearError = (): void => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
@@ -197,6 +207,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logout,
       clearError,
       checkAuthStatus,
+      handleTokenExpired,
     },
   };
 
