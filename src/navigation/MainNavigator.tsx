@@ -83,6 +83,21 @@ const AdminStackNavigator: React.FC = () => {
         component={AdminScreen}
         options={{ title: 'Painel Administrativo' }}
       />
+      <Stack.Screen
+        name="CreatePost"
+        component={CreatePostScreen}
+        options={{ title: 'Criar Post' }}
+      />
+      <Stack.Screen
+        name="EditPost"
+        component={EditPostScreen}
+        options={{ title: 'Editar Post' }}
+      />
+      <Stack.Screen
+        name="PostDetail"
+        component={PostDetailScreen}
+        options={{ title: 'Detalhes do Post' }}
+      />
     </Stack.Navigator>
   );
 };
@@ -141,7 +156,7 @@ const MainTabNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarIcon: ({ color, size }) => {
           let iconName: string;
 
           if (route.name === 'HomeTab') {
