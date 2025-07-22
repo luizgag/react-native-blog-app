@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
@@ -14,8 +13,7 @@ import { useToast } from '../context/AppContext';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { LoginFormData, RegisterRequest } from '../types';
-import { formValidationSchemas } from '../utils/validation';
+import { LoginFormData } from '../types';
 import { enhancedApiService } from '../services';
 
 interface SignupFormData {
@@ -33,12 +31,12 @@ export const LoginScreen: React.FC = () => {
   const { showSuccess, showError } = useToast();
   const [isSignupMode, setIsSignupMode] = useState(false);
   const [signupLoading, setSignupLoading] = useState(false);
-  
+
   const [loginData, setLoginData] = useState<LoginFormData>({
     email: '',
     password: '',
   });
-  
+
   const [signupData, setSignupData] = useState<SignupFormData>({
     name: '',
     email: '',
@@ -48,7 +46,7 @@ export const LoginScreen: React.FC = () => {
     department: '',
     studentId: '',
   });
-  
+
   const [loginErrors, setLoginErrors] = useState<Partial<LoginFormData>>({});
   const [signupErrors, setSignupErrors] = useState<Partial<SignupFormData>>({});
 
@@ -173,7 +171,7 @@ export const LoginScreen: React.FC = () => {
     }
 
     setSignupLoading(true);
-    
+
     try {
       // Transform data to match API RegisterRequest format (Portuguese field names)
       const registerData = {
@@ -192,7 +190,7 @@ export const LoginScreen: React.FC = () => {
 
       showSuccess('Account created successfully! You can now sign in.');
       setIsSignupMode(false);
-      
+
       // Clear signup form
       setSignupData({
         name: '',
@@ -204,7 +202,7 @@ export const LoginScreen: React.FC = () => {
         studentId: '',
       });
       setSignupErrors({});
-      
+
     } catch (signupError: any) {
       showError(signupError.message || 'Failed to create account. Please try again.');
     } finally {
@@ -241,8 +239,8 @@ export const LoginScreen: React.FC = () => {
               {isSignupMode ? 'Create Account' : 'Welcome Back'}
             </Text>
             <Text style={styles.subtitle}>
-              {isSignupMode 
-                ? 'Sign up to join the blog platform' 
+              {isSignupMode
+                ? 'Sign up to join the blog platform'
                 : 'Sign in to access your blog dashboard'
               }
             </Text>
@@ -324,7 +322,7 @@ export const LoginScreen: React.FC = () => {
                         Student
                       </Text>
                     </TouchableOpacity>
-                    
+
                     <TouchableOpacity
                       style={[
                         styles.roleButton,
@@ -412,8 +410,8 @@ export const LoginScreen: React.FC = () => {
           {/* Toggle between login and signup */}
           <View style={styles.toggleContainer}>
             <Text style={styles.toggleText}>
-              {isSignupMode 
-                ? 'Already have an account?' 
+              {isSignupMode
+                ? 'Already have an account?'
                 : "Don't have an account?"
               }
             </Text>
