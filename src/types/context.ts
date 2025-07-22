@@ -1,5 +1,5 @@
 // Context and state management specific types
-import { Post, Teacher, Student, AuthUser } from './index';
+import { Post, Teacher, Student, AuthUser, CreatePostRequest, UpdatePostRequest } from './index';
 import { AsyncState, PaginationState, ToastMessage } from './utils';
 
 // Auth Context Types
@@ -36,8 +36,8 @@ export interface PostsContextActions {
   fetchPosts: () => Promise<void>;
   fetchPost: (id: number) => Promise<void>;
   searchPosts: (query: string) => Promise<void>;
-  createPost: (post: { title: string; content: string; author: string }) => Promise<void>;
-  updatePost: (id: number, post: { title?: string; content?: string; author?: string }) => Promise<void>;
+  createPost: (post: CreatePostRequest) => Promise<void>;
+  updatePost: (id: number, post: UpdatePostRequest) => Promise<void>;
   deletePost: (id: number) => Promise<void>;
   clearCurrentPost: () => void;
   clearError: () => void;

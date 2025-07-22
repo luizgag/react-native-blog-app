@@ -81,7 +81,9 @@ export const HomeScreen: React.FC = () => {
 
   // Handle post selection
   const handlePostPress = useCallback((post: Post) => {
-    navigation.navigate('PostDetail', { postId: post.id });
+    if (post.id) {
+      navigation.navigate('PostDetail', { postId: post.id });
+    }
   }, [navigation]);
 
   // Handle retry
@@ -138,10 +140,10 @@ export const HomeScreen: React.FC = () => {
 
   // Show error state
   if (error && !refreshing) {
-    const errorMessage = !isOnline 
+    const errorMessage = !isOnline
       ? 'You appear to be offline. Please check your internet connection and try again.'
       : error;
-    
+
     return (
       <View style={styles.container}>
         <SearchBar
@@ -168,21 +170,21 @@ export const HomeScreen: React.FC = () => {
         onSearch={handleSearch}
         initialValue={searchQuery}
       />
-      
+
       {showLoading && (
         <LoadingSpinner message="Loading posts..." />
       )}
-      
+
       {showSearching && (
         <View style={styles.searchingContainer}>
           <LoadingSpinner size="small" message="Searching..." />
         </View>
       )}
-      
+
       <FlatList
         data={displayPosts}
         renderItem={renderPost}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id?.toString() || `post-${Math.random()}`}
         contentContainerStyle={styles.listContainer}
         refreshControl={
           <RefreshControl

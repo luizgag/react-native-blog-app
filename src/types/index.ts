@@ -36,7 +36,7 @@ export interface PaginatedResponse<T> {
 // Request/Response types
 export interface LoginRequest {
   email: string;
-  senha: string;  // Changed from password to match backend API
+  senha: string;
 }
 
 export interface AuthResponse {
@@ -47,8 +47,7 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  author?: number; // author_id from JWT token
-  materia?: string;
+  author?: number;
 }
 
 export interface UpdatePostRequest {

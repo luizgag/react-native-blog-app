@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { 
-  PostsContextValue, 
-  PostsContextState, 
+import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
+import {
+  PostsContextValue,
+  PostsContextState,
   PostsAction
 } from '../types/context';
-import { Post } from '../types';
+import { Post, CreatePostRequest, UpdatePostRequest } from '../types';
 import { enhancedApiService } from '../services';
 
 // Initial state
@@ -27,7 +27,7 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         isLoading: true,
         error: null,
       };
-    
+
     case 'FETCH_POSTS_SUCCESS':
       return {
         ...state,
@@ -35,21 +35,21 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         isLoading: false,
         error: null,
       };
-    
+
     case 'FETCH_POSTS_FAILURE':
       return {
         ...state,
         isLoading: false,
         error: action.payload,
       };
-    
+
     case 'FETCH_POST_START':
       return {
         ...state,
         isLoading: true,
         error: null,
       };
-    
+
     case 'FETCH_POST_SUCCESS':
       return {
         ...state,
@@ -57,7 +57,7 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         isLoading: false,
         error: null,
       };
-    
+
     case 'FETCH_POST_FAILURE':
       return {
         ...state,
@@ -65,14 +65,14 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         isLoading: false,
         error: action.payload,
       };
-    
+
     case 'SEARCH_POSTS_START':
       return {
         ...state,
         isSearching: true,
         error: null,
       };
-    
+
     case 'SEARCH_POSTS_SUCCESS':
       return {
         ...state,
@@ -80,7 +80,7 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         isSearching: false,
         error: null,
       };
-    
+
     case 'SEARCH_POSTS_FAILURE':
       return {
         ...state,
@@ -88,24 +88,24 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         isSearching: false,
         error: action.payload,
       };
-    
+
     case 'CREATE_POST_SUCCESS':
       return {
         ...state,
         posts: [action.payload, ...state.posts],
         error: null,
       };
-    
+
     case 'UPDATE_POST_SUCCESS':
       return {
         ...state,
-        posts: state.posts.map(post => 
+        posts: state.posts.map(post =>
           post.id === action.payload.id ? action.payload : post
         ),
         currentPost: state.currentPost?.id === action.payload.id ? action.payload : state.currentPost,
         error: null,
       };
-    
+
     case 'DELETE_POST_SUCCESS':
       return {
         ...state,
@@ -113,25 +113,25 @@ const postsReducer = (state: PostsContextState, action: PostsAction): PostsConte
         currentPost: state.currentPost?.id === action.payload ? null : state.currentPost,
         error: null,
       };
-    
+
     case 'CLEAR_CURRENT_POST':
       return {
         ...state,
         currentPost: null,
       };
-    
+
     case 'CLEAR_ERROR':
       return {
         ...state,
         error: null,
       };
-    
+
     case 'SET_SEARCH_QUERY':
       return {
         ...state,
         searchQuery: action.payload,
       };
-    
+
     default:
       return state;
   }
@@ -148,9 +148,9 @@ interface PostsProviderProps {
 export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(postsReducer, initialState);
 
-  const fetchPosts = async (): Promise<void> => {
+  const fetchPosts = useCallback(async (): Promise<void> => {
     dispatch({ type: 'FETCH_POSTS_START' });
-    
+
     try {
       const posts = await enhancedApiService.getPosts();
       dispatch({ type: 'FETCH_POSTS_SUCCESS', payload: posts });
@@ -159,11 +159,11 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
       dispatch({ type: 'FETCH_POSTS_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const fetchPost = async (id: number): Promise<void> => {
+  const fetchPost = useCallback(async (id: number): Promise<void> => {
     dispatch({ type: 'FETCH_POST_START' });
-    
+
     try {
       const post = await enhancedApiService.getPost(id);
       dispatch({ type: 'FETCH_POST_SUCCESS', payload: post });
@@ -172,11 +172,11 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
       dispatch({ type: 'FETCH_POST_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const searchPosts = async (query: string): Promise<void> => {
+  const searchPosts = useCallback(async (query: string): Promise<void> => {
     dispatch({ type: 'SEARCH_POSTS_START' });
-    
+
     try {
       const results = await enhancedApiService.searchPosts(query);
       dispatch({ type: 'SEARCH_POSTS_SUCCESS', payload: results });
@@ -185,9 +185,9 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
       dispatch({ type: 'SEARCH_POSTS_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const createPost = async (post: { title: string; content: string; author: string }): Promise<void> => {
+  const createPost = useCallback(async (post: CreatePostRequest): Promise<void> => {
     try {
       const newPost = await enhancedApiService.createPost(post);
       dispatch({ type: 'CREATE_POST_SUCCESS', payload: newPost });
@@ -196,9 +196,9 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
       dispatch({ type: 'FETCH_POSTS_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const updatePost = async (id: number, post: { title?: string; content?: string; author?: string }): Promise<void> => {
+  const updatePost = useCallback(async (id: number, post: UpdatePostRequest): Promise<void> => {
     try {
       const updatedPost = await enhancedApiService.updatePost(id, post);
       dispatch({ type: 'UPDATE_POST_SUCCESS', payload: updatedPost });
@@ -207,9 +207,9 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
       dispatch({ type: 'FETCH_POSTS_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const deletePost = async (id: number): Promise<void> => {
+  const deletePost = useCallback(async (id: number): Promise<void> => {
     try {
       await enhancedApiService.deletePost(id);
       dispatch({ type: 'DELETE_POST_SUCCESS', payload: id });
@@ -218,19 +218,19 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
       dispatch({ type: 'FETCH_POSTS_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const clearCurrentPost = (): void => {
+  const clearCurrentPost = useCallback((): void => {
     dispatch({ type: 'CLEAR_CURRENT_POST' });
-  };
+  }, []);
 
-  const clearError = (): void => {
+  const clearError = useCallback((): void => {
     dispatch({ type: 'CLEAR_ERROR' });
-  };
+  }, []);
 
-  const setSearchQuery = (query: string): void => {
+  const setSearchQuery = useCallback((query: string): void => {
     dispatch({ type: 'SET_SEARCH_QUERY', payload: query });
-  };
+  }, []);
 
   const contextValue: PostsContextValue = {
     ...state,
