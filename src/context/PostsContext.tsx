@@ -200,14 +200,16 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
 
   const updatePost = useCallback(async (id: number, post: UpdatePostRequest): Promise<void> => {
     try {
-      const updatedPost = await enhancedApiService.updatePost(id, post);
+      // Find the current post to provide as fallback data
+      const currentPost = state.posts.find(p => p.id === id) || state.currentPost || undefined;
+      const updatedPost = await enhancedApiService.updatePost(id, post, currentPost);
       dispatch({ type: 'UPDATE_POST_SUCCESS', payload: updatedPost });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to update post. Please try again.';
       dispatch({ type: 'FETCH_POSTS_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  }, []);
+  }, [state.posts, state.currentPost]);
 
   const deletePost = useCallback(async (id: number): Promise<void> => {
     try {

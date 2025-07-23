@@ -31,13 +31,11 @@ interface Props {
 interface FormData {
   title: string;
   content: string;
-  author: string;
 }
 
 interface FormErrors {
   title?: string;
   content?: string;
-  author?: string;
 }
 
 export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
@@ -54,13 +52,11 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    author: '',
   });
   
   const [originalData, setOriginalData] = useState<FormData>({
     title: '',
     content: '',
-    author: '',
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
@@ -98,7 +94,6 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
       const initialData = {
         title: currentPost.title,
         content: currentPost.content,
-        author: currentPost.author || '',
       };
       
       setFormData(initialData);
@@ -128,15 +123,6 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
       newErrors.content = 'Conteúdo deve ter menos de 10.000 caracteres';
     }
 
-    // Author validation
-    if (!formData.author.trim()) {
-      newErrors.author = 'Autor é obrigatório';
-    } else if (formData.author.trim().length < 2) {
-      newErrors.author = 'Nome do autor deve ter pelo menos 2 caracteres';
-    } else if (formData.author.trim().length > 100) {
-      newErrors.author = 'Nome do autor deve ter menos de 100 caracteres';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -159,8 +145,7 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
   const hasChanges = (): boolean => {
     return (
       formData.title.trim() !== originalData.title.trim() ||
-      formData.content.trim() !== originalData.content.trim() ||
-      formData.author.trim() !== originalData.author.trim()
+      formData.content.trim() !== originalData.content.trim()
     );
   };
 
@@ -180,7 +165,6 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
       await updatePost(postId, {
         title: formData.title.trim(),
         content: formData.content.trim(),
-        author: formData.author.trim(),
       });
 
       // Show success message
@@ -289,21 +273,6 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
             showValidationIcon={true}
             accessibilityLabel="Título do post"
             accessibilityHint="Digite um título descritivo para seu post"
-          />
-
-          <FormInput
-            label="Autor"
-            value={formData.author}
-            onChangeText={(value) => handleInputChange('author', value)}
-            error={errors.author}
-            required
-            placeholder="Digite o nome do autor..."
-            maxLength={100}
-            validationRules={formValidationSchemas.createPost.author}
-            realTimeValidation={true}
-            showValidationIcon={true}
-            accessibilityLabel="Nome do autor"
-            accessibilityHint="Digite o nome do autor do post"
           />
 
           <FormInput

@@ -16,7 +16,7 @@ export interface ApiService {
   getPost(id: number): Promise<Post>;
   searchPosts(term: string): Promise<Post[]>;
   createPost(post: CreatePostRequest): Promise<Post>;
-  updatePost(id: number, post: UpdatePostRequest): Promise<Post>;
+  updatePost(id: number, post: UpdatePostRequest, currentPost?: Post): Promise<Post>;
   deletePost(id: number): Promise<void>;
 
   // Comments

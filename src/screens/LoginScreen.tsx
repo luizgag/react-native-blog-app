@@ -50,12 +50,7 @@ export const LoginScreen: React.FC = () => {
   const [loginErrors, setLoginErrors] = useState<Partial<LoginFormData>>({});
   const [signupErrors, setSignupErrors] = useState<Partial<SignupFormData>>({});
 
-  // Clear error when component mounts or when user starts typing
-  useEffect(() => {
-    if (error) {
-      actions.clearError();
-    }
-  }, []);
+
 
   const validateLoginForm = (): boolean => {
     const errors: Partial<LoginFormData> = {};

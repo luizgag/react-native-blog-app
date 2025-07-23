@@ -7,6 +7,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -18,6 +19,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Post } from '../types';
+import { enhancedApiService } from '../services';
 
 interface PostItemProps {
   post: Post;
@@ -26,13 +28,47 @@ interface PostItemProps {
 }
 
 const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
+  const [authorName, setAuthorName] = useState<string>(post.author || 'Autor desconhecido');
+  const [isLoadingAuthor, setIsLoadingAuthor] = useState<boolean>(false);
+
+  useEffect(() => {
+    // If we have an author_id, fetch the user data
+    if (post.author_id) {
+      fetchAuthorName(post.author_id);
+    }
+  }, [post.author_id]);
+
+  const fetchAuthorName = async (authorId: number) => {
+    try {
+      setIsLoadingAuthor(true);
+      const userData = await enhancedApiService.getUser(authorId);
+
+      // Check if the response has a name or nome field
+      if (userData) {
+        const name = userData.name || userData.nome || userData.usuario;
+        if (name) {
+          setAuthorName(name);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch author name:', error);
+      // If there's an error, use the author field as fallback
+      setAuthorName(post.author || 'Autor desconhecido');
+    } finally {
+      setIsLoadingAuthor(false);
+    }
+  };
+
   return (
     <View style={styles.postItem}>
       <View style={styles.postHeader}>
         <Text style={styles.postTitle} numberOfLines={2}>
           {post.title}
         </Text>
-        <Text style={styles.postAuthor}>por {post.author || 'Autor desconhecido'}</Text>
+        <View style={styles.authorContainer}>
+          <Text style={styles.postAuthor}>por {authorName}</Text>
+          {isLoadingAuthor && <ActivityIndicator size="small" color="#666666" style={styles.authorLoader} />}
+        </View>
       </View>
       
       <Text style={styles.postContent} numberOfLines={3}>
@@ -332,10 +368,18 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 4,
   },
+  authorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   postAuthor: {
     fontSize: 14,
     color: '#666',
     fontStyle: 'italic',
+    marginRight: 8,
+  },
+  authorLoader: {
+    marginLeft: 4,
   },
   postContent: {
     fontSize: 16,

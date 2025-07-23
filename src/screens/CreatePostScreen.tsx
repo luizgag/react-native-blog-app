@@ -28,13 +28,11 @@ interface Props {
 interface FormData {
   title: string;
   content: string;
-  author: string;
 }
 
 interface FormErrors {
   title?: string;
   content?: string;
-  author?: string;
 }
 
 export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
@@ -45,7 +43,6 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    author: user?.name || 'Usuário',
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
@@ -70,15 +67,6 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
       newErrors.content = 'Conteúdo deve ter pelo menos 10 caracteres';
     } else if (formData.content.trim().length > 10000) {
       newErrors.content = 'Conteúdo deve ter menos de 10.000 caracteres';
-    }
-
-    // Author validation
-    if (!formData.author.trim()) {
-      newErrors.author = 'Autor é obrigatório';
-    } else if (formData.author.trim().length < 2) {
-      newErrors.author = 'Nome do autor deve ter pelo menos 2 caracteres';
-    } else if (formData.author.trim().length > 100) {
-      newErrors.author = 'Nome do autor deve ter menos de 100 caracteres';
     }
 
     setErrors(newErrors);
@@ -111,7 +99,7 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
       await postsActions.createPost({
         title: formData.title.trim(),
         content: formData.content.trim(),
-        author: formData.author.trim(),
+        author: user?.name || 'Usuário',
       });
 
       // Show success message
@@ -192,21 +180,6 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
             showValidationIcon={true}
             accessibilityLabel="Título do post"
             accessibilityHint="Digite um título descritivo para seu post"
-          />
-
-          <FormInput
-            label="Autor"
-            value={formData.author}
-            onChangeText={(value) => handleInputChange('author', value)}
-            error={errors.author}
-            required
-            placeholder="Digite o nome do autor..."
-            maxLength={100}
-            validationRules={formValidationSchemas.createPost.author}
-            realTimeValidation={true}
-            showValidationIcon={true}
-            accessibilityLabel="Nome do autor"
-            accessibilityHint="Digite o nome do autor do post"
           />
 
           <FormInput

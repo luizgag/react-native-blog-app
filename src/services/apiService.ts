@@ -317,7 +317,7 @@ class BlogApiService implements ApiService {
     };
   }
 
-  async updatePost(id: number, post: UpdatePostRequest): Promise<Post> {
+  async updatePost(id: number, post: UpdatePostRequest, currentPost?: Post): Promise<Post> {
     return RetryService.withRetry(async () => {
       const response = await this.client.put(`/posts/${id}`, post);
 
@@ -326,8 +326,20 @@ class BlogApiService implements ApiService {
         try {
           return await this.getPost(id);
         } catch (error) {
-          // If fetching the updated post fails, create a minimal updated post object
-          console.warn('Failed to fetch updated post, creating minimal object:', error);
+          // If fetching the updated post fails, merge updates with current post data
+          console.warn('Failed to fetch updated post, creating merged object:', error);
+          
+          if (currentPost) {
+            // Merge the updates with the existing post data
+            return {
+              ...currentPost,
+              ...post, // Apply the updates
+              id, // Ensure ID is correct
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          
+          // Fallback if no current post data available
           return {
             id,
             title: post.title || 'Updated Post',
@@ -343,7 +355,16 @@ class BlogApiService implements ApiService {
         return response.data;
       }
 
-      // Fallback: create minimal updated post object
+      // Fallback: merge updates with current post or create minimal object
+      if (currentPost) {
+        return {
+          ...currentPost,
+          ...post, // Apply the updates
+          id, // Ensure ID is correct
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
       return {
         id,
         title: post.title || 'Updated Post',

@@ -49,14 +49,13 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  author: string;
+  author: number;
 }
 
 export interface UpdatePostRequest {
-  title?: string;
-  content?: string;
-  author?: string;
-  materia?: string;
+  title: string;
+  content: string;
+  author: number;
 }
 
 export interface Comment {

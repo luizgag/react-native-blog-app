@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   AuthContextValue, 
@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     enhancedApiService.setTokenExpiredCallback(handleTokenExpired);
   }, []);
 
-  const checkAuthStatus = async (): Promise<void> => {
+  const checkAuthStatus = useCallback(async (): Promise<void> => {
     dispatch({ type: 'CHECK_AUTH_START' });
     
     try {
@@ -142,9 +142,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Error checking auth status:', error);
       dispatch({ type: 'CHECK_AUTH_FAILURE' });
     }
-  };
+  }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
@@ -164,9 +164,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       throw error; // Re-throw to allow components to handle
     }
-  };
+  }, []);
 
-  const logout = async (): Promise<void> => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       await enhancedApiService.logout();
     } catch (error) {
@@ -176,18 +176,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await clearStoredAuthData();
       dispatch({ type: 'LOGOUT' });
     }
-  };
+  }, []);
 
-  const handleTokenExpired = async (): Promise<void> => {
+  const handleTokenExpired = useCallback(async (): Promise<void> => {
     // Clear auth data and update state without making API call
     // since we already know the token is expired
     await clearStoredAuthData();
     dispatch({ type: 'LOGOUT' });
-  };
+  }, []);
 
-  const clearError = (): void => {
+  const clearError = useCallback((): void => {
     dispatch({ type: 'CLEAR_ERROR' });
-  };
+  }, []);
 
   const clearStoredAuthData = async (): Promise<void> => {
     try {
