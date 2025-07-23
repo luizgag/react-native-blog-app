@@ -261,12 +261,12 @@ class BlogApiService implements ApiService {
       if (Array.isArray(data) && data.length > 0) {
         return data[0];
       }
-      
+
       // If data is not an array or is empty, check if it's a direct post object
       if (data && typeof data === 'object' && data.title) {
         return data;
       }
-      
+
       // If we still don't have valid data, throw an error
       throw new Error(`Post with ID ${id} not found or invalid response format`);
     });
@@ -293,10 +293,10 @@ class BlogApiService implements ApiService {
         // If fetching the created post fails, create a minimal post object
         console.warn('Failed to fetch created post, creating minimal object:', error);
         return {
-          id: postId,
+          id: postId, // postId is a number which matches the Post interface
           title: post.title,
           content: post.content,
-          author: post.author,
+          author: String(post.author), // Convert number to string to match Post interface
           createdAt: new Date().toISOString(),
         };
       }
@@ -312,7 +312,7 @@ class BlogApiService implements ApiService {
       id: postId || Date.now(), // Use timestamp as fallback ID
       title: post.title,
       content: post.content,
-      author: post.author,
+      author: String(post.author), // Convert number to string to match Post interface
       createdAt: new Date().toISOString(),
     };
   }
@@ -328,7 +328,7 @@ class BlogApiService implements ApiService {
         } catch (error) {
           // If fetching the updated post fails, merge updates with current post data
           console.warn('Failed to fetch updated post, creating merged object:', error);
-          
+
           if (currentPost) {
             // Merge the updates with the existing post data
             return {
@@ -338,13 +338,13 @@ class BlogApiService implements ApiService {
               updatedAt: new Date().toISOString(),
             };
           }
-          
+
           // Fallback if no current post data available
           return {
             id,
             title: post.title || 'Updated Post',
             content: post.content || 'Updated content',
-            author: post.author || 'Unknown Author',
+            author: post.author ? String(post.author) : 'Unknown Author', // Convert number to string
             updatedAt: new Date().toISOString(),
           };
         }
@@ -369,7 +369,7 @@ class BlogApiService implements ApiService {
         id,
         title: post.title || 'Updated Post',
         content: post.content || 'Updated content',
-        author: post.author || 'Unknown Author',
+        author: post.author ? String(post.author) : 'Unknown Author', // Convert number to string
         updatedAt: new Date().toISOString(),
       };
     });
