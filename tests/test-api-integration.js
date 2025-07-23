@@ -39,8 +39,7 @@ const TEST_DATA = {
     post: {
         title: 'Test Post API Integration',
         content: 'This is a test post content from API integration test',
-        author: 1, // Based on API guide, posts need author ID (will be set after login)
-        materia: 'Matemática' // One of the available subjects
+        author_id: 1, // Based on API guide, posts need author ID (will be set after login)
     },
     comment: {
         comentario: 'This is a test comment from API integration test'
@@ -339,7 +338,6 @@ const testPostsCRUD = async () => {
             const updatedData = {
                 title: 'Updated Test Post API Integration',
                 content: 'This is updated content from API integration test',
-                materia: 'Física' // Change to a different valid subject
             };
 
             try {

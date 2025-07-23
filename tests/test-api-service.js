@@ -47,7 +47,6 @@ const TEST_DATA = {
   post: {
     title: 'Test Post from RN',
     content: 'This is a test post content from React Native',
-    materia: 'Matemática' // Use valid subject from API guide
   }
 };
 
@@ -167,7 +166,6 @@ const testPostsCRUD = async () => {
     const updatedData = {
       title: 'Updated Test Post from RN',
       content: 'This is updated content from React Native',
-      materia: 'Updated Subject'
     };
     const updatedPost = await apiService.updatePost(testPostId, updatedData);
     if (updatedPost.title !== updatedData.title) {

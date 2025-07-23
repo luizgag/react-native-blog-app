@@ -227,7 +227,6 @@ const testPosts = async () => {
       title: 'Final Test Post',
       content: 'This is a comprehensive test post for API validation',
       author: 1,
-      materia: 'Matemática'
     });
     return response.data;
   }, 'Create new post', 'posts');

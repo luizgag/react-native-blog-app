@@ -38,7 +38,7 @@ export class ApiIntegrationTester {
       // Test with dummy credentials - replace with actual test credentials
       const result = await apiService.login({
         email: 'test@example.com',
-        password: 'test123'
+        senha: 'test123'
       });
 
       this.testResults.login = {
@@ -95,7 +95,6 @@ export class ApiIntegrationTester {
       const newPost = await apiService.createPost({
         title: 'Test Post from React Native',
         content: 'This is a test post created from the React Native app to verify API integration.',
-        materia: 'Testing'
       });
 
       this.testResults.createPost = {

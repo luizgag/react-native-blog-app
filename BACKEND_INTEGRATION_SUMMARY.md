@@ -33,15 +33,10 @@ This document summarizes the changes made to integrate the React Native blog app
 **File: `src/types/index.ts`**
 
 #### Post Interface:
-- Changed `author: string` to `author_id?: number`
-- Changed `createdAt` to `created_at`
-- Changed `updatedAt` to `updated_at`
-- Added `materia?: string` field
+- Changed `author: string` to `author_id: number`
 
 #### Request Types:
-- **CreatePostRequest**: Updated to use `author?: number` and added `materia?: string`
-- **UpdatePostRequest**: Removed `author` field, added `materia?: string`
-- **PostFormData**: Removed `author` field, added `materia?: string`
+- **CreatePostRequest**: Updated to use `author_id: number`
 
 ### 4. JWT Token Utilities
 
@@ -103,13 +98,13 @@ Based on the API documentation, the following endpoints are now properly integra
 ### Create Post Process:
 ```typescript
 // User input
-{ title: "My Post", content: "Post content", materia: "Math" }
+{ title: "My Post", content: "Post content", author_id: 5 }
 
 // Sent to backend (with author_id from token)
-{ title: "My Post", content: "Post content", materia: "Math", author: 1 }
+{ title: "My Post", content: "Post content", author_id: 1 }
 
 // Backend response
-{ id: 123, title: "My Post", content: "Post content", author_id: 1, materia: "Math", created_at: "2025-01-20T..." }
+{ id: 123, title: "My Post", content: "Post content", author_id: 1}
 ```
 
 ## Testing Recommendations

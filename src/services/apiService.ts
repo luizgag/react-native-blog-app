@@ -293,11 +293,11 @@ class BlogApiService implements ApiService {
         // If fetching the created post fails, create a minimal post object
         console.warn('Failed to fetch created post, creating minimal object:', error);
         return {
-          id: postId, // postId is a number which matches the Post interface
+          id: postId,
           title: post.title,
           content: post.content,
-          author: String(post.author), // Convert number to string to match Post interface
-          createdAt: new Date().toISOString(),
+          author_id: postId,
+          author: "Autor desconhecido"
         };
       }
     }
@@ -312,8 +312,8 @@ class BlogApiService implements ApiService {
       id: postId || Date.now(), // Use timestamp as fallback ID
       title: post.title,
       content: post.content,
-      author: String(post.author), // Convert number to string to match Post interface
-      createdAt: new Date().toISOString(),
+      author_id: post.author_id,
+      author: "Autor desconhecido"
     };
   }
 
@@ -344,8 +344,6 @@ class BlogApiService implements ApiService {
             id,
             title: post.title || 'Updated Post',
             content: post.content || 'Updated content',
-            author: post.author ? String(post.author) : 'Unknown Author', // Convert number to string
-            updatedAt: new Date().toISOString(),
           };
         }
       }
@@ -369,8 +367,6 @@ class BlogApiService implements ApiService {
         id,
         title: post.title || 'Updated Post',
         content: post.content || 'Updated content',
-        author: post.author ? String(post.author) : 'Unknown Author', // Convert number to string
-        updatedAt: new Date().toISOString(),
       };
     });
   }
@@ -409,9 +405,9 @@ class BlogApiService implements ApiService {
       return {
         id: data,
         post_id: postId,
-        author_id: 1, // Will be updated when we have user info
+        author_id: 1,
         comentario,
-        created_at: new Date().toISOString(),
+        author: "Autor desconhecido"
       };
     }
 

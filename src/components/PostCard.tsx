@@ -69,11 +69,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onPress }) => {
         <Text style={styles.preview} numberOfLines={3}>
           {post.content}
         </Text>
-        {post.createdAt && (
-          <Text style={styles.date}>
-            {new Date(post.createdAt).toLocaleDateString()}
-          </Text>
-        )}
       </View>
     </TouchableOpacity>
   );

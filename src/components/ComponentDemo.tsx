@@ -16,7 +16,7 @@ const samplePost: Post = {
   title: 'Post de Blog de Exemplo',
   content: 'Este é um conteúdo de post de blog de exemplo para demonstrar o componente PostCard.',
   author: 'João Silva',
-  createdAt: '2023-01-01T00:00:00Z',
+  author_id: 1,
 };
 
 export const ComponentDemo: React.FC = () => {

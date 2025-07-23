@@ -1,11 +1,11 @@
 // Core data types for the blog app
 
 export interface Post {
-  id?: number;
+  id: number;
   title: string;
   content: string;
   author: string;
-  author_id?: number;
+  author_id: number;
 }
 
 export interface User {
@@ -45,7 +45,6 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  nome: string;
   author_id: number;
   tipo_usuario: 'professor' | 'aluno';
 }
@@ -53,7 +52,6 @@ export interface CreatePostRequest {
 export interface UpdatePostRequest {
   title: string;
   content: string;
-  author: number;
 }
 
 export interface Comment {
@@ -61,8 +59,7 @@ export interface Comment {
   post_id: number;
   author_id: number;
   comentario: string;
-  created_at: string;
-  updated_at?: string;
+  author: string
 }
 
 export interface Like {
@@ -136,7 +133,6 @@ export interface LoginFormData {
 export interface PostFormData {
   title: string;
   content: string;
-  materia?: string;
 }
 
 export interface TeacherFormData {
