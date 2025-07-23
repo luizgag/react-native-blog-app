@@ -11,6 +11,7 @@ import { MainStackParamList } from '../navigation';
 import { usePosts } from '../context/PostsContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { CommentSection } from '../components/CommentSection';
 
 interface PostDetailScreenProps {
   route: RouteProp<MainStackParamList, 'PostDetail'>;
@@ -110,7 +111,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+      contentContainerStyle={styles.scrollContentContainer}
       refreshControl={
         <RefreshControl
           refreshing={isLoading}
@@ -125,57 +126,43 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
     >
       {currentPost && (
         <View style={styles.postContainer}>
-          <Text
-            style={styles.title}
-            accessibilityRole="header"
-            accessibilityLabel={`Título do post: ${currentPost.title}`}
-          >
-            {currentPost.title}
-          </Text>
-          
-          <View style={styles.metaContainer}>
+          {/* Post Header */}
+          <View style={styles.postHeader}>
             <Text
-              style={styles.author}
-              accessibilityLabel={`Autor: ${currentPost.author || 'Autor desconhecido'}`}
+              style={styles.title}
+              accessibilityRole="header"
+              accessibilityLabel={`Título do post: ${currentPost.title}`}
             >
-              Por {currentPost.author || 'Autor desconhecido'}
+              {currentPost.title}
             </Text>
-            {currentPost.createdAt && (
+            
+            <View style={styles.metaContainer}>
               <Text
-                style={styles.date}
-                accessibilityLabel={`Publicado em ${new Date(currentPost.createdAt).toLocaleDateString()}`}
+                style={styles.author}
+                accessibilityLabel={`Autor: ${currentPost.author || 'Autor desconhecido'}`}
               >
-                {new Date(currentPost.createdAt).toLocaleDateString('pt-BR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                Por {currentPost.author || 'Autor desconhecido'}
               </Text>
-            )}
+            </View>
           </View>
           
           <View style={styles.divider} />
           
-          <Text
-            style={styles.content}
-            accessibilityLabel="Conteúdo do post"
-            accessibilityRole="text"
-          >
-            {currentPost.content}
-          </Text>
-          
-          {currentPost.updatedAt && currentPost.updatedAt !== currentPost.createdAt && (
+          {/* Post Content */}
+          <View style={styles.contentContainer}>
             <Text
-              style={styles.updatedDate}
-              accessibilityLabel={`Última atualização em ${new Date(currentPost.updatedAt).toLocaleDateString()}`}
+              style={styles.content}
+              accessibilityLabel="Conteúdo do post"
+              accessibilityRole="text"
             >
-              Última atualização: {new Date(currentPost.updatedAt).toLocaleDateString('pt-BR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+              {currentPost.content}
             </Text>
-          )}
+          </View>
+
+          {/* Comments Section */}
+          <View style={styles.commentsContainer}>
+            <CommentSection postId={postId} />
+          </View>
         </View>
       )}
     </ScrollView>
@@ -185,54 +172,101 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8f9fa',
   },
   centerContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8f9fa',
   },
-  contentContainer: {
+  scrollContentContainer: {
     flexGrow: 1,
+    paddingBottom: 20,
   },
   postContainer: {
+    backgroundColor: '#ffffff',
+    margin: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    overflow: 'hidden',
+  },
+  postHeader: {
     padding: 20,
+    paddingBottom: 16,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333333',
+    color: '#1a1a1a',
     lineHeight: 36,
     marginBottom: 16,
   },
   metaContainer: {
-    marginBottom: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 12,
   },
   author: {
     fontSize: 16,
     color: '#2196F3',
     fontWeight: '600',
-    marginBottom: 4,
   },
   date: {
     fontSize: 14,
     color: '#666666',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  subjectTag: {
+    backgroundColor: '#e3f2fd',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#2196F3',
+  },
+  subjectText: {
+    fontSize: 12,
+    color: '#2196F3',
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
   divider: {
     height: 1,
     backgroundColor: '#e0e0e0',
-    marginBottom: 20,
+    marginHorizontal: 20,
+  },
+  contentContainer: {
+    padding: 20,
+    paddingTop: 24,
   },
   content: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#333333',
-    lineHeight: 24,
+    lineHeight: 26,
     textAlign: 'left',
   },
   updatedDate: {
     fontSize: 12,
     color: '#888888',
     fontStyle: 'italic',
-    marginTop: 20,
+    marginTop: 24,
     textAlign: 'right',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  commentsContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });

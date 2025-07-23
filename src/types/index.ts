@@ -6,10 +6,6 @@ export interface Post {
   content: string;
   author: string;
   author_id?: number;
-  created_at?: string;
-  updated_at?: string;
-  createdAt?: string;
-  materia?: string;
 }
 
 export interface User {
@@ -49,7 +45,9 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  author: number;
+  nome: string;
+  author_id: number;
+  tipo_usuario: 'professor' | 'aluno';
 }
 
 export interface UpdatePostRequest {
