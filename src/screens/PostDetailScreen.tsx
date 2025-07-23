@@ -136,9 +136,9 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
           <View style={styles.metaContainer}>
             <Text
               style={styles.author}
-              accessibilityLabel={`Autor: ${currentPost.author}`}
+              accessibilityLabel={`Autor: ${currentPost.author || 'Autor desconhecido'}`}
             >
-              Por {currentPost.author}
+              Por {currentPost.author || 'Autor desconhecido'}
             </Text>
             {currentPost.createdAt && (
               <Text

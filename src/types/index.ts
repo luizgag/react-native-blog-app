@@ -4,9 +4,11 @@ export interface Post {
   id?: number;
   title: string;
   content: string;
+  author: string;
   author_id?: number;
   created_at?: string;
   updated_at?: string;
+  createdAt?: string;
   materia?: string;
 }
 
@@ -47,12 +49,13 @@ export interface AuthResponse {
 export interface CreatePostRequest {
   title: string;
   content: string;
-  author?: number;
+  author: string;
 }
 
 export interface UpdatePostRequest {
   title?: string;
   content?: string;
+  author?: string;
   materia?: string;
 }
 

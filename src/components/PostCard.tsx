@@ -23,14 +23,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onPress }) => {
       style={styles.container}
       onPress={handlePress}
       accessibilityRole="button"
-      accessibilityLabel={`Read post: ${post.title} by ${post.author}`}
+      accessibilityLabel={`Read post: ${post.title} by ${post.author || 'Unknown author'}`}
       accessibilityHint="Tap to view full post content"
     >
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={2}>
           {post.title}
         </Text>
-        <Text style={styles.author}>By {post.author}</Text>
+        <Text style={styles.author}>By {post.author || 'Unknown author'}</Text>
         <Text style={styles.preview} numberOfLines={3}>
           {post.content}
         </Text>

@@ -32,7 +32,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
         <Text style={styles.postTitle} numberOfLines={2}>
           {post.title}
         </Text>
-        <Text style={styles.postAuthor}>por {post.author}</Text>
+        <Text style={styles.postAuthor}>por {post.author || 'Autor desconhecido'}</Text>
       </View>
       
       <Text style={styles.postContent} numberOfLines={3}>
@@ -48,7 +48,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
       <View style={styles.postActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
-          onPress={() => onEdit(post.id)}
+          onPress={() => post.id && onEdit(post.id)}
           accessibilityLabel={`Editar post: ${post.title}`}
           accessibilityHint="Toque para editar este post"
           accessibilityRole="button"
@@ -59,7 +59,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
         
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => onDelete(post.id)}
+          onPress={() => post.id && onDelete(post.id)}
           accessibilityLabel={`Excluir post: ${post.title}`}
           accessibilityHint="Toque para excluir este post"
           accessibilityRole="button"
@@ -122,7 +122,7 @@ const AdminContent: React.FC = () => {
 
   const handleDeletePost = (postId: number) => {
     const post = posts.find(p => p.id === postId);
-    if (post) {
+    if (post && post.id) {
       setDeleteDialog({
         visible: true,
         postId,
@@ -217,7 +217,7 @@ const AdminContent: React.FC = () => {
       <FlatList
         data={posts}
         renderItem={renderPostItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id?.toString() || `post-${Math.random()}`}
         contentContainerStyle={[
           styles.listContainer,
           posts.length === 0 && styles.emptyListContainer,

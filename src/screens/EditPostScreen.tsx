@@ -47,7 +47,7 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
     currentPost, 
     isLoading, 
     error: postsError, 
-    actions: postsActions 
+    actions: { fetchPost, updatePost, clearCurrentPost }
   } = usePosts();
   const { showSuccess, showError, showInfo } = useToast();
   
@@ -70,22 +70,27 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
   // Fetch post data when screen is focused
   useFocusEffect(
     React.useCallback(() => {
-      const fetchPost = async () => {
+      const loadPost = async () => {
         try {
-          await postsActions.fetchPost(postId);
+          await fetchPost(postId);
         } catch (error) {
           // Error is handled by the context
         }
       };
 
-      fetchPost();
+      loadPost();
 
       return () => {
         // Cleanup when screen loses focus
-        postsActions.clearCurrentPost();
+        clearCurrentPost();
       };
-    }, [postId, postsActions])
+    }, [postId, fetchPost, clearCurrentPost])
   );
+
+  // Reset initialization when postId changes
+  useEffect(() => {
+    setIsInitialized(false);
+  }, [postId]);
 
   // Initialize form data when post is loaded
   useEffect(() => {
@@ -93,7 +98,7 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
       const initialData = {
         title: currentPost.title,
         content: currentPost.content,
-        author: currentPost.author,
+        author: currentPost.author || '',
       };
       
       setFormData(initialData);
@@ -172,7 +177,7 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
     setIsSubmitting(true);
 
     try {
-      await postsActions.updatePost(postId, {
+      await updatePost(postId, {
         title: formData.title.trim(),
         content: formData.content.trim(),
         author: formData.author.trim(),
@@ -233,7 +238,7 @@ export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
       <View style={styles.container}>
         <ErrorMessage 
           message={postsError} 
-          onRetry={() => postsActions.fetchPost(postId)}
+          onRetry={() => fetchPost(postId)}
         />
       </View>
     );

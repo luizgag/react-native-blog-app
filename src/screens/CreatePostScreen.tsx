@@ -45,7 +45,7 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    author: user?.name || '',
+    author: user?.name || 'Usuário',
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
