@@ -63,7 +63,7 @@ const studentsReducer = (state: StudentsContextState, action: StudentsAction): S
         data: state.data ? [action.payload, ...state.data] : [action.payload],
         pagination: {
           ...state.pagination,
-          totalItems: state.pagination.totalItems + 1,
+          totalItems: (state.pagination?.totalItems || 0) + 1,
         },
         error: null,
       };
@@ -93,7 +93,7 @@ const studentsReducer = (state: StudentsContextState, action: StudentsAction): S
           : state.currentStudent,
         pagination: {
           ...state.pagination,
-          totalItems: Math.max(0, state.pagination.totalItems - 1),
+          totalItems: Math.max(0, (state.pagination?.totalItems || 0) - 1),
         },
         error: null,
       };
@@ -133,12 +133,12 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
       const response: PaginatedResponse<User> = await enhancedApiService.getStudents(page);
 
       const pagination: PaginationState = {
-        currentPage: response.currentPage,
-        totalPages: response.totalPages,
-        totalItems: response.totalItems,
-        itemsPerPage: Math.ceil(response.totalItems / response.totalPages) || 10,
-        hasNextPage: response.currentPage < response.totalPages,
-        hasPreviousPage: response.currentPage > 1,
+        currentPage: response.currentPage || 1,
+        totalPages: response.totalPages || 1,
+        totalItems: response.totalItems || 0,
+        itemsPerPage: Math.ceil((response.totalItems || 0) / (response.totalPages || 1)) || 10,
+        hasNextPage: (response.currentPage || 1) < (response.totalPages || 1),
+        hasPreviousPage: (response.currentPage || 1) > 1,
       };
 
       dispatch({
@@ -180,7 +180,6 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
     nome: string;
     email: string;
     senha: string;
-    studentId?: string
   }): Promise<void> => {
     try {
       const studentData = {
@@ -202,7 +201,6 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
   const updateStudent = async (id: number, student: {
     nome?: string;
     email?: string;
-    studentId?: string
   }): Promise<void> => {
     try {
       const updatedStudent = await enhancedApiService.updateStudent(id, student);

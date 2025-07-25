@@ -119,11 +119,11 @@ const StudentListContent: React.FC = () => {
   };
 
   const handleLoadMore = async () => {
-    if (loadingMore || !pagination.hasNextPage) return;
+    if (loadingMore || !pagination?.hasNextPage) return;
     
     setLoadingMore(true);
     try {
-      await actions.fetchStudents(pagination.currentPage + 1);
+      await actions.fetchStudents((pagination?.currentPage || 1) + 1);
     } catch (error) {
       // Error is handled by context
       console.error('Failed to load more students:', error);
@@ -222,7 +222,7 @@ const StudentListContent: React.FC = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Gerenciamento de Alunos</Text>
         <Text style={styles.subtitle}>
-          Gerencie contas de alunos ({pagination.totalItems} total)
+          Gerencie contas de alunos ({pagination?.totalItems || 0} total)
         </Text>
       </View>
 
@@ -245,7 +245,7 @@ const StudentListContent: React.FC = () => {
       <FlatList
         data={students || []}
         renderItem={renderStudentItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => (item.id || item.email || Math.random()).toString()}
         contentContainerStyle={[
           styles.listContainer,
           (!students || students.length === 0) && styles.emptyListContainer,
@@ -267,10 +267,10 @@ const StudentListContent: React.FC = () => {
         accessibilityHint="Deslize para baixo para atualizar alunos"
       />
 
-      {pagination.totalPages > 1 && (
+      {(pagination?.totalPages || 1) > 1 && (
         <View style={styles.paginationInfo}>
           <Text style={styles.paginationText}>
-            Página {pagination.currentPage} de {pagination.totalPages}
+            Página {pagination?.currentPage || 1} de {pagination?.totalPages || 1}
           </Text>
         </View>
       )}

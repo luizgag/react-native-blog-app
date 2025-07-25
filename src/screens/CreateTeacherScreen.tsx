@@ -29,7 +29,6 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  department: string;
 }
 
 interface FormErrors {
@@ -37,7 +36,6 @@ interface FormErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
-  department?: string;
 }
 
 export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
@@ -49,7 +47,6 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
     email: '',
     password: '',
     confirmPassword: '',
-    department: '',
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
@@ -93,10 +90,7 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
       newErrors.confirmPassword = 'As senhas não coincidem';
     }
 
-    // Department validation (optional)
-    if (formData.department.trim() && formData.department.trim().length > 100) {
-      newErrors.department = 'Departamento deve ter menos de 100 caracteres';
-    }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -126,10 +120,9 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
 
     try {
       await teachersActions.createTeacher({
-        name: formData.name.trim(),
+        nome: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
-        password: formData.password,
-        department: formData.department.trim() || undefined,
+        senha: formData.password,
       });
 
       // Show success message
@@ -256,19 +249,7 @@ export const CreateTeacherScreen: React.FC<Props> = ({ navigation }) => {
             accessibilityHint="Digite novamente a senha para confirmar"
           />
 
-          <FormInput
-            label="Departamento (Opcional)"
-            value={formData.department}
-            onChangeText={(value) => handleInputChange('department', value)}
-            error={errors.department}
-            placeholder="Digite o nome do departamento..."
-            maxLength={100}
-            validationRules={formValidationSchemas.createTeacher.department}
-            realTimeValidation={true}
-            showValidationIcon={true}
-            accessibilityLabel="Departamento do professor"
-            accessibilityHint="Digite o departamento ou área de assunto do professor"
-          />
+
         </View>
 
         <View style={styles.buttonContainer}>

@@ -28,7 +28,6 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  studentId: string;
 }
 
 interface FormErrors {
@@ -36,7 +35,6 @@ interface FormErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
-  studentId?: string;
 }
 
 export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
@@ -48,7 +46,6 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
     email: '',
     password: '',
     confirmPassword: '',
-    studentId: '',
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
@@ -92,10 +89,7 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
       newErrors.confirmPassword = 'As senhas não coincidem';
     }
 
-    // Student ID validation (optional)
-    if (formData.studentId.trim() && formData.studentId.trim().length > 50) {
-      newErrors.studentId = 'ID do aluno deve ter menos de 50 caracteres';
-    }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -125,10 +119,9 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
 
     try {
       await studentsActions.createStudent({
-        name: formData.name.trim(),
+        nome: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
-        password: formData.password,
-        studentId: formData.studentId.trim() || undefined,
+        senha: formData.password,
       });
 
       // Show success message
@@ -255,19 +248,7 @@ export const CreateStudentScreen: React.FC<Props> = ({ navigation }) => {
             accessibilityHint="Digite novamente a senha para confirmar"
           />
 
-          <FormInput
-            label="ID do Aluno (Opcional)"
-            value={formData.studentId}
-            onChangeText={(value) => handleInputChange('studentId', value)}
-            error={errors.studentId}
-            placeholder="Digite o ID do aluno..."
-            maxLength={50}
-            validationRules={formValidationSchemas.createStudent.studentId}
-            realTimeValidation={true}
-            showValidationIcon={true}
-            accessibilityLabel="ID do aluno"
-            accessibilityHint="Digite o identificador único do aluno"
-          />
+
         </View>
 
         <View style={styles.buttonContainer}>

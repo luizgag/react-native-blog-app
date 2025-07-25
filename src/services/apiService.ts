@@ -482,14 +482,60 @@ class BlogApiService implements ApiService {
   async getStudents(page: number = 1): Promise<any> {
     return RetryService.withRetry(async () => {
       const response = await this.client.get(`/users/students?page=${page}`);
-      return response.data;
+      const data = response.data;
+      
+      // If the API returns a proper paginated response, use it
+      if (data && typeof data === 'object' && 'data' in data && 'currentPage' in data) {
+        return data;
+      }
+      
+      // If the API returns just an array, wrap it in pagination structure
+      if (Array.isArray(data)) {
+        return {
+          data: data,
+          currentPage: page,
+          totalPages: 1,
+          totalItems: data.length
+        };
+      }
+      
+      // Fallback for unexpected response format
+      return {
+        data: [],
+        currentPage: page,
+        totalPages: 1,
+        totalItems: 0
+      };
     });
   }
 
   async getTeachers(page: number = 1): Promise<any> {
     return RetryService.withRetry(async () => {
       const response = await this.client.get(`/users/teachers?page=${page}`);
-      return response.data;
+      const data = response.data;
+      
+      // If the API returns a proper paginated response, use it
+      if (data && typeof data === 'object' && 'data' in data && 'currentPage' in data) {
+        return data;
+      }
+      
+      // If the API returns just an array, wrap it in pagination structure
+      if (Array.isArray(data)) {
+        return {
+          data: data,
+          currentPage: page,
+          totalPages: 1,
+          totalItems: data.length
+        };
+      }
+      
+      // Fallback for unexpected response format
+      return {
+        data: [],
+        currentPage: page,
+        totalPages: 1,
+        totalItems: 0
+      };
     });
   }
 
@@ -528,13 +574,91 @@ class BlogApiService implements ApiService {
   async createTeacher(userData: RegisterRequest): Promise<any> {
     const teacherData = { ...userData, tipo_usuario: 'professor' as const };
     const response = await this.client.post('/register', teacherData);
-    return response.data;
+    
+    // Handle different response formats
+    const data = response.data;
+    
+    // If response contains error, throw it
+    if (data && typeof data === 'object' && 'error' in data) {
+      throw new Error(data.error);
+    }
+    
+    // If response is just an ID, create a basic user object
+    if (typeof data === 'number') {
+      return {
+        id: data,
+        nome: userData.nome,
+        email: userData.email,
+        tipo_usuario: 'professor',
+        createdAt: new Date().toISOString()
+      };
+    }
+    
+    // If response is already a user object, ensure it has an id
+    if (data && typeof data === 'object') {
+      return {
+        id: data.id || data.userId || Date.now(),
+        nome: data.nome || userData.nome,
+        email: data.email || userData.email,
+        tipo_usuario: 'professor',
+        createdAt: data.createdAt || new Date().toISOString(),
+        ...data
+      };
+    }
+    
+    // Fallback: create minimal user object
+    return {
+      id: Date.now(),
+      nome: userData.nome,
+      email: userData.email,
+      tipo_usuario: 'professor',
+      createdAt: new Date().toISOString()
+    };
   }
 
   async createStudent(userData: RegisterRequest): Promise<any> {
     const studentData = { ...userData, tipo_usuario: 'aluno' as const };
     const response = await this.client.post('/register', studentData);
-    return response.data;
+    
+    // Handle different response formats
+    const data = response.data;
+    
+    // If response contains error, throw it
+    if (data && typeof data === 'object' && 'error' in data) {
+      throw new Error(data.error);
+    }
+    
+    // If response is just an ID, create a basic user object
+    if (typeof data === 'number') {
+      return {
+        id: data,
+        nome: userData.nome,
+        email: userData.email,
+        tipo_usuario: 'aluno',
+        createdAt: new Date().toISOString()
+      };
+    }
+    
+    // If response is already a user object, ensure it has an id
+    if (data && typeof data === 'object') {
+      return {
+        id: data.id || data.userId || Date.now(),
+        nome: data.nome || userData.nome,
+        email: data.email || userData.email,
+        tipo_usuario: 'aluno',
+        createdAt: data.createdAt || new Date().toISOString(),
+        ...data
+      };
+    }
+    
+    // Fallback: create minimal user object
+    return {
+      id: Date.now(),
+      nome: userData.nome,
+      email: userData.email,
+      tipo_usuario: 'aluno',
+      createdAt: new Date().toISOString()
+    };
   }
 
   // Authentication API methods (no retry for login to avoid account lockout)
