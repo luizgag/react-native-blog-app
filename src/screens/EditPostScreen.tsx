@@ -14,6 +14,7 @@ import { MainStackParamList } from '../navigation';
 import { useAuth } from '../context/AuthContext';
 import { usePosts } from '../context/PostsContext';
 import { useToast } from '../context/AppContext';
+import { ProtectedRoute } from '../navigation/ProtectedRoute';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -38,7 +39,7 @@ interface FormErrors {
   content?: string;
 }
 
-export const EditPostScreen: React.FC<Props> = ({ navigation, route }) => {
+const EditPostContent: React.FC<Props> = ({ navigation, route }) => {
   const { postId } = route.params;
   const { user } = useAuth();
   const { 
@@ -385,3 +386,14 @@ const styles = StyleSheet.create({
     flex: 2,
   },
 });
+
+export const EditPostScreen: React.FC<Props> = (props) => {
+  return (
+    <ProtectedRoute 
+      requiredRole="professor"
+      fallbackMessage="Apenas professores podem editar posts."
+    >
+      <EditPostContent {...props} />
+    </ProtectedRoute>
+  );
+};

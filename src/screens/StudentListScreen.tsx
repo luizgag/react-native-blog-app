@@ -292,7 +292,7 @@ const StudentListContent: React.FC = () => {
 export const StudentListScreen: React.FC = () => {
   return (
     <ProtectedRoute 
-      requiredRole="teacher"
+      requiredRole="professor"
       fallbackMessage="Apenas professores podem acessar o gerenciamento de alunos."
     >
       <StudentListContent />

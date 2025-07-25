@@ -1,4 +1,5 @@
 import React from 'react';
+import { TouchableOpacity, Alert } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -46,29 +47,81 @@ const Stack = createStackNavigator<MainStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Drawer = createDrawerNavigator<MainDrawerParamList>();
 
+// Logout Button Component
+const LogoutButton: React.FC = () => {
+  const { actions } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sair',
+      'Tem certeza de que deseja sair?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sair',
+          style: 'destructive',
+          onPress: () => {
+            actions.logout();
+          },
+        },
+      ]
+    );
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={handleLogout}
+      style={{ marginRight: 15 }}
+      accessibilityLabel="Sair"
+      accessibilityHint="Toque para fazer logout"
+      accessibilityRole="button"
+    >
+      <Icon name="logout" size={24} color="#2196F3" />
+    </TouchableOpacity>
+  );
+};
+
 // Stack Navigator for Home-related screens
 const HomeStackNavigator: React.FC = () => {
+  const { user } = useAuth();
+  const isStudent = user?.tipo_usuario === 'aluno';
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: 'Posts do Blog' }}
+        options={{
+          title: 'Posts do Blog',
+          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+        }}
       />
       <Stack.Screen
         name="PostDetail"
         component={PostDetailScreen}
-        options={{ title: 'Detalhes do Post' }}
+        options={{
+          title: 'Detalhes do Post',
+          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+        }}
       />
       <Stack.Screen
         name="CreatePost"
         component={CreatePostScreen}
-        options={{ title: 'Criar Post' }}
+        options={{
+          title: 'Criar Post',
+          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+        }}
       />
       <Stack.Screen
         name="EditPost"
         component={EditPostScreen}
-        options={{ title: 'Editar Post' }}
+        options={{
+          title: 'Editar Post',
+          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+        }}
       />
     </Stack.Navigator>
   );
@@ -151,7 +204,12 @@ const StudentStackNavigator: React.FC = () => {
 // Tab Navigator for main app sections
 const MainTabNavigator: React.FC = () => {
   const { user } = useAuth();
-  const isTeacher = user?.role === 'teacher';
+  const isTeacher = user?.tipo_usuario === 'professor';
+
+  // Debug logging
+  console.log('MainTabNavigator - User:', JSON.stringify(user, null, 2));
+  console.log('MainTabNavigator - User type:', user?.tipo_usuario);
+  console.log('MainTabNavigator - Is teacher:', isTeacher);
 
   return (
     <Tab.Navigator
@@ -193,7 +251,7 @@ const MainTabNavigator: React.FC = () => {
 // Main Navigator with Drawer (for teachers only)
 export const MainNavigator: React.FC = () => {
   const { user } = useAuth();
-  const isTeacher = user?.role === 'teacher';
+  const isTeacher = user?.tipo_usuario === 'professor';
 
   if (!isTeacher) {
     // Students only get the tab navigator without drawer

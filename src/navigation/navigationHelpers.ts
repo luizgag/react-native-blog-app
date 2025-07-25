@@ -82,13 +82,13 @@ export const routeConfig = {
   ] as const,
   
   // Check if a route is accessible to the current user
-  isRouteAccessible: (routeName: keyof MainStackParamList, userRole: 'teacher' | 'student'): boolean => {
+  isRouteAccessible: (routeName: keyof MainStackParamList, userRole: 'professor' | 'aluno'): boolean => {
     if (routeConfig.publicRoutes.includes(routeName as any)) {
       return true;
     }
     
     if (routeConfig.teacherOnlyRoutes.includes(routeName as any)) {
-      return userRole === 'teacher';
+      return userRole === 'professor';
     }
     
     return false;
@@ -96,7 +96,7 @@ export const routeConfig = {
 };
 
 // Screen options helper
-export const getScreenOptions = (userRole: 'teacher' | 'student') => ({
+export const getScreenOptions = (userRole: 'professor' | 'aluno') => ({
   headerStyle: {
     backgroundColor: '#2196F3',
   },
@@ -105,7 +105,7 @@ export const getScreenOptions = (userRole: 'teacher' | 'student') => ({
     fontWeight: 'bold',
   },
   // Add role-specific options if needed
-  ...(userRole === 'teacher' && {
+  ...(userRole === 'professor' && {
     headerRight: () => null, // Can add teacher-specific header buttons
   }),
 });

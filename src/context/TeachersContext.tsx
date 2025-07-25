@@ -4,7 +4,7 @@ import {
   TeachersContextState,
   TeachersAction
 } from '../types/context';
-import { Teacher, PaginatedResponse } from '../types';
+import { User, PaginatedResponse } from '../types';
 import { enhancedApiService } from '../services';
 import { PaginationState } from '../types/utils';
 
@@ -72,8 +72,8 @@ const teachersReducer = (state: TeachersContextState, action: TeachersAction): T
       return {
         ...state,
         data: state.data
-          ? state.data.map(teacher =>
-            teacher.id === action.payload.id ? action.payload : teacher
+          ? state.data.map(user =>
+            user.id === action.payload.id ? action.payload : user
           )
           : null,
         currentTeacher: state.currentTeacher?.id === action.payload.id
@@ -86,7 +86,7 @@ const teachersReducer = (state: TeachersContextState, action: TeachersAction): T
       return {
         ...state,
         data: state.data
-          ? state.data.filter(teacher => teacher.id !== action.payload)
+          ? state.data.filter(user => user.id !== action.payload)
           : null,
         currentTeacher: state.currentTeacher?.id === action.payload
           ? null
@@ -130,7 +130,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
     dispatch({ type: 'FETCH_TEACHERS_START' });
 
     try {
-      const response: PaginatedResponse<Teacher> = await enhancedApiService.getTeachers(page);
+      const response: PaginatedResponse<User> = await enhancedApiService.getTeachers(page);
 
       const pagination: PaginationState = {
         currentPage: response.currentPage,
@@ -177,13 +177,20 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
   };
 
   const createTeacher = async (teacher: {
-    name: string;
+    nome: string;
     email: string;
-    password: string;
+    senha: string;
     department?: string
   }): Promise<void> => {
     try {
-      const newTeacher = await enhancedApiService.createTeacher(teacher);
+      const teacherData = {
+        nome: teacher.nome,
+        email: teacher.email,
+        senha: teacher.senha,
+        confirmacao_senha: teacher.senha, // Use the same password for confirmation
+        tipo_usuario: 'professor' as const
+      };
+      const newTeacher = await enhancedApiService.createTeacher(teacherData);
       dispatch({ type: 'CREATE_TEACHER_SUCCESS', payload: newTeacher });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create teacher. Please try again.';
@@ -193,7 +200,7 @@ export const TeachersProvider: React.FC<TeachersProviderProps> = ({ children }) 
   };
 
   const updateTeacher = async (id: number, teacher: {
-    name?: string;
+    nome?: string;
     email?: string;
     department?: string
   }): Promise<void> => {

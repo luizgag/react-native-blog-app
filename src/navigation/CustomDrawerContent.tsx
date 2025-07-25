@@ -45,11 +45,11 @@ export const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props
           <View style={styles.userAvatar}>
             <Icon name="account-circle" size={60} color="#2196F3" />
           </View>
-          <Text style={styles.userName}>{user?.name}</Text>
+          <Text style={styles.userName}>{user?.nome}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
             <Text style={styles.roleText}>
-              {user?.role === 'teacher' ? 'Professor' : 'Aluno'}
+              {user?.tipo_usuario === 'professor' ? 'Professor' : 'Aluno'}
             </Text>
           </View>
         </View>

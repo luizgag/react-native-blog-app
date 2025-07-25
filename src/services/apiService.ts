@@ -479,6 +479,46 @@ class BlogApiService implements ApiService {
     });
   }
 
+  async getStudents(page: number = 1): Promise<any> {
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get(`/users/students?page=${page}`);
+      return response.data;
+    });
+  }
+
+  async getTeachers(page: number = 1): Promise<any> {
+    return RetryService.withRetry(async () => {
+      const response = await this.client.get(`/users/teachers?page=${page}`);
+      return response.data;
+    });
+  }
+
+  async updateStudent(id: number, userData: any): Promise<any> {
+    return RetryService.withRetry(async () => {
+      const response = await this.client.put(`/users/students/${id}`, userData);
+      return response.data;
+    });
+  }
+
+  async updateTeacher(id: number, userData: any): Promise<any> {
+    return RetryService.withRetry(async () => {
+      const response = await this.client.put(`/users/teachers/${id}`, userData);
+      return response.data;
+    });
+  }
+
+  async deleteStudent(id: number): Promise<void> {
+    return RetryService.withRetry(async () => {
+      await this.client.delete(`/users/students/${id}`);
+    });
+  }
+
+  async deleteTeacher(id: number): Promise<void> {
+    return RetryService.withRetry(async () => {
+      await this.client.delete(`/users/teachers/${id}`);
+    });
+  }
+
   // Registration methods (no retry to avoid duplicates)
   async register(userData: RegisterRequest): Promise<any> {
     const response = await this.client.post('/register', userData);
@@ -522,17 +562,22 @@ class BlogApiService implements ApiService {
     // Store auth token
     await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken);
 
+    // Debug logging for login response
+    console.log('Login response data:', JSON.stringify(responseData, null, 2));
+
     // Create AuthResponse format for compatibility
     const authResponse: AuthResponse = {
       user: {
         id: responseData.userId || responseData.id || 1,
         nome: responseData.name || responseData.nome || responseData.usuario || 'Usuário',
         email: credentials.email,
-        tipo_usuario: responseData.tipo_usuario || 'teacher',
+        tipo_usuario: responseData.tipo_usuario || 'professor', // Default to 'professor' if not provided
         token: accessToken
       },
       token: accessToken
     };
+
+    console.log('Created auth response:', JSON.stringify(authResponse, null, 2));
 
     await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(authResponse.user));
 

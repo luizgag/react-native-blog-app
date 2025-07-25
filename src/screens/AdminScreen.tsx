@@ -70,11 +70,11 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
           {isLoadingAuthor && <ActivityIndicator size="small" color="#666666" style={styles.authorLoader} />}
         </View>
       </View>
-      
+
       <Text style={styles.postContent} numberOfLines={3}>
         {post.content}
       </Text>
-      
+
       <View style={styles.postActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
@@ -86,7 +86,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
           <Icon name="edit" size={20} color="#007AFF" />
           <Text style={styles.editButtonText}>Editar</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => post.id && onDelete(post.id)}
@@ -282,8 +282,8 @@ const AdminContent: React.FC = () => {
 
 export const AdminScreen: React.FC = () => {
   return (
-    <ProtectedRoute 
-      requiredRole="teacher"
+    <ProtectedRoute
+      requiredRole="professor"
       fallbackMessage="Apenas professores podem acessar o painel administrativo."
     >
       <AdminContent />

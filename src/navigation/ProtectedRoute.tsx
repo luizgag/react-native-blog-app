@@ -5,19 +5,19 @@ import { ActionButton } from '../components/ActionButton';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'teacher' | 'student';
+  requiredRole?: 'professor' | 'aluno';
   fallbackMessage?: string;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  requiredRole = 'teacher',
+  requiredRole = 'professor',
   fallbackMessage = 'You do not have permission to access this screen.',
 }) => {
   const { user, actions } = useAuth();
 
   // Check if user has required role
-  const hasAccess = user?.role === requiredRole || requiredRole === 'student';
+  const hasAccess = user?.tipo_usuario === requiredRole;
 
   if (!hasAccess) {
     return (

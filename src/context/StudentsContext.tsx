@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { 
-  StudentsContextValue, 
-  StudentsContextState, 
+import {
+  StudentsContextValue,
+  StudentsContextState,
   StudentsAction
 } from '../types/context';
-import { Student, PaginatedResponse } from '../types';
+import { User, PaginatedResponse } from '../types';
 import { enhancedApiService } from '../services';
 import { PaginationState } from '../types/utils';
 
@@ -33,7 +33,7 @@ const studentsReducer = (state: StudentsContextState, action: StudentsAction): S
         loading: 'loading',
         error: null,
       };
-    
+
     case 'FETCH_STUDENTS_SUCCESS':
       return {
         ...state,
@@ -42,21 +42,21 @@ const studentsReducer = (state: StudentsContextState, action: StudentsAction): S
         loading: 'success',
         error: null,
       };
-    
+
     case 'FETCH_STUDENTS_FAILURE':
       return {
         ...state,
         loading: 'error',
         error: action.payload,
       };
-    
+
     case 'FETCH_STUDENT_SUCCESS':
       return {
         ...state,
         currentStudent: action.payload,
         error: null,
       };
-    
+
     case 'CREATE_STUDENT_SUCCESS':
       return {
         ...state,
@@ -67,29 +67,29 @@ const studentsReducer = (state: StudentsContextState, action: StudentsAction): S
         },
         error: null,
       };
-    
+
     case 'UPDATE_STUDENT_SUCCESS':
       return {
         ...state,
-        data: state.data 
-          ? state.data.map(student => 
-              student.id === action.payload.id ? action.payload : student
-            )
+        data: state.data
+          ? state.data.map(user =>
+            user.id === action.payload.id ? action.payload : user
+          )
           : null,
-        currentStudent: state.currentStudent?.id === action.payload.id 
-          ? action.payload 
+        currentStudent: state.currentStudent?.id === action.payload.id
+          ? action.payload
           : state.currentStudent,
         error: null,
       };
-    
+
     case 'DELETE_STUDENT_SUCCESS':
       return {
         ...state,
-        data: state.data 
-          ? state.data.filter(student => student.id !== action.payload)
+        data: state.data
+          ? state.data.filter(user => user.id !== action.payload)
           : null,
-        currentStudent: state.currentStudent?.id === action.payload 
-          ? null 
+        currentStudent: state.currentStudent?.id === action.payload
+          ? null
           : state.currentStudent,
         pagination: {
           ...state.pagination,
@@ -97,19 +97,19 @@ const studentsReducer = (state: StudentsContextState, action: StudentsAction): S
         },
         error: null,
       };
-    
+
     case 'CLEAR_CURRENT_STUDENT':
       return {
         ...state,
         currentStudent: null,
       };
-    
+
     case 'CLEAR_ERROR':
       return {
         ...state,
         error: null,
       };
-    
+
     default:
       return state;
   }
@@ -128,10 +128,10 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
 
   const fetchStudents = async (page: number = 1): Promise<void> => {
     dispatch({ type: 'FETCH_STUDENTS_START' });
-    
+
     try {
-      const response: PaginatedResponse<Student> = await enhancedApiService.getStudents(page);
-      
+      const response: PaginatedResponse<User> = await enhancedApiService.getStudents(page);
+
       const pagination: PaginationState = {
         currentPage: response.currentPage,
         totalPages: response.totalPages,
@@ -140,13 +140,13 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
         hasNextPage: response.currentPage < response.totalPages,
         hasPreviousPage: response.currentPage > 1,
       };
-      
-      dispatch({ 
-        type: 'FETCH_STUDENTS_SUCCESS', 
-        payload: { 
-          data: response.data, 
-          pagination 
-        } 
+
+      dispatch({
+        type: 'FETCH_STUDENTS_SUCCESS',
+        payload: {
+          data: response.data,
+          pagination
+        }
       });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to fetch students. Please try again.';
@@ -162,7 +162,7 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
       if (!state.data) {
         await fetchStudents();
       }
-      
+
       const student = state.data?.find(s => s.id === id);
       if (student) {
         dispatch({ type: 'FETCH_STUDENT_SUCCESS', payload: student });
@@ -176,14 +176,21 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
     }
   };
 
-  const createStudent = async (student: { 
-    name: string; 
-    email: string; 
-    password: string; 
-    studentId?: string 
+  const createStudent = async (student: {
+    nome: string;
+    email: string;
+    senha: string;
+    studentId?: string
   }): Promise<void> => {
     try {
-      const newStudent = await enhancedApiService.createStudent(student);
+      const studentData = {
+        nome: student.nome,
+        email: student.email,
+        senha: student.senha,
+        confirmacao_senha: student.senha, // Use the same password for confirmation
+        tipo_usuario: 'aluno' as const
+      };
+      const newStudent = await enhancedApiService.createStudent(studentData);
       dispatch({ type: 'CREATE_STUDENT_SUCCESS', payload: newStudent });
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create student. Please try again.';
@@ -192,10 +199,10 @@ export const StudentsProvider: React.FC<StudentsProviderProps> = ({ children }) 
     }
   };
 
-  const updateStudent = async (id: number, student: { 
-    name?: string; 
-    email?: string; 
-    studentId?: string 
+  const updateStudent = async (id: number, student: {
+    nome?: string;
+    email?: string;
+    studentId?: string
   }): Promise<void> => {
     try {
       const updatedStudent = await enhancedApiService.updateStudent(id, student);

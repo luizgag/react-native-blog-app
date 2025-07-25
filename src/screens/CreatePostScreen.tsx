@@ -13,6 +13,7 @@ import { MainStackParamList } from '../navigation';
 import { useAuth } from '../context/AuthContext';
 import { usePosts } from '../context/PostsContext';
 import { useToast } from '../context/AppContext';
+import { ProtectedRoute } from '../navigation/ProtectedRoute';
 import { FormInput } from '../components/FormInput';
 import { ActionButton } from '../components/ActionButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -35,7 +36,7 @@ interface FormErrors {
   content?: string;
 }
 
-export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
+const CreatePostContent: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
   const { actions: postsActions, error: postsError } = usePosts();
   const { showSuccess, showError } = useToast();
@@ -281,3 +282,14 @@ const styles = StyleSheet.create({
     flex: 2,
   },
 });
+
+export const CreatePostScreen: React.FC<Props> = (props) => {
+  return (
+    <ProtectedRoute 
+      requiredRole="professor"
+      fallbackMessage="Apenas professores podem criar posts."
+    >
+      <CreatePostContent {...props} />
+    </ProtectedRoute>
+  );
+};

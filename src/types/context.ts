@@ -1,6 +1,6 @@
 // Context and state management specific types
-import { Post, AuthUser, CreatePostRequest, UpdatePostRequest } from './index';
-import { AsyncState, PaginationState, ToastMessage } from './utils';
+import { Post, AuthUser, CreatePostRequest, UpdatePostRequest, User, PaginatedResponse } from './index';
+import { LoadingState, PaginationState, ToastMessage } from './utils';
 
 // Auth Context Types
 export interface AuthContextState {
@@ -49,24 +49,50 @@ export interface PostsContextValue extends PostsContextState {
   actions: PostsContextActions;
 }
 
+// Teachers Context Types
+export interface TeachersContextState {
+  data: User[] | null;
+  loading: LoadingState;
+  error: string | null;
+  pagination: PaginationState;
+  currentTeacher: User | null;
+}
+
 export interface TeachersContextActions {
   fetchTeachers: (page?: number) => Promise<void>;
   fetchTeacher: (id: number) => Promise<void>;
-  createTeacher: (teacher: { name: string; email: string; password: string; department?: string }) => Promise<void>;
-  updateTeacher: (id: number, teacher: { name?: string; email?: string; department?: string }) => Promise<void>;
+  createTeacher: (teacher: { nome: string; email: string; senha: string; department?: string }) => Promise<void>;
+  updateTeacher: (id: number, teacher: { nome?: string; email?: string; department?: string }) => Promise<void>;
   deleteTeacher: (id: number) => Promise<void>;
   clearCurrentTeacher: () => void;
   clearError: () => void;
 }
 
+export interface TeachersContextValue extends TeachersContextState {
+  actions: TeachersContextActions;
+}
+
+// Students Context Types
+export interface StudentsContextState {
+  data: User[] | null;
+  loading: LoadingState;
+  error: string | null;
+  pagination: PaginationState;
+  currentStudent: User | null;
+}
+
 export interface StudentsContextActions {
   fetchStudents: (page?: number) => Promise<void>;
   fetchStudent: (id: number) => Promise<void>;
-  createStudent: (student: { name: string; email: string; password: string; studentId?: string }) => Promise<void>;
-  updateStudent: (id: number, student: { name?: string; email?: string; studentId?: string }) => Promise<void>;
+  createStudent: (student: { nome: string; email: string; senha: string; studentId?: string }) => Promise<void>;
+  updateStudent: (id: number, student: { nome?: string; email?: string; studentId?: string }) => Promise<void>;
   deleteStudent: (id: number) => Promise<void>;
   clearCurrentStudent: () => void;
   clearError: () => void;
+}
+
+export interface StudentsContextValue extends StudentsContextState {
+  actions: StudentsContextActions;
 }
 
 // Global App Context Types (for app-wide state)
@@ -117,14 +143,22 @@ export type PostsAction =
 
 export type TeachersAction =
   | { type: 'FETCH_TEACHERS_START' }
+  | { type: 'FETCH_TEACHERS_SUCCESS'; payload: { data: User[]; pagination: PaginationState } }
   | { type: 'FETCH_TEACHERS_FAILURE'; payload: string }
+  | { type: 'FETCH_TEACHER_SUCCESS'; payload: User }
+  | { type: 'CREATE_TEACHER_SUCCESS'; payload: User }
+  | { type: 'UPDATE_TEACHER_SUCCESS'; payload: User }
   | { type: 'DELETE_TEACHER_SUCCESS'; payload: number }
   | { type: 'CLEAR_CURRENT_TEACHER' }
   | { type: 'CLEAR_ERROR' };
 
 export type StudentsAction =
   | { type: 'FETCH_STUDENTS_START' }
+  | { type: 'FETCH_STUDENTS_SUCCESS'; payload: { data: User[]; pagination: PaginationState } }
   | { type: 'FETCH_STUDENTS_FAILURE'; payload: string }
+  | { type: 'FETCH_STUDENT_SUCCESS'; payload: User }
+  | { type: 'CREATE_STUDENT_SUCCESS'; payload: User }
+  | { type: 'UPDATE_STUDENT_SUCCESS'; payload: User }
   | { type: 'DELETE_STUDENT_SUCCESS'; payload: number }
   | { type: 'CLEAR_CURRENT_STUDENT' }
   | { type: 'CLEAR_ERROR' };
