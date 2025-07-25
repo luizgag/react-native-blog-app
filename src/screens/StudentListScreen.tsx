@@ -17,10 +17,10 @@ import { ActionButton } from '../components/ActionButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { Student } from '../types';
+import { User } from '../types';
 
 interface StudentItemProps {
-  student: Student;
+  student: User;
   onEdit: (studentId: number) => void;
   onDelete: (studentId: number) => void;
 }
@@ -30,11 +30,11 @@ const StudentItem: React.FC<StudentItemProps> = ({ student, onEdit, onDelete }) 
     <View style={styles.studentItem}>
       <View style={styles.studentHeader}>
         <View style={styles.studentInfo}>
-          <Text style={styles.studentName}>{student.name}</Text>
+          <Text style={styles.studentName}>{student.nome}</Text>
           <Text style={styles.studentEmail}>{student.email}</Text>
-          {student.studentId && (
+          {student.id && (
             <Text style={styles.studentIdText}>
-              ID do Aluno: {student.studentId}
+              ID do Aluno: {student.id}
             </Text>
           )}
         </View>
@@ -54,7 +54,7 @@ const StudentItem: React.FC<StudentItemProps> = ({ student, onEdit, onDelete }) 
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
           onPress={() => onEdit(student.id)}
-          accessibilityLabel={`Editar aluno: ${student.name}`}
+          accessibilityLabel={`Editar aluno: ${student.nome}`}
           accessibilityHint="Toque para editar as informações deste aluno"
           accessibilityRole="button"
         >
@@ -65,7 +65,7 @@ const StudentItem: React.FC<StudentItemProps> = ({ student, onEdit, onDelete }) 
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => onDelete(student.id)}
-          accessibilityLabel={`Excluir aluno: ${student.name}`}
+          accessibilityLabel={`Excluir aluno: ${student.nome}`}
           accessibilityHint="Toque para excluir este aluno"
           accessibilityRole="button"
         >
@@ -146,7 +146,7 @@ const StudentListContent: React.FC = () => {
       setDeleteDialog({
         visible: true,
         studentId,
-        studentName: student.name,
+        studentName: student.nome,
       });
     }
   };
@@ -175,7 +175,7 @@ const StudentListContent: React.FC = () => {
     setDeleteDialog({ visible: false, studentId: null, studentName: '' });
   };
 
-  const renderStudentItem = ({ item }: { item: Student }) => (
+  const renderStudentItem = ({ item }: { item: User }) => (
     <StudentItem
       student={item}
       onEdit={handleEditStudent}
