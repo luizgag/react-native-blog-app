@@ -1,8 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, Alert } from 'react-native';
+import { TouchableOpacity, Alert, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { DrawerActions } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -84,11 +85,36 @@ const LogoutButton: React.FC = () => {
   );
 };
 
+// Drawer Toggle Button Component
+const DrawerToggleButton: React.FC<{ navigation: any }> = ({ navigation }) => {
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+      style={{ marginLeft: 15 }}
+      accessibilityLabel="Abrir menu"
+      accessibilityHint="Toque para abrir o menu lateral"
+      accessibilityRole="button"
+    >
+      <Icon name="menu" size={24} color="#2196F3" />
+    </TouchableOpacity>
+  );
+};
+
+// Header Buttons Component (combines drawer toggle and logout)
+const HeaderButtons: React.FC<{ navigation: any; showDrawerToggle?: boolean }> = ({
+  navigation,
+  showDrawerToggle = false
+}) => {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {showDrawerToggle && <DrawerToggleButton navigation={navigation} />}
+      <LogoutButton />
+    </View>
+  );
+};
+
 // Stack Navigator for Home-related screens
 const HomeStackNavigator: React.FC = () => {
-  const { user } = useAuth();
-  const isStudent = user?.tipo_usuario === 'aluno';
-
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -96,7 +122,7 @@ const HomeStackNavigator: React.FC = () => {
         component={HomeScreen}
         options={{
           title: 'Posts do Blog',
-          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+          headerRight: () => <LogoutButton />,
         }}
       />
       <Stack.Screen
@@ -104,7 +130,7 @@ const HomeStackNavigator: React.FC = () => {
         component={PostDetailScreen}
         options={{
           title: 'Detalhes do Post',
-          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+          headerRight: () => <LogoutButton />,
         }}
       />
       <Stack.Screen
@@ -112,7 +138,7 @@ const HomeStackNavigator: React.FC = () => {
         component={CreatePostScreen}
         options={{
           title: 'Criar Post',
-          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+          headerRight: () => <LogoutButton />,
         }}
       />
       <Stack.Screen
@@ -120,7 +146,7 @@ const HomeStackNavigator: React.FC = () => {
         component={EditPostScreen}
         options={{
           title: 'Editar Post',
-          headerRight: isStudent ? () => <LogoutButton /> : undefined,
+          headerRight: () => <LogoutButton />,
         }}
       />
     </Stack.Navigator>
@@ -134,22 +160,34 @@ const AdminStackNavigator: React.FC = () => {
       <Stack.Screen
         name="Admin"
         component={AdminScreen}
-        options={{ title: 'Painel Administrativo' }}
+        options={{
+          title: 'Painel Administrativo',
+          headerRight: () => <LogoutButton />,
+        }}
       />
       <Stack.Screen
         name="CreatePost"
         component={CreatePostScreen}
-        options={{ title: 'Criar Post' }}
+        options={{
+          title: 'Criar Post',
+          headerRight: () => <LogoutButton />,
+        }}
       />
       <Stack.Screen
         name="EditPost"
         component={EditPostScreen}
-        options={{ title: 'Editar Post' }}
+        options={{
+          title: 'Editar Post',
+          headerRight: () => <LogoutButton />,
+        }}
       />
       <Stack.Screen
         name="PostDetail"
         component={PostDetailScreen}
-        options={{ title: 'Detalhes do Post' }}
+        options={{
+          title: 'Detalhes do Post',
+          headerRight: () => <LogoutButton />,
+        }}
       />
     </Stack.Navigator>
   );
@@ -261,20 +299,30 @@ export const MainNavigator: React.FC = () => {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: false,
+      screenOptions={({ navigation }) => ({
+        headerShown: true,
+        headerLeft: () => <DrawerToggleButton navigation={navigation} />,
+        headerRight: () => <LogoutButton />,
+        headerStyle: {
+          backgroundColor: '#FFFFFF',
+        },
+        headerTintColor: '#333',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
         drawerStyle: {
           backgroundColor: '#f8f9fa',
           width: 280,
         },
         drawerActiveTintColor: '#2196F3',
         drawerInactiveTintColor: '#666',
-      }}
+      })}
     >
       <Drawer.Screen
         name="MainTabs"
         component={MainTabNavigator}
         options={{
+          title: 'Blog App',
           drawerLabel: 'Início',
           drawerIcon: ({ color, size }) => (
             <Icon name="home" size={size} color={color} />
@@ -285,6 +333,7 @@ export const MainNavigator: React.FC = () => {
         name="TeacherManagement"
         component={TeacherStackNavigator}
         options={{
+          title: 'Gerenciar Professores',
           drawerLabel: 'Gerenciar Professores',
           drawerIcon: ({ color, size }) => (
             <Icon name="school" size={size} color={color} />
@@ -295,6 +344,7 @@ export const MainNavigator: React.FC = () => {
         name="StudentManagement"
         component={StudentStackNavigator}
         options={{
+          title: 'Gerenciar Alunos',
           drawerLabel: 'Gerenciar Alunos',
           drawerIcon: ({ color, size }) => (
             <Icon name="people" size={size} color={color} />
