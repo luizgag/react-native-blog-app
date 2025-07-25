@@ -1,5 +1,5 @@
 // Context and state management specific types
-import { Post, Teacher, Student, AuthUser, CreatePostRequest, UpdatePostRequest } from './index';
+import { Post, AuthUser, CreatePostRequest, UpdatePostRequest } from './index';
 import { AsyncState, PaginationState, ToastMessage } from './utils';
 
 // Auth Context Types
@@ -49,12 +49,6 @@ export interface PostsContextValue extends PostsContextState {
   actions: PostsContextActions;
 }
 
-// Teachers Context Types
-export interface TeachersContextState extends AsyncState<Teacher[]> {
-  pagination: PaginationState;
-  currentTeacher: Teacher | null;
-}
-
 export interface TeachersContextActions {
   fetchTeachers: (page?: number) => Promise<void>;
   fetchTeacher: (id: number) => Promise<void>;
@@ -65,16 +59,6 @@ export interface TeachersContextActions {
   clearError: () => void;
 }
 
-export interface TeachersContextValue extends TeachersContextState {
-  actions: TeachersContextActions;
-}
-
-// Students Context Types
-export interface StudentsContextState extends AsyncState<Student[]> {
-  pagination: PaginationState;
-  currentStudent: Student | null;
-}
-
 export interface StudentsContextActions {
   fetchStudents: (page?: number) => Promise<void>;
   fetchStudent: (id: number) => Promise<void>;
@@ -83,10 +67,6 @@ export interface StudentsContextActions {
   deleteStudent: (id: number) => Promise<void>;
   clearCurrentStudent: () => void;
   clearError: () => void;
-}
-
-export interface StudentsContextValue extends StudentsContextState {
-  actions: StudentsContextActions;
 }
 
 // Global App Context Types (for app-wide state)
@@ -137,22 +117,14 @@ export type PostsAction =
 
 export type TeachersAction =
   | { type: 'FETCH_TEACHERS_START' }
-  | { type: 'FETCH_TEACHERS_SUCCESS'; payload: { data: Teacher[]; pagination: PaginationState } }
   | { type: 'FETCH_TEACHERS_FAILURE'; payload: string }
-  | { type: 'FETCH_TEACHER_SUCCESS'; payload: Teacher }
-  | { type: 'CREATE_TEACHER_SUCCESS'; payload: Teacher }
-  | { type: 'UPDATE_TEACHER_SUCCESS'; payload: Teacher }
   | { type: 'DELETE_TEACHER_SUCCESS'; payload: number }
   | { type: 'CLEAR_CURRENT_TEACHER' }
   | { type: 'CLEAR_ERROR' };
 
 export type StudentsAction =
   | { type: 'FETCH_STUDENTS_START' }
-  | { type: 'FETCH_STUDENTS_SUCCESS'; payload: { data: Student[]; pagination: PaginationState } }
   | { type: 'FETCH_STUDENTS_FAILURE'; payload: string }
-  | { type: 'FETCH_STUDENT_SUCCESS'; payload: Student }
-  | { type: 'CREATE_STUDENT_SUCCESS'; payload: Student }
-  | { type: 'UPDATE_STUDENT_SUCCESS'; payload: Student }
   | { type: 'DELETE_STUDENT_SUCCESS'; payload: number }
   | { type: 'CLEAR_CURRENT_STUDENT' }
   | { type: 'CLEAR_ERROR' };

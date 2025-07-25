@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
   StyleSheet,
   Alert,
 } from 'react-native';
@@ -47,18 +46,9 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, canDelete 
     <View style={styles.commentItem}>
       <View style={styles.commentHeader}>
         <Text style={styles.commentAuthor}>
-          Usuário #{comment.author_id}
+          {comment.author}
         </Text>
         <View style={styles.commentActions}>
-          <Text style={styles.commentDate}>
-            {new Date(comment.created_at).toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </Text>
           {canDelete && (
             <TouchableOpacity
               onPress={handleDelete}
@@ -72,11 +62,6 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, canDelete 
         </View>
       </View>
       <Text style={styles.commentText}>{comment.comentario}</Text>
-      {comment.updated_at && comment.updated_at !== comment.created_at && (
-        <Text style={styles.editedText}>
-          Editado em {new Date(comment.updated_at).toLocaleDateString('pt-BR')}
-        </Text>
-      )}
     </View>
   );
 };
@@ -152,14 +137,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     }
   };
 
-  const renderComment = ({ item }: { item: Comment }) => (
-    <CommentItem
-      comment={item}
-      onDelete={handleDeleteComment}
-      canDelete={user?.id === item.author_id}
-    />
-  );
-
   const renderEmptyComments = () => (
     <View style={styles.emptyContainer}>
       <Icon name="comment" size={48} color="#ccc" />
@@ -224,15 +201,19 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
           onRetry={loadComments}
           retryText="Tentar Novamente"
         />
+      ) : comments.length === 0 ? (
+        renderEmptyComments()
       ) : (
-        <FlatList
-          data={comments}
-          renderItem={renderComment}
-          keyExtractor={(item) => item.id.toString()}
-          ListEmptyComponent={renderEmptyComments}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={comments.length === 0 ? styles.emptyListContainer : undefined}
-        />
+        <View style={styles.commentsListContainer}>
+          {comments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              onDelete={handleDeleteComment}
+              canDelete={user?.id === comment.author_id}
+            />
+          ))}
+        </View>
       )}
     </View>
   );
@@ -338,8 +319,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 40,
   },
-  emptyListContainer: {
-    flexGrow: 1,
+  commentsListContainer: {
+    marginTop: 8,
   },
   emptyText: {
     fontSize: 16,

@@ -526,9 +526,9 @@ class BlogApiService implements ApiService {
     const authResponse: AuthResponse = {
       user: {
         id: responseData.userId || responseData.id || 1,
-        name: responseData.name || responseData.nome || responseData.usuario || 'Usuário',
+        nome: responseData.name || responseData.nome || responseData.usuario || 'Usuário',
         email: credentials.email,
-        role: responseData.tipo_usuario || 'teacher',
+        tipo_usuario: responseData.tipo_usuario || 'teacher',
         token: accessToken
       },
       token: accessToken

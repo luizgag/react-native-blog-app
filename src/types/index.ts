@@ -54,10 +54,10 @@ export interface UpdatePostRequest {
 }
 
 export interface Comment {
-  id?: number;
+  id: number;
   post_id: number;
-  user_id: number;      // Alinhado com o banco de dados
-  comentario: string;   // Alinhado com o banco de dados
+  author_id: number;     
+  comentario: string;  
   resposta_id?: number;
   created_at?: string;
   author?: string;      // Optional for display purposes
