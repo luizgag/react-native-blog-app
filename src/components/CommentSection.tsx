@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Comment } from '../types';
+import { Comment, User } from '../types';
 import { apiService } from '../services/apiService';
 import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -20,11 +20,13 @@ interface CommentSectionProps {
 
 interface CommentItemProps {
   comment: Comment;
+  author: User | null;
+  isLoadingAuthor: boolean;
   onDelete?: (commentId: number) => void;
   canDelete?: boolean;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, canDelete }) => {
+const CommentItem: React.FC<CommentItemProps> = ({ comment, author, isLoadingAuthor, onDelete, canDelete }) => {
   const handleDelete = () => {
     if (!onDelete) return;
 
@@ -46,7 +48,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, canDelete 
     <View style={styles.commentItem}>
       <View style={styles.commentHeader}>
         <Text style={styles.commentAuthor}>
-          {comment.author}
+          {isLoadingAuthor ? 'Carregando autor...' : (author?.nome || 'Autor desconhecido')}
         </Text>
         <View style={styles.commentActions}>
           {canDelete && (
@@ -74,10 +76,49 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // State for comment authors
+  const [commentAuthors, setCommentAuthors] = useState<Record<number, User>>({});
+  const [loadingAuthors, setLoadingAuthors] = useState<Set<number>>(new Set());
+
   // Load comments when component mounts
   useEffect(() => {
     loadComments();
   }, [postId]);
+
+  // Fetch author information for a comment
+  const fetchCommentAuthor = useCallback(async (authorId: number) => {
+    if (!authorId || commentAuthors[authorId] || loadingAuthors.has(authorId)) {
+      return;
+    }
+
+    setLoadingAuthors(prev => new Set(prev).add(authorId));
+
+    try {
+      const author = await apiService.getUser(authorId);
+      setCommentAuthors(prev => ({
+        ...prev,
+        [authorId]: author
+      }));
+    } catch (error) {
+      console.log('Failed to load comment author:', error);
+    } finally {
+      setLoadingAuthors(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(authorId);
+        return newSet;
+      });
+    }
+  }, [commentAuthors, loadingAuthors]);
+
+  // Fetch authors for all comments
+  useEffect(() => {
+    const uniqueAuthorIds = [...new Set(comments.map(comment => comment.author_id))];
+    uniqueAuthorIds.forEach(authorId => {
+      if (authorId) {
+        fetchCommentAuthor(authorId);
+      }
+    });
+  }, [comments, fetchCommentAuthor]);
 
   const loadComments = async () => {
     setIsLoading(true);
@@ -86,6 +127,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     try {
       const commentsData = await apiService.getComments(postId);
       setComments(commentsData || []);
+      // Clear previous author data when loading new comments
+      setCommentAuthors({});
+      setLoadingAuthors(new Set());
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar comentários';
       setError(errorMessage);
@@ -209,6 +253,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             <CommentItem
               key={comment.id}
               comment={comment}
+              author={commentAuthors[comment.author_id] || null}
+              isLoadingAuthor={loadingAuthors.has(comment.author_id)}
               onDelete={handleDeleteComment}
               canDelete={user?.id === comment.author_id}
             />

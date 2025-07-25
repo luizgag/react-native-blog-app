@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import { usePosts } from '../context/PostsContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { CommentSection } from '../components/CommentSection';
+import { apiService } from '../services/apiService';
+import { User } from '../types';
 
 interface PostDetailScreenProps {
   route: RouteProp<MainStackParamList, 'PostDetail'>;
@@ -30,6 +32,26 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
     },
   } = usePosts();
 
+  // State for author information
+  const [postAuthor, setPostAuthor] = useState<User | null>(null);
+  const [isLoadingAuthor, setIsLoadingAuthor] = useState(false);
+
+  // Fetch author information
+  const fetchAuthor = useCallback(async (authorId: number) => {
+    if (!authorId) return;
+    
+    setIsLoadingAuthor(true);
+    try {
+      const author = await apiService.getUser(authorId);
+      setPostAuthor(author);
+    } catch (error) {
+      console.log('Failed to load author:', error);
+      setPostAuthor(null);
+    } finally {
+      setIsLoadingAuthor(false);
+    }
+  }, []);
+
   // Fetch post when component mounts or postId changes
   useEffect(() => {
     const loadPost = async () => {
@@ -44,6 +66,15 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
     loadPost();
   }, [postId, fetchPost]);
 
+  // Fetch author when post is loaded
+  useEffect(() => {
+    if (currentPost?.author_id) {
+      fetchAuthor(currentPost.author_id);
+    } else {
+      setPostAuthor(null);
+    }
+  }, [currentPost?.author_id, fetchAuthor]);
+
   // Clear current post when component unmounts
   useFocusEffect(
     useCallback(() => {
@@ -56,6 +87,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
   // Handle retry
   const handleRetry = useCallback(async () => {
     clearError();
+    setPostAuthor(null);
     try {
       await fetchPost(postId);
     } catch (error) {
@@ -66,6 +98,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
 
   // Handle refresh
   const onRefresh = useCallback(async () => {
+    setPostAuthor(null);
     try {
       await fetchPost(postId);
     } catch (error) {
@@ -75,7 +108,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
   }, [fetchPost, postId]);
 
   // Show loading state
-  if (isLoading && !currentPost) {
+  if ((isLoading || isLoadingAuthor) && !currentPost) {
     return (
       <View style={styles.centerContainer}>
         <LoadingSpinner message="Carregando post..." />
@@ -114,7 +147,7 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
       contentContainerStyle={styles.scrollContentContainer}
       refreshControl={
         <RefreshControl
-          refreshing={isLoading}
+          refreshing={isLoading || isLoadingAuthor}
           onRefresh={onRefresh}
           colors={['#2196F3']}
           tintColor="#2196F3"
@@ -139,9 +172,9 @@ export const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => 
             <View style={styles.metaContainer}>
               <Text
                 style={styles.author}
-                accessibilityLabel={`Autor: ${currentPost.author || 'Autor desconhecido'}`}
+                accessibilityLabel={`Autor: ${postAuthor?.nome || 'Carregando autor...'}`}
               >
-                Por {currentPost.author || 'Autor desconhecido'}
+                Por {postAuthor?.nome || (isLoadingAuthor ? 'Carregando autor...' : 'Autor desconhecido')}
               </Text>
             </View>
           </View>
