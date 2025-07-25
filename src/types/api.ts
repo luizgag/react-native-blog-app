@@ -8,6 +8,7 @@ import {
   Comment,
   Like,
   RegisterRequest,
+  User,
 } from './index';
 
 export interface ApiService {
@@ -31,7 +32,7 @@ export interface ApiService {
   removeLike(postId: number): Promise<void>;
 
   // Users
-  getUser(id: number): Promise<any>;
+  getUser(id: number): Promise<User>;
 
   // Authentication
   login(credentials: LoginRequest): Promise<AuthResponse>;
@@ -55,4 +56,15 @@ export interface ApiResponse<T> {
   data: T;
   success: boolean;
   message?: string;
+}
+
+// Comment creation request
+export interface CreateCommentRequest {
+  post_id: number;
+  comentario: string;
+}
+
+// Like creation request
+export interface CreateLikeRequest {
+  post_id: number;
 }

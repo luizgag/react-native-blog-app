@@ -99,7 +99,7 @@ export const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
       await postsActions.createPost({
         title: formData.title.trim(),
         content: formData.content.trim(),
-        author: user?.name || 'Usuário',
+        author_id: user?.id || 1,
       });
 
       // Show success message

@@ -75,12 +75,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, onEdit, onDelete }) => {
         {post.content}
       </Text>
       
-      {post.createdAt && (
-        <Text style={styles.postDate}>
-          Criado: {new Date(post.createdAt).toLocaleDateString('pt-BR')}
-        </Text>
-      )}
-      
       <View style={styles.postActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}

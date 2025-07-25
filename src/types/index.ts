@@ -1,26 +1,26 @@
 // Core data types for the blog app
 
 export interface Post {
-  id: number;
+  id?: number;
   title: string;
   content: string;
-  author: string;
-  author_id: number;
+  author_id: number; 
+  author?: string; 
 }
 
 export interface User {
   id: number;
-  name: string;
+  nome: string;
   email: string;
-  role: 'teacher' | 'student';
+  tipo_usuario: 'aluno' | 'professor';
   createdAt?: string;
 }
 
 export interface AuthUser {
   id: number;
-  name: string;
+  nome: string;
   email: string;
-  role: 'teacher' | 'student';
+  tipo_usuario: 'aluno' | 'professor';
   token: string;
 }
 
@@ -46,7 +46,6 @@ export interface CreatePostRequest {
   title: string;
   content: string;
   author_id: number;
-  tipo_usuario: 'professor' | 'aluno';
 }
 
 export interface UpdatePostRequest {
@@ -55,11 +54,13 @@ export interface UpdatePostRequest {
 }
 
 export interface Comment {
-  id: number;
+  id?: number;
   post_id: number;
-  author_id: number;
-  comentario: string;
-  author: string
+  user_id: number;      // Alinhado com o banco de dados
+  comentario: string;   // Alinhado com o banco de dados
+  resposta_id?: number;
+  created_at?: string;
+  author?: string;      // Optional for display purposes
 }
 
 export interface Like {
@@ -136,16 +137,16 @@ export interface PostFormData {
 }
 
 export interface TeacherFormData {
-  name: string;
+  nome: string;
   email: string;
-  password?: string;
+  senha?: string;
   department?: string;
 }
 
 export interface StudentFormData {
-  name: string;
+  nome: string;
   email: string;
-  password?: string;
+  senha?: string;
   studentId?: string;
 }
 

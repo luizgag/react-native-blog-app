@@ -109,12 +109,6 @@ export const formValidationSchemas = {
       validationRules.minLength(10, 'Content'),
       validationRules.maxLength(10000, 'Content'),
     ],
-    author: [
-      validationRules.required('Author'),
-      validationRules.minLength(2, 'Author'),
-      validationRules.maxLength(100, 'Author'),
-      validationRules.noWhitespace('Author'),
-    ],
   },
 
   createTeacher: {
