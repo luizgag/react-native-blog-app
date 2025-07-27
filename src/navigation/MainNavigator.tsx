@@ -244,11 +244,6 @@ const MainTabNavigator: React.FC = () => {
   const { user } = useAuth();
   const isTeacher = user?.tipo_usuario === 'professor';
 
-  // Debug logging
-  console.log('MainTabNavigator - User:', JSON.stringify(user, null, 2));
-  console.log('MainTabNavigator - User type:', user?.tipo_usuario);
-  console.log('MainTabNavigator - Is teacher:', isTeacher);
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

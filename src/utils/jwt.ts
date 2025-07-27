@@ -2,8 +2,8 @@ import { jwtDecode } from 'jwt-decode';
 
 export interface DecodedToken {
   userId: number;
-  email: string;
-  role?: string;
+  userName: string;
+  userType: string;
   exp: number;
   iat: number;
 }
@@ -33,20 +33,16 @@ export function isTokenExpired(token: string): boolean {
   }
 }
 
-export function getUserFromToken(token: string): { id: number; email: string; role: string } | null {
+export function getUserFromToken(token: string): { id: number; userType: string } | null {
   try {
     const decoded = decodeToken(token);
-    if (!decoded) {
-      return null;
-    }
-    
+    if (!decoded) return null;
+
     return {
       id: decoded.userId,
-      email: decoded.email,
-      role: decoded.role || 'teacher'
+      userType: decoded.userType,
     };
-  } catch (error) {
-    console.error('Error extracting user from token:', error);
+  } catch {
     return null;
   }
 }

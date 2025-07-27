@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -47,6 +47,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   const [validationError, setValidationError] = useState<string>('');
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const shakeAnimation = new Animated.Value(0);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Update internal value when prop changes
   useEffect(() => {
@@ -55,12 +56,26 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   // Real-time validation
   useEffect(() => {
-    if (realTimeValidation && validationRules.length > 0 && internalValue) {
-      validateInput(internalValue);
-    } else if (!internalValue) {
-      setValidationError('');
-      setIsValid(null);
+    if (realTimeValidation && validationRules.length > 0) {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+      
+      debounceTimer.current = setTimeout(() => {
+        if (internalValue) {
+          validateInput(internalValue);
+        } else {
+          setValidationError('');
+          setIsValid(null);
+        }
+      }, 500);
     }
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
   }, [internalValue, validationRules, realTimeValidation]);
 
   const validateInput = (inputValue: string) => {
@@ -120,7 +135,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   const handleChangeText = (text: string) => {
     setInternalValue(text);
     onChangeText?.(text);
-    
+
     // Clear validation error when user starts typing
     if (error || validationError) {
       setValidationError('');
@@ -130,11 +145,11 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   const getInputStyle = () => {
     const baseStyle: any[] = [styles.input];
-    
+
     if (multiline) {
       baseStyle.push(styles.multilineInput);
     }
-    
+
     const currentError = error || validationError;
     if (currentError) {
       baseStyle.push(styles.inputError);
@@ -143,17 +158,17 @@ export const FormInput: React.FC<FormInputProps> = ({
     } else if (isFocused) {
       baseStyle.push(styles.inputFocused);
     }
-    
+
     if (style) {
       baseStyle.push(style);
     }
-    
+
     return baseStyle;
   };
 
   const getValidationIcon = () => {
     if (!showValidationIcon || isValid === null) return null;
-    
+
     return (
       <View style={styles.validationIcon}>
         <Text style={styles.validationIconText}>
@@ -174,7 +189,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   }, [displayError]);
 
   return (
-    <Animated.View 
+    <Animated.View
       style={[
         styles.container,
         { transform: [{ translateX: shakeAnimation }] }
@@ -184,7 +199,7 @@ export const FormInput: React.FC<FormInputProps> = ({
         {label}
         {required && <Text style={styles.required}> *</Text>}
       </Text>
-      
+
       <View style={styles.inputContainer}>
         <TextInput
           {...textInputProps}
@@ -198,9 +213,9 @@ export const FormInput: React.FC<FormInputProps> = ({
           accessibilityLabel={label}
           accessibilityHint={displayError ? `Error: ${displayError}` : undefined}
         />
-        
+
         {getValidationIcon()}
-        
+
         {showPasswordToggle && secureTextEntry && (
           <TouchableOpacity
             style={styles.passwordToggle}
@@ -214,7 +229,7 @@ export const FormInput: React.FC<FormInputProps> = ({
           </TouchableOpacity>
         )}
       </View>
-      
+
       {displayError && (
         <Animated.Text
           style={[styles.errorText, { opacity: displayError ? 1 : 0 }]}
