@@ -296,8 +296,7 @@ class BlogApiService implements ApiService {
           id: postId,
           title: post.title,
           content: post.content,
-          author_id: postId,
-          author: "Autor desconhecido"
+          author_id: post.author_id,
         };
       }
     }
@@ -313,7 +312,6 @@ class BlogApiService implements ApiService {
       title: post.title,
       content: post.content,
       author_id: post.author_id,
-      author: "Autor desconhecido"
     };
   }
 
@@ -407,7 +405,6 @@ class BlogApiService implements ApiService {
         post_id: postId,
         author_id: 1,
         comentario,
-        author: "Autor desconhecido"
       };
     }
 
