@@ -14,6 +14,7 @@ import {
   RegisterRequest,
 } from '../types';
 import { API_CONFIG, STORAGE_KEYS } from '../config';
+import { getUserFromToken } from '../utils/jwt';
 
 class BlogApiService implements ApiService {
   private client: AxiosInstance;
@@ -659,51 +660,47 @@ class BlogApiService implements ApiService {
   }
 
   // Authentication API methods (no retry for login to avoid account lockout)
-  async login(credentials: LoginRequest): Promise<AuthResponse> {
-    // LoginRequest now uses 'senha' to match backend API format
-    const loginData = {
-      email: credentials.email,
-      senha: credentials.senha
-    };
+ async login(credentials: LoginRequest): Promise<AuthResponse> {
+  const loginData = {
+    email: credentials.email,
+    senha: credentials.senha,
+  };
 
-    const response = await this.client.post('/login', loginData);
+  const response = await this.client.post('/login', loginData);
+  const responseData = response.data;
 
-    // Handle different response formats
-    const responseData = response.data;
-    let accessToken: string;
-
-    if (responseData.accessToken) {
-      accessToken = responseData.accessToken;
-    } else if (responseData.token) {
-      accessToken = responseData.token;
-    } else {
-      throw new Error('No access token received from login response');
-    }
-
-    // Store auth token
-    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken);
-
-    // Debug logging for login response
-    console.log('Login response data:', JSON.stringify(responseData, null, 2));
-
-    // Create AuthResponse format for compatibility
-    const authResponse: AuthResponse = {
-      user: {
-        id: responseData.userId || responseData.id || 1,
-        nome: responseData.name || responseData.nome || responseData.usuario || 'Usuário',
-        email: credentials.email,
-        tipo_usuario: responseData.tipo_usuario || 'professor', // Default to 'professor' if not provided
-        token: accessToken
-      },
-      token: accessToken
-    };
-
-    console.log('Created auth response:', JSON.stringify(authResponse, null, 2));
-
-    await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(authResponse.user));
-
-    return authResponse;
+  let accessToken: string;
+  if (responseData.accessToken) {
+    accessToken = responseData.accessToken;
+  } else if (responseData.token) {
+    accessToken = responseData.token;
+  } else {
+    throw new Error('No access token received from login response');
   }
+
+  const userFromToken = getUserFromToken(accessToken);
+  if (!userFromToken) {
+    throw new Error('Erro ao decodificar token');
+  }
+
+  const tipoUsuario = userFromToken.userType === 'professor' ? 'professor' : 'aluno';
+  
+  const authResponse: AuthResponse = {
+    user: {
+      id: userFromToken.id,
+      nome: credentials.email,
+      email: credentials.email,
+      tipo_usuario: tipoUsuario,
+      token: accessToken,
+    },
+    token: accessToken,
+  };
+
+  await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, accessToken);
+  await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(authResponse.user));
+
+  return authResponse;
+}
 
   async logout(): Promise<void> {
     return RetryService.withRetry(async () => {

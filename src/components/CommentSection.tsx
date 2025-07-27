@@ -154,11 +154,10 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     setError(null);
 
     try {
-      const comment = await apiService.createComment(postId, newComment.trim());
-
-      // Add the new comment to the list
-      setComments(prevComments => [comment, ...prevComments]);
+      await apiService.createComment(postId, newComment.trim());
       setNewComment('');
+
+      await loadComments();
 
       Alert.alert('Sucesso', 'Comentário adicionado com sucesso!');
     } catch (error) {
@@ -169,6 +168,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       setIsSubmitting(false);
     }
   };
+
 
   const handleDeleteComment = async (commentId: number) => {
     try {
